@@ -178,7 +178,7 @@ export default function Home() {
             </div>
             <div>
               <p className="text-sm font-medium uppercase tracking-[0.3em] text-slate-500">
-                Truth Lens
+                The Truth
               </p>
               <h1 className="text-2xl font-semibold tracking-tight">
                 Evidence-first claim checks
@@ -203,7 +203,7 @@ export default function Home() {
                   Turn a claim into a transparent verification brief.
                 </h2>
                 <p className="max-w-2xl text-lg leading-8 text-slate-300">
-                  Truth Lens helps reporters, researchers, and community teams
+                  The Truth helps reporters, researchers, and community teams
                   decide whether a statement is specific, sourced, and ready for
                   human review.
                 </p>
@@ -426,7 +426,7 @@ export default function Home() {
               </CardHeader>
               <CardContent className="space-y-4 text-sm leading-6 text-slate-600">
                 <p>
-                  Truth Lens scores whether a claim is ready to be verified by a
+                  The Truth scores whether a claim is ready to be verified by a
                   person. It rewards specificity, source notes, primary-source
                   clues, and measurable language.
                 </p>

@@ -1,6 +1,6 @@
-# Truth Lens
+# The Truth
 
-Truth Lens is a Next.js app for turning factual claims into transparent verification briefs. It helps a reviewer decide whether a claim is specific, sourced, and ready for human fact-checking.
+The Truth is a Next.js app for turning factual claims into transparent verification briefs. It helps a reviewer decide whether a claim is specific, sourced, and ready for human fact-checking.
 
 ## What is included
 

@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Truth Lens",
+  title: "The Truth",
   description: "Evidence-first claim checks for human reviewers.",
 };
 
