@@ -1,8 +1,7 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,209 +11,168 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 
-type Assessment = {
-  score: number;
-  verdict: string;
-  summary: string;
-  signals: string[];
-  nextSteps: string[];
+type Reading = {
+  theme: string;
+  scriptureReference: string;
+  scriptureText: string;
+  christianText: string;
+  scientificText: string;
+  reflection: string;
+  prayer: string;
 };
 
-const exampleClaims = [
-  "A city audit found that bus delays dropped 18 percent after the new signal priority program launched in March.",
-  "Everyone knows the new supplement cures brain fog in two days.",
-  "The state education report says third-grade reading scores rose in districts that added summer tutoring.",
+const readings: Reading[] = [
+  {
+    theme: "Creation",
+    scriptureReference: "Genesis 1:1 KJV",
+    scriptureText: "In the beginning God created the heaven and the earth.",
+    christianText:
+      "Christian faith begins with God as Creator. The world is not treated as an accident without meaning, but as a created reality that can be received with gratitude, studied with humility, and stewarded with care.",
+    scientificText:
+      "Cosmology studies the origin, age, structure, and expansion of the universe. The observable universe contains billions of galaxies, and measurements of cosmic background radiation help scientists reconstruct its earliest moments.",
+    reflection:
+      "Faith gives creation meaning; science helps describe its order. Both can move the heart toward wonder.",
+    prayer:
+      "Lord, teach me to see the created world with reverence, curiosity, and responsibility.",
+  },
+  {
+    theme: "Light",
+    scriptureReference: "John 1:5 KJV",
+    scriptureText:
+      "And the light shineth in darkness; and the darkness comprehended it not.",
+    christianText:
+      "In Christian teaching, light is a sign of Christ, truth, holiness, and hope. Darkness is real, but it does not overcome the light God gives.",
+    scientificText:
+      "Visible light is one small part of the electromagnetic spectrum. Light behaves in ways that can be measured as waves and particles, and it makes sight, photosynthesis, astronomy, and modern communication possible.",
+    reflection:
+      "The physical gift of light helps us understand why Scripture uses light to speak about life, guidance, and truth.",
+    prayer:
+      "Christ, shine your light into my thoughts, choices, and relationships today.",
+  },
+  {
+    theme: "Life",
+    scriptureReference: "Psalm 139:14 KJV",
+    scriptureText:
+      "I will praise thee; for I am fearfully and wonderfully made.",
+    christianText:
+      "Christian belief honors human life as made by God and worthy of dignity. The body is not disposable; it is part of the person God knows and loves.",
+    scientificText:
+      "Human bodies are made of trillions of cells working together. DNA stores biological instructions, cells repair damage, and organ systems coordinate through chemical and electrical signals.",
+    reflection:
+      "The complexity of life can deepen gratitude instead of reducing wonder.",
+    prayer:
+      "Father, help me honor the life you have given me and the lives of the people around me.",
+  },
+  {
+    theme: "Water",
+    scriptureReference: "John 4:14 KJV",
+    scriptureText:
+      "But whosoever drinketh of the water that I shall give him shall never thirst.",
+    christianText:
+      "Jesus uses water to describe the life God gives. The image points to renewal, cleansing, and a hope that reaches deeper than physical need.",
+    scientificText:
+      "Water is essential for known life. Its polarity helps dissolve nutrients, regulate temperature, transport minerals, and support the chemistry inside living cells.",
+    reflection:
+      "The ordinary need for water helps reveal the deeper spiritual need for God.",
+    prayer:
+      "Jesus, satisfy what is thirsty in me and make me a source of mercy to others.",
+  },
+  {
+    theme: "Heavens",
+    scriptureReference: "Psalm 19:1 KJV",
+    scriptureText:
+      "The heavens declare the glory of God; and the firmament sheweth his handywork.",
+    christianText:
+      "The heavens have long called believers to worship. Scripture invites us to look upward and remember that creation is larger than our fears, plans, and pride.",
+    scientificText:
+      "Stars form from clouds of gas and dust. Inside stars, nuclear fusion releases energy and creates many of the elements later found in planets, oceans, rocks, and living organisms.",
+    reflection:
+      "The night sky can make human life feel small, but Christian hope says small does not mean forgotten.",
+    prayer:
+      "Creator God, let the heavens teach me humility, awe, and trust.",
+  },
+  {
+    theme: "Mind",
+    scriptureReference: "Romans 12:2 KJV",
+    scriptureText:
+      "And be not conformed to this world: but be ye transformed by the renewing of your mind.",
+    christianText:
+      "Christian discipleship includes the renewal of thought, desire, and attention. The mind is trained by what it loves, repeats, and receives as true.",
+    scientificText:
+      "Neuroscience shows that repeated habits can strengthen neural pathways. Attention, sleep, stress, learning, and relationships all influence how the brain adapts over time.",
+    reflection:
+      "Spiritual formation and habit formation both remind us that daily attention matters.",
+    prayer:
+      "Holy Spirit, renew my mind and shape my habits toward truth, love, and wisdom.",
+  },
 ];
 
-const reviewQueue = [
-  {
-    claim: "Public transit pilot reduced downtown commute times.",
-    status: "Source requested",
-  },
-  {
-    claim: "New water rules cut household usage in pilot neighborhoods.",
-    status: "Ready for review",
-  },
-  {
-    claim: "Viral post misquoted the health department guidance.",
-    status: "Needs context",
-  },
+const readingPlan = [
+  "Read the selected Scripture slowly.",
+  "Study the science note without rushing past the wonder.",
+  "Write one sentence of gratitude or conviction.",
+  "Pray the prompt and carry one thought into the day.",
 ];
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(Math.max(value, min), max);
-}
-
-function assessClaim(claim: string, sources: string): Assessment {
-  const words = claim.trim().split(/\s+/).filter(Boolean);
-  const sourceItems = sources
-    .split(/[\n,]/)
-    .map((source) => source.trim())
-    .filter(Boolean);
-  const lowerClaim = claim.toLowerCase();
-  const joinedSources = sourceItems.join(" ").toLowerCase();
-
-  let score = 24;
-  const signals: string[] = [];
-  const nextSteps = [
-    "Trace the claim back to the original report, data table, interview, or recording.",
-    "Find an independent source that can confirm or challenge the same point.",
-    "Separate the verified fact from any interpretation or opinion around it.",
-  ];
-
-  if (words.length >= 18) {
-    score += 14;
-    signals.push("The claim has enough detail to investigate.");
-  } else {
-    nextSteps.push("Add who, what, where, and when so the claim can be checked.");
-  }
-
-  if (/\d|percent|million|billion|january|february|march|april|may|june|july|august|september|october|november|december/.test(lowerClaim)) {
-    score += 16;
-    signals.push("Specific numbers or dates make the claim more testable.");
-  } else {
-    nextSteps.push("Look for measurable figures or a clear date range.");
-  }
-
-  if (/[A-Z][a-z]+(?:\s[A-Z][a-z]+)?/.test(claim)) {
-    score += 8;
-    signals.push("Named people, places, or organizations are present.");
-  }
-
-  if (sourceItems.length > 0) {
-    score += Math.min(sourceItems.length * 8, 24);
-    signals.push(`${sourceItems.length} source note${sourceItems.length === 1 ? "" : "s"} attached.`);
-  } else {
-    nextSteps.push("Attach at least one source link, citation, or reporting note.");
-  }
-
-  if (/(doi|\.gov|\.edu|who\.int|cdc\.gov|pubmed|journal|reuters|apnews|audit|report)/.test(joinedSources)) {
-    score += 12;
-    signals.push("At least one source appears to be primary or reputable.");
-  }
-
-  if (/(always|never|everyone knows|secret|shocking|miracle|proves|they do not want you to know)/.test(lowerClaim)) {
-    score -= 18;
-    signals.push("Loaded or absolute language needs extra scrutiny.");
-    nextSteps.push("Replace emotional framing with the exact factual assertion.");
-  }
-
-  const finalScore = clamp(score, 5, 96);
-
-  if (finalScore >= 75) {
-    return {
-      score: finalScore,
-      verdict: "Ready for review",
-      summary:
-        "This claim is specific and sourced enough for a reviewer to begin checking evidence.",
-      signals,
-      nextSteps,
-    };
-  }
-
-  if (finalScore >= 55) {
-    return {
-      score: finalScore,
-      verdict: "Promising lead",
-      summary:
-        "There is a checkable core here, but the evidence package still needs support.",
-      signals,
-      nextSteps,
-    };
-  }
-
-  return {
-    score: finalScore,
-    verdict: "Needs evidence",
-    summary:
-      "The claim needs more specificity or sourcing before it can be responsibly labeled true or false.",
-    signals,
-    nextSteps,
-  };
-}
 
 export default function Home() {
-  const [claim, setClaim] = useState("");
-  const [sources, setSources] = useState("");
-  const [assessment, setAssessment] = useState<Assessment | null>(null);
-  const [error, setError] = useState("");
+  const [selectedTheme, setSelectedTheme] = useState(readings[0].theme);
+  const [journal, setJournal] = useState("");
 
-  const wordCount = useMemo(
-    () => claim.trim().split(/\s+/).filter(Boolean).length,
-    [claim]
+  const selectedReading = useMemo(
+    () =>
+      readings.find((reading) => reading.theme === selectedTheme) ?? readings[0],
+    [selectedTheme]
   );
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (wordCount < 8) {
-      setAssessment(null);
-      setError("Add a fuller claim before running a truth check.");
-      return;
-    }
-
-    setError("");
-    setAssessment(assessClaim(claim, sources));
-  }
-
-  function loadExample(example: string) {
-    setClaim(example);
-    setSources("City audit report, March 2026\nLocal newsroom follow-up");
-    setError("");
-    setAssessment(null);
-  }
-
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#e0f2fe,_transparent_34%),linear-gradient(135deg,_#f8fafc,_#eef2ff_45%,_#fff7ed)] px-5 py-6 text-slate-950 sm:px-8 lg:px-12">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_#fde68a,_transparent_30%),radial-gradient(circle_at_bottom_right,_#bfdbfe,_transparent_35%),linear-gradient(135deg,_#fffdf7,_#f8fafc_55%,_#eef2ff)] px-5 py-6 text-slate-950 sm:px-8 lg:px-12">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-8">
-        <header className="flex flex-col gap-4 rounded-3xl border border-white/70 bg-white/75 p-5 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
+        <header className="flex flex-col gap-4 rounded-3xl border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-950 text-lg font-black text-white">
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-amber-700 text-lg font-black text-white shadow-sm">
               T
             </div>
             <div>
-              <p className="text-sm font-medium uppercase tracking-[0.3em] text-slate-500">
+              <p className="text-sm font-medium uppercase tracking-[0.3em] text-amber-700">
                 The Truth
               </p>
               <h1 className="text-2xl font-semibold tracking-tight">
-                Evidence-first claim checks
+                Christian and scientific text side by side
               </h1>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">Local analysis</Badge>
-            <Badge variant="outline">No account needed</Badge>
-            <Badge variant="outline">Reviewer ready</Badge>
+            <Badge variant="secondary">Scripture</Badge>
+            <Badge variant="outline">Science notes</Badge>
+            <Badge variant="outline">Prayer journal</Badge>
           </div>
         </header>
 
         <section className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="flex flex-col justify-between gap-6 rounded-[2rem] bg-slate-950 p-7 text-white shadow-xl sm:p-10">
+          <div className="flex flex-col justify-between gap-8 rounded-[2rem] bg-slate-950 p-7 text-white shadow-xl sm:p-10">
             <div className="space-y-6">
               <Badge className="bg-white/15 text-white hover:bg-white/20">
-                First usable slice
+                Faith seeking understanding
               </Badge>
               <div className="space-y-4">
                 <h2 className="max-w-3xl text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">
-                  Turn a claim into a transparent verification brief.
+                  Read Christian truth with the wonder of God&apos;s creation.
                 </h2>
                 <p className="max-w-2xl text-lg leading-8 text-slate-300">
-                  The Truth helps reporters, researchers, and community teams
-                  decide whether a statement is specific, sourced, and ready for
-                  human review.
+                  The Truth pairs Scripture and Christian reflection with clear
+                  scientific text about creation, light, life, water, the
+                  heavens, and the mind.
                 </p>
               </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
               {[
-                ["3", "signal checks"],
-                ["0", "external API calls"],
-                ["1", "review brief"],
+                ["6", "guided themes"],
+                ["KJV", "Scripture text"],
+                ["1", "daily reflection"],
               ].map(([value, label]) => (
                 <div
                   className="rounded-2xl border border-white/10 bg-white/10 p-4"
@@ -229,215 +187,158 @@ export default function Home() {
 
           <Card className="border-white/80 bg-white/90 shadow-xl backdrop-blur">
             <CardHeader>
-              <CardTitle>Run a truth check</CardTitle>
+              <CardTitle>Choose a theme</CardTitle>
               <CardDescription>
-                Paste a factual claim and add any source links or notes you
-                already have.
+                Select a topic to read Scripture, Christian reflection, and a
+                scientific note together.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <form className="space-y-5" onSubmit={handleSubmit}>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium" htmlFor="claim">
-                    Claim
-                  </label>
-                  <Textarea
-                    className="min-h-32 resize-none bg-white"
-                    id="claim"
-                    onChange={(event) => setClaim(event.target.value)}
-                    placeholder="Example: A city audit found bus delays dropped 18 percent after signal priority launched in March."
-                    value={claim}
-                  />
-                  <p className="text-xs text-slate-500">
-                    {wordCount} word{wordCount === 1 ? "" : "s"} entered
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium" htmlFor="sources">
-                    Sources or notes
-                  </label>
-                  <Input
-                    className="bg-white"
-                    id="sources"
-                    onChange={(event) => setSources(event.target.value)}
-                    placeholder="Paste URLs, report names, or reporting notes"
-                    value={sources}
-                  />
-                </div>
-
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <Button className="sm:flex-1" type="submit">
-                    Generate review brief
-                  </Button>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {readings.map((reading) => (
                   <Button
-                    className="sm:flex-1"
-                    onClick={() => {
-                      setClaim("");
-                      setSources("");
-                      setAssessment(null);
-                      setError("");
-                    }}
+                    key={reading.theme}
+                    onClick={() => setSelectedTheme(reading.theme)}
                     type="button"
-                    variant="outline"
+                    variant={
+                      selectedTheme === reading.theme ? "default" : "secondary"
+                    }
                   >
-                    Clear
-                  </Button>
-                </div>
-              </form>
-
-              <div className="mt-5 flex flex-wrap gap-2">
-                {exampleClaims.map((example, index) => (
-                  <Button
-                    key={example}
-                    onClick={() => loadExample(example)}
-                    size="sm"
-                    type="button"
-                    variant="secondary"
-                  >
-                    Example {index + 1}
+                    {reading.theme}
                   </Button>
                 ))}
+              </div>
+
+              <div className="rounded-3xl border bg-amber-50 p-5">
+                <p className="text-sm font-medium uppercase tracking-[0.2em] text-amber-700">
+                  Today&apos;s passage
+                </p>
+                <h3 className="mt-3 text-2xl font-semibold">
+                  {selectedReading.theme}
+                </h3>
+                <p className="mt-2 text-sm font-medium text-slate-600">
+                  {selectedReading.scriptureReference}
+                </p>
+                <p className="mt-4 text-xl leading-8 text-slate-900">
+                  &quot;{selectedReading.scriptureText}&quot;
+                </p>
               </div>
             </CardContent>
           </Card>
         </section>
 
-        {error ? (
-          <Alert variant="destructive">
-            <AlertTitle>Claim is too short</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        ) : null}
+        <section className="grid gap-6 lg:grid-cols-3">
+          <Card className="bg-white/90 shadow-sm">
+            <CardHeader>
+              <CardTitle>Christian text</CardTitle>
+              <CardDescription>
+                A short reflection rooted in the selected Scripture.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-base leading-7 text-slate-700">
+                {selectedReading.christianText}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 shadow-sm">
+            <CardHeader>
+              <CardTitle>Scientific text</CardTitle>
+              <CardDescription>
+                A concise science note connected to the theme.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-base leading-7 text-slate-700">
+                {selectedReading.scientificText}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 shadow-sm">
+            <CardHeader>
+              <CardTitle>Reflection</CardTitle>
+              <CardDescription>
+                Bring faith, reason, and worship into one thought.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-base leading-7 text-slate-700">
+                {selectedReading.reflection}
+              </p>
+              <div className="rounded-2xl bg-slate-950 p-4 text-white">
+                <p className="text-sm font-medium text-amber-200">Prayer</p>
+                <p className="mt-2 text-sm leading-6 text-slate-200">
+                  {selectedReading.prayer}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </section>
 
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <Card className="bg-white/90 shadow-sm">
             <CardHeader>
-              <CardTitle>Review brief</CardTitle>
+              <CardTitle>Daily reading rhythm</CardTitle>
               <CardDescription>
-                Your result appears here after a truth check.
+                A simple pattern for reading The Truth each day.
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {assessment ? (
-                <div className="space-y-6">
-                  <div className="rounded-3xl border bg-slate-50 p-5">
-                    <div className="mb-3 flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-sm text-slate-500">
-                          Evidence readiness
-                        </p>
-                        <p className="text-4xl font-semibold">
-                          {assessment.score}%
-                        </p>
-                      </div>
-                      <Badge
-                        variant={
-                          assessment.score >= 75
-                            ? "default"
-                            : assessment.score >= 55
-                              ? "secondary"
-                              : "destructive"
-                        }
-                      >
-                        {assessment.verdict}
-                      </Badge>
-                    </div>
-                    <Progress value={assessment.score} />
-                    <p className="mt-4 text-sm leading-6 text-slate-600">
-                      {assessment.summary}
-                    </p>
-                  </div>
+              <ol className="space-y-3">
+                {readingPlan.map((step, index) => (
+                  <li
+                    className="flex gap-3 rounded-2xl border bg-white p-4"
+                    key={step}
+                  >
+                    <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-amber-700 text-sm font-semibold text-white">
+                      {index + 1}
+                    </span>
+                    <span className="text-sm leading-6 text-slate-700">
+                      {step}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </CardContent>
+          </Card>
 
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div>
-                      <h3 className="mb-3 font-medium">Positive signals</h3>
-                      <ul className="space-y-2 text-sm text-slate-600">
-                        {(assessment.signals.length
-                          ? assessment.signals
-                          : ["No strong verification signals found yet."]
-                        ).map((signal) => (
-                          <li
-                            className="rounded-2xl bg-emerald-50 px-3 py-2 text-emerald-950"
-                            key={signal}
-                          >
-                            {signal}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h3 className="mb-3 font-medium">Next verification steps</h3>
-                      <ul className="space-y-2 text-sm text-slate-600">
-                        {assessment.nextSteps.slice(0, 4).map((step) => (
-                          <li
-                            className="rounded-2xl bg-amber-50 px-3 py-2 text-amber-950"
-                            key={step}
-                          >
-                            {step}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
+          <Card className="bg-white/90 shadow-sm">
+            <CardHeader>
+              <CardTitle>Prayer journal</CardTitle>
+              <CardDescription>
+                Save a thought for your own reflection during this session.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Textarea
+                className="min-h-40 resize-none bg-white"
+                onChange={(event) => setJournal(event.target.value)}
+                placeholder="Write a prayer, question, or insight from today's reading."
+                value={journal}
+              />
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm text-slate-500">
+                  {journal.length} character{journal.length === 1 ? "" : "s"} in
+                  this note
+                </p>
+                <Button onClick={() => setJournal("")} type="button" variant="outline">
+                  Clear journal
+                </Button>
+              </div>
+              {journal ? (
+                <div className="rounded-2xl bg-emerald-50 p-4 text-sm leading-6 text-emerald-950">
+                  Your note is kept locally in this browser session. No account,
+                  database, or secret key is required.
                 </div>
               ) : (
-                <div className="rounded-3xl border border-dashed bg-slate-50 p-8 text-center">
-                  <p className="text-lg font-medium">No brief generated yet</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    Add a claim above to see an evidence-readiness score,
-                    verification signals, and a reviewer checklist.
-                  </p>
+                <div className="rounded-2xl border border-dashed bg-slate-50 p-4 text-sm leading-6 text-slate-500">
+                  Use this space to respond to the reading before moving on.
                 </div>
               )}
             </CardContent>
           </Card>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card className="bg-white/90 shadow-sm">
-              <CardHeader>
-                <CardTitle>Review queue</CardTitle>
-                <CardDescription>
-                  A simple view of claims moving through verification.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {reviewQueue.map((item) => (
-                  <div
-                    className="rounded-2xl border bg-white p-4"
-                    key={item.claim}
-                  >
-                    <p className="font-medium leading-6">{item.claim}</p>
-                    <Badge className="mt-3" variant="outline">
-                      {item.status}
-                    </Badge>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/90 shadow-sm">
-              <CardHeader>
-                <CardTitle>Method</CardTitle>
-                <CardDescription>
-                  The app does not declare truth automatically.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4 text-sm leading-6 text-slate-600">
-                <p>
-                  The Truth scores whether a claim is ready to be verified by a
-                  person. It rewards specificity, source notes, primary-source
-                  clues, and measurable language.
-                </p>
-                <p>
-                  It lowers readiness for vague claims, missing sources, and
-                  emotional or absolute language. The result is a triage brief,
-                  not a final verdict.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
         </section>
       </div>
     </main>

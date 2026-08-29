@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "The Truth",
-  description: "Evidence-first claim checks for human reviewers.",
+  description: "A Christian app with Scripture, reflection, and scientific text.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
