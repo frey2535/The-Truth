@@ -1,0 +1,53 @@
+{
+  "name": "StudyPlan",
+  "type": "object",
+  "properties": {
+    "topic": {
+      "type": "string",
+      "title": "Topic",
+      "description": "The biblical topic being studied"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Auto-generated summary of the study"
+    },
+    "derivatives": {
+      "type": "string",
+      "title": "Word Forms",
+      "description": "Comma-separated list of all word-form derivatives of the topic that were searched (e.g. baptism, baptize, baptised)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "researching",
+        "complete",
+        "failed"
+      ],
+      "default": "researching",
+      "title": "Status"
+    },
+    "verse_count": {
+      "type": "number",
+      "default": 0,
+      "title": "Verse Count"
+    }
+  },
+  "required": [
+    "topic"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

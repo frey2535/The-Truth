@@ -1,0 +1,74 @@
+# The Truth
+
+Self-hosted biblical scripture research app. This is the Base44 export running independently — same library, investigation, evidence, and study tools, without Base44.
+
+## Quick start
+
+```bash
+npm install
+npm run dev
+```
+
+Open **[http://truth.localhost:5174](http://truth.localhost:5174)** in Cursor’s browser (a separate origin from Buildr on `localhost:5173` and NECALCUL8R on `5176`). `http://127.0.0.1:5174` also works. On a phone on the same Wi‑Fi, use the **Network** URL Vite prints (not 127.0.0.1).
+
+The app works immediately. Sign-in is optional; the first named account you create becomes admin. Base44 accounts were not imported.
+
+### Google sign-in
+
+1. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials) create a **Web application** OAuth client.
+2. Add **Authorized JavaScript origins** `http://127.0.0.1:5174` and your HTTPS site (this is what Google 400 is usually missing).
+3. Optionally add redirect URIs `http://127.0.0.1:5174/login` and `https://your-site/login`.
+4. Put `VITE_GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env.local` (secret has no `VITE_` prefix) and restart `npm run dev`.
+5. Open **http://127.0.0.1:5174/login** (not `truth.localhost`) and click **Continue with Google**.
+
+## Install on a phone
+
+This is a Progressive Web App. People open it once in the phone’s browser, then add it to the home screen — it launches like a native app. There is no App Store or Play Store listing.
+
+1. Run `npm run dev` (or `npm run share` for a production build on port **4174**).
+2. On the phone, open the LAN address shown as Vite’s **Network** URL, or open **Install on a phone** in the app and share/copy that link.
+3. **iPhone:** Safari → Share → Add to Home Screen.
+4. **Android:** Chrome menu → Install app / Add to Home screen.
+
+iPhone install works best in Safari. For people not on your Wi‑Fi, use the public HTTPS site.
+
+## Free local study
+
+Research, Investigate, Word Study, and the Assistant search only what is stored in this app:
+
+- King James (66 books) and the 1611 Apocrypha
+- Extra deuterocanonical books, 1–2 Enoch, Jubilees, and other early manuscripts
+- Dead Sea Scrolls English already in the Library
+- Ante-Nicene Fathers, Volume 1, and Josephus, *Antiquities*
+- Published inscriptions, government science notes, state papers, and published papal / conciliar decrees
+
+No account and no paid API. The first search may take a moment while the books load. Results quote stored wording only — no invented verses and no internet search for answers.
+
+The closed Vatican Apostolic Archive and paywalled journals are not published in full anywhere. This app does not invent them. What is here is the actual text of the documents included.
+
+To refresh the public-domain downloads later:
+
+```bash
+node scripts/vendor-corpus.mjs
+```
+
+## What changed vs Base44
+
+- Removed `@base44/sdk` and `@base44/vite-plugin`
+- Auth, study plans, conversations, and evidence records persist in the browser (`localStorage`)
+- Scripture, early writings, and the in-app evidence archive are stored under `public/corpus/` and `src/data/inAppArchive.js` and are searched in the browser
+- Google sign-in uses `VITE_GOOGLE_CLIENT_ID` (see `.env.example`). Local Google login: [http://127.0.0.1:5174/login](http://127.0.0.1:5174/login)
+- Extra Apocrypha chapters from eBible.org are proxied in `npm run dev` / `npm run preview`
+
+To move to a real backend later (Supabase, Postgres, etc.), replace `src/api/local*.js` — page components already talk to a `base44` facade.
+
+## Scripts
+
+```bash
+npm run dev
+npm run build
+npm run preview
+npm run share
+```
+
+`npm run share` builds a production copy and serves it on your LAN at port **4174** so phones can open and install it.

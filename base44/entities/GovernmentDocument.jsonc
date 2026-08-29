@@ -1,0 +1,78 @@
+{
+  "name": "GovernmentDocument",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "What the document is and how it pertains to scripture"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "email",
+        "published_document",
+        "article",
+        "foia_request",
+        "foia_reply",
+        "vatican_archive",
+        "other"
+      ],
+      "title": "Document Type"
+    },
+    "agency": {
+      "type": "string",
+      "title": "Agency",
+      "description": "Issuing agency, department, institution, or Vatican body"
+    },
+    "country": {
+      "type": "string",
+      "title": "Country",
+      "description": "Country of origin; use Vatican for Vatican documents"
+    },
+    "scripture_reference": {
+      "type": "string",
+      "title": "Scripture Reference"
+    },
+    "topic": {
+      "type": "string",
+      "title": "Topic"
+    },
+    "source_url": {
+      "type": "string",
+      "title": "Source URL"
+    },
+    "document_url": {
+      "type": "string",
+      "title": "Document URL",
+      "description": "Link to the full document for the user to read"
+    },
+    "date": {
+      "type": "string",
+      "title": "Date"
+    },
+    "confirms_scripture": {
+      "type": "boolean",
+      "default": false,
+      "title": "Confirms Scripture",
+      "description": "Whether this document confirms the scripture is true"
+    },
+    "verification_note": {
+      "type": "string",
+      "title": "Verification Note"
+    },
+    "chronological_order": {
+      "type": "number",
+      "default": 0,
+      "title": "Chronological Order"
+    }
+  },
+  "required": [
+    "title",
+    "document_type"
+  ]
+}

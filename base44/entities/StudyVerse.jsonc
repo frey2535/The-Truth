@@ -1,0 +1,74 @@
+{
+  "name": "StudyVerse",
+  "type": "object",
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "title": "Plan ID",
+      "description": "The study plan this verse belongs to"
+    },
+    "reference": {
+      "type": "string",
+      "title": "Reference",
+      "description": "Precise citation (book chapter:verse, scroll catalog, or Enoch chapter:verse)"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "canon",
+        "apocrypha",
+        "dead_sea_scrolls",
+        "enoch",
+        "other"
+      ],
+      "title": "Source",
+      "description": "Which corpus the passage comes from"
+    },
+    "text": {
+      "type": "string",
+      "title": "Text",
+      "description": "The actual quoted text of the passage"
+    },
+    "chronological_order": {
+      "type": "number",
+      "default": 0,
+      "title": "Chronological Order",
+      "description": "Ordering by when the event occurred (earliest = lowest)"
+    },
+    "era": {
+      "type": "string",
+      "title": "Era",
+      "description": "Approximate date of the event described"
+    },
+    "context_note": {
+      "type": "string",
+      "title": "Context Note",
+      "description": "How the passage relates to the topic, including disputes"
+    },
+    "owner_id": {
+      "type": "string",
+      "title": "Owner ID",
+      "description": "The user who owns the plan this verse belongs to (for tenant isolation)"
+    }
+  },
+  "required": [
+    "plan_id",
+    "reference",
+    "source",
+    "text"
+  ],
+  "rls": {
+    "read": {
+      "data.owner_id": "{{user.id}}"
+    },
+    "create": {
+      "data.owner_id": "{{user.id}}"
+    },
+    "update": {
+      "data.owner_id": "{{user.id}}"
+    },
+    "delete": {
+      "data.owner_id": "{{user.id}}"
+    }
+  }
+}

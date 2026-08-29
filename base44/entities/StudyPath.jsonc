@@ -1,0 +1,54 @@
+{
+  "name": "StudyPath",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title",
+      "description": "Name of the guided study path"
+    },
+    "slug": {
+      "type": "string",
+      "title": "Slug",
+      "description": "URL-friendly identifier"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "Short summary of what the path covers"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "scholar"
+      ],
+      "default": "beginner",
+      "title": "Level"
+    },
+    "category": {
+      "type": "string",
+      "title": "Category",
+      "description": "e.g. Jesus, Reliability, Archaeology, Prophecy, History"
+    },
+    "cover_url": {
+      "type": "string",
+      "title": "Cover Image URL"
+    },
+    "lesson_count": {
+      "type": "number",
+      "default": 0,
+      "title": "Lesson Count"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "title": "Display Order"
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

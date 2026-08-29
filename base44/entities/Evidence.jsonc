@@ -1,0 +1,69 @@
+{
+  "name": "Evidence",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title",
+      "description": "Name of the artifact, site, manuscript, or record"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "What it is and how it supports the text"
+    },
+    "evidence_type": {
+      "type": "string",
+      "enum": [
+        "artifact",
+        "scroll",
+        "inscription",
+        "archaeological_site",
+        "manuscript",
+        "historical_record",
+        "other"
+      ],
+      "title": "Evidence Type"
+    },
+    "scripture_reference": {
+      "type": "string",
+      "title": "Scripture Reference",
+      "description": "The passage this evidence supports"
+    },
+    "era": {
+      "type": "string",
+      "title": "Era",
+      "description": "Date/period the evidence dates to"
+    },
+    "location": {
+      "type": "string",
+      "title": "Location",
+      "description": "Where found or where held"
+    },
+    "source_url": {
+      "type": "string",
+      "title": "Source URL",
+      "description": "Verifiable link to the source"
+    },
+    "image_url": {
+      "type": "string",
+      "title": "Image URL",
+      "description": "Public image of the evidence, if available"
+    },
+    "verification_note": {
+      "type": "string",
+      "title": "Verification Note",
+      "description": "How it empirically supports the text; scholarly disputes"
+    },
+    "chronological_order": {
+      "type": "number",
+      "default": 0,
+      "title": "Chronological Order"
+    }
+  },
+  "required": [
+    "title",
+    "evidence_type",
+    "scripture_reference"
+  ]
+}

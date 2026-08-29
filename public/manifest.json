@@ -1,0 +1,64 @@
+{
+  "id": "/",
+  "name": "The Truth",
+  "short_name": "The Truth",
+  "description": "Read Scripture and ancient writings, investigate claims against primary evidence, and learn with guided study paths.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "theme_color": "#2b2620",
+  "background_color": "#faf6ef",
+  "categories": ["education", "reference"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Read",
+      "short_name": "Read",
+      "description": "Open the library",
+      "url": "/library",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Investigate",
+      "short_name": "Investigate",
+      "description": "Build a Truth Dossier",
+      "url": "/investigate",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Learn",
+      "short_name": "Learn",
+      "description": "Guided study paths",
+      "url": "/learn",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
+}

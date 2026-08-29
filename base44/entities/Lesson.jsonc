@@ -1,0 +1,60 @@
+{
+  "name": "Lesson",
+  "type": "object",
+  "properties": {
+    "path_id": {
+      "type": "string",
+      "title": "Study Path ID",
+      "description": "The study path this lesson belongs to"
+    },
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "summary": {
+      "type": "string",
+      "title": "Summary",
+      "description": "One-line summary shown in the lesson list"
+    },
+    "content": {
+      "type": "string",
+      "title": "Content",
+      "description": "Lesson body in Markdown"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "title": "Order"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "scholar"
+      ],
+      "default": "beginner",
+      "title": "Level"
+    },
+    "scripture_references": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Scripture References"
+    },
+    "evidence_links": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Links",
+      "description": "Titles or URLs of related evidence records"
+    }
+  },
+  "required": [
+    "path_id",
+    "title"
+  ]
+}

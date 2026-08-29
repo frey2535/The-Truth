@@ -1,0 +1,58 @@
+{
+  "name": "ScientificConfirmation",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "title": "Title"
+    },
+    "description": {
+      "type": "string",
+      "title": "Description",
+      "description": "What the science found and how it confirms the scripture"
+    },
+    "scripture_reference": {
+      "type": "string",
+      "title": "Scripture Reference"
+    },
+    "scientific_field": {
+      "type": "string",
+      "title": "Scientific Field",
+      "description": "e.g. oceanography, genetics, astronomy"
+    },
+    "source_url": {
+      "type": "string",
+      "title": "Source URL",
+      "description": "Reputable source link"
+    },
+    "article_url": {
+      "type": "string",
+      "title": "Article URL",
+      "description": "Link to the full scientific article for the user to read"
+    },
+    "publication": {
+      "type": "string",
+      "title": "Publication",
+      "description": "Journal, institution, or publisher"
+    },
+    "date": {
+      "type": "string",
+      "title": "Date",
+      "description": "When the finding was published or discovered"
+    },
+    "verification_note": {
+      "type": "string",
+      "title": "Verification Note",
+      "description": "How it confirms the text; honest note on disputes"
+    },
+    "chronological_order": {
+      "type": "number",
+      "default": 0,
+      "title": "Chronological Order"
+    }
+  },
+  "required": [
+    "title",
+    "scripture_reference"
+  ]
+}

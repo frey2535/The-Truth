@@ -1,0 +1,44 @@
+{
+  "name": "WordStudy",
+  "type": "object",
+  "properties": {
+    "word": {
+      "type": "string",
+      "title": "Word",
+      "description": "The word being studied"
+    },
+    "reference": {
+      "type": "string",
+      "title": "Reference",
+      "description": "Optional passage where the word is used"
+    },
+    "definition": {
+      "type": "string",
+      "title": "Definition",
+      "description": "Modern definition"
+    },
+    "original_language": {
+      "type": "string",
+      "title": "Original Language",
+      "description": "Hebrew, Aramaic, or Koine Greek"
+    },
+    "original_word": {
+      "type": "string",
+      "title": "Original Word",
+      "description": "The word in its original language"
+    },
+    "original_meaning": {
+      "type": "string",
+      "title": "Original Meaning",
+      "description": "Meaning at the time the text was written"
+    },
+    "era_context": {
+      "type": "string",
+      "title": "Era Context",
+      "description": "Cultural/historical context that shaped the meaning"
+    }
+  },
+  "required": [
+    "word"
+  ]
+}

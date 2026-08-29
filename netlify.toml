@@ -1,0 +1,27 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[functions."openai-chat"]
+  timeout = 26
+
+[[redirects]]
+  from = "/api/openai"
+  to = "/.netlify/functions/openai-chat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/google-token"
+  to = "/.netlify/functions/google-token"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
