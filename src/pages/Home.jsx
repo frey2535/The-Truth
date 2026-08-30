@@ -21,7 +21,7 @@ import PlanCard from "@/components/study/PlanCard";
 const ACTIONS = [
   { to: "/library", label: "Read", desc: "Master catalog of Christian and comparative texts — stored wording plus honest gaps", icon: BookOpenText },
   { to: "/search", label: "Search a text", desc: "Search inside the Bible, Apocrypha, scrolls, or records only", icon: Search },
-  { to: "/map", label: "Biblical map", desc: "Ancient names on today's map — fade layers to compare", icon: Sparkles },
+  { to: "/map", label: "Biblical map", desc: "Bible atlas plates with today's map faded over them", icon: Sparkles },
   { to: "/notebook", label: "Notebook", desc: "Your plans, notes, highlights, and favorites", icon: GraduationCap },
   { to: "/word-study", label: "Word study", desc: "Strong's definition and etymology, plus the verses", icon: Microscope },
   { to: "/customs", label: "Holidays and symbols", desc: "Christmas, Easter, Halloween, worn signs, and names Scripture gives the adversary", icon: Moon },

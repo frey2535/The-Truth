@@ -29,6 +29,7 @@ const PRIMARY = [
 const MOBILE_NAV = [
   { to: "/library", label: "Read", icon: BookOpenText },
   { to: "/search", label: "Search", icon: Search },
+  { to: "/map", label: "Map", icon: MapIcon },
   { to: "/customs", label: "Holidays", icon: Moon },
   { to: "/evidence", label: "Evidence", icon: Landmark, matchEvidence: true },
   { to: "/notebook", label: "Notes", icon: BookMarked },

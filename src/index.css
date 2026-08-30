@@ -227,7 +227,16 @@
 
 .leaflet-container {
   font-family: inherit;
-  background: #e8ddc7;
+  background: #cbb98a;
+}
+
+.bible-map-frame .leaflet-container {
+  background: #d8c9a8;
+}
+
+.leaflet-pane.biblePlates-pane,
+.leaflet-biblePlates-pane {
+  pointer-events: none;
 }
 
 .biblical-name-tip {

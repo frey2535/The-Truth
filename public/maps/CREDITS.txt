@@ -1,0 +1,20 @@
+Public-domain Bible atlas plates stored for overlay on today's map.
+Library of Congress raster images. Not Wikimedia.
+
+canaan-monarchy-1895.jpg
+  G. W. & C. B. Colton, Palestine during the Monarchy (Sunday School Maps no. 14), c. 1895.
+  LOC G7481.2 1895 .C6 — https://www.loc.gov/item/2016586536/
+
+holy-land-1695.jpg
+  Abraham ben Jacob after Christiaan van Adrichem, Holy Land plate in the Amsterdam Haggadah, 1695.
+  LOC 2021668293 — https://www.loc.gov/item/2021668293/
+  The engraving was printed with east at the top. The file in this folder is rotated so north is up.
+
+exodus-tribes.jpg
+  Jachiel Bar-Joseph, Journey of the children of Israel from Egypt…, 1840.
+  LOC 2014592002 — https://www.loc.gov/item/2014592002/
+
+apostles-paul-1680.jpg
+  Richard Blome, A mapp of the travels and voyages of the apostles…, c. 1680.
+  LOC 2005625328 — https://www.loc.gov/item/2005625328/
+  The original portrait strip along the bottom is cropped so the geography can be laid on the globe.

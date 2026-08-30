@@ -1,0 +1,173 @@
+/** Public-domain Bible atlas plates and traditional study outlines. Not a modern border claim. */
+
+export const ATLAS_PLATES = [
+  {
+    id: "holy-land",
+    label: "Holy Land plate",
+    title: "Palestine during the Monarchy",
+    year: "1895",
+    maker: "G. W. & C. B. Colton (Sunday School map no. 14)",
+    note: "The plate printed with latitude and longitude. Israel and Judah, the tribes, and the Salt Sea sit on today's coordinates. Insets (Solomon's temple plan; David and Solomon's reach) are on the engraving, as in the original atlas page.",
+    url: "/maps/canaan-monarchy-1895.jpg",
+    bounds: [
+      [31.0, 34.5],
+      [34.0, 36.5],
+    ],
+    source: "Library of Congress G7481.2 1895 .C6 / loc.gmd/g74812.ct006795",
+    default: true,
+  },
+  {
+    id: "oldest",
+    label: "Oldest Bible plate",
+    title: "Holy Land — Amsterdam Haggadah",
+    year: "1695",
+    maker: "Abraham ben Jacob, after Christiaan van Adrichem",
+    note: "Copperplate from the 1695 Amsterdam Haggadah. The original engraving had east at the top, as many early Bible maps did. It is turned so north is up, then laid on today's globe. The drawing is pictorial, not a survey, so coasts will not lock to modern tiles the way the 1895 plate does.",
+    url: "/maps/holy-land-1695.jpg",
+    bounds: [
+      [29.6, 31.6],
+      [33.7, 36.4],
+    ],
+    source: "Library of Congress 2021668293 / wdl_02887",
+  },
+  {
+    id: "exodus",
+    label: "Exodus plate",
+    title: "Journey of the children of Israel",
+    year: "1840",
+    maker: "Jachiel Bar-Joseph",
+    note: "Egypt, the wilderness, and the tribal allotments on one atlas page. The Sinai route on this plate is the traditional Bible-atlas line. The text does not fix every camp to a surveyed coordinate.",
+    url: "/maps/exodus-tribes.jpg",
+    bounds: [
+      [29.0, 30.4],
+      [33.55, 36.35],
+    ],
+    source: "Library of Congress 2014592002 / loc.gmd/g74812.ct004319",
+  },
+  {
+    id: "apostles",
+    label: "Apostles plate",
+    title: "Travels and voyages of the apostles",
+    year: "1680",
+    maker: "Richard Blome",
+    note: "Eastern Mediterranean plate of the apostles, especially Paul's voyage toward Rome. The portrait strip from the original sheet is not shown so the geography can sit on the map.",
+    url: "/maps/apostles-paul-1680.jpg",
+    bounds: [
+      [24.8, 10.0],
+      [45.2, 48.0],
+    ],
+    source: "Library of Congress 2005625328 / loc.gmd/g74813.ct001381",
+  },
+];
+
+export const DEFAULT_PLATE_ID = ATLAS_PLATES.find((p) => p.default)?.id || ATLAS_PLATES[0].id;
+
+/** Traditional Bible-atlas outlines. Approximate study drawings, not surveyed borders. */
+export const KINGDOM_POLYGONS = [
+  {
+    id: "judah",
+    name: "Judah",
+    scripture: "1 Kings 12:17; 2 Chronicles 11:5–12",
+    color: "#7a2e2e",
+    positions: [
+      [31.22, 34.72],
+      [31.35, 34.55],
+      [31.72, 34.62],
+      [31.92, 35.05],
+      [31.88, 35.42],
+      [31.55, 35.48],
+      [31.28, 35.38],
+      [31.15, 35.05],
+    ],
+  },
+  {
+    id: "israel",
+    name: "Israel (northern kingdom)",
+    scripture: "1 Kings 12:19–20; 16:24",
+    color: "#2f4a6b",
+    positions: [
+      [31.95, 34.78],
+      [32.35, 34.82],
+      [32.72, 34.88],
+      [33.22, 35.12],
+      [33.28, 35.72],
+      [32.85, 35.68],
+      [32.35, 35.52],
+      [31.98, 35.42],
+      [31.92, 35.12],
+    ],
+  },
+];
+
+export const BIBLE_ROUTES = [
+  {
+    id: "exodus-route",
+    name: "Wilderness road (traditional atlas line)",
+    scripture: "Exodus 12–19; Numbers 33; Joshua 3",
+    color: "#8a5a12",
+    layers: ["exodus"],
+    positions: [
+      [30.7, 31.8],
+      [30.0, 32.55],
+      [28.539, 33.975],
+      [30.642, 34.427],
+      [31.4, 35.35],
+      [31.871, 35.444],
+    ],
+  },
+  {
+    id: "paul-1",
+    name: "Paul — first journey",
+    scripture: "Acts 13–14",
+    color: "#7a2e2e",
+    layers: ["nt"],
+    positions: [
+      [36.202, 36.161],
+      [34.76, 32.41],
+      [36.96, 30.85],
+      [38.3, 31.19],
+      [37.872, 32.492],
+      [37.596, 32.342],
+      [37.35, 33.42],
+      [36.202, 36.161],
+    ],
+  },
+  {
+    id: "paul-2",
+    name: "Paul — second journey",
+    scripture: "Acts 15:40–18:22",
+    color: "#3d5a3a",
+    layers: ["nt"],
+    positions: [
+      [36.202, 36.161],
+      [36.917, 34.896],
+      [37.872, 32.492],
+      [39.75, 26.158],
+      [41.012, 24.286],
+      [40.64, 22.944],
+      [40.521, 22.204],
+      [37.972, 23.726],
+      [37.906, 22.88],
+      [37.941, 27.342],
+      [32.501, 34.892],
+    ],
+  },
+  {
+    id: "paul-rome",
+    name: "Paul — voyage to Rome",
+    scripture: "Acts 27–28",
+    color: "#4a3a6b",
+    layers: ["nt"],
+    positions: [
+      [32.501, 34.892],
+      [33.563, 35.369],
+      [36.26, 29.98],
+      [35.03, 24.75],
+      [35.9, 14.45],
+      [37.07, 15.29],
+      [38.24, 15.64],
+      [40.83, 14.12],
+      [41.89, 12.48],
+    ],
+  },
+];
