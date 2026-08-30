@@ -5,7 +5,7 @@
  */
 
 export const ARCHIVE_NOTICE =
-  "This archive holds empirical evidence only: excavated objects, published inscriptions, laboratory measurements, and dated public records. Tradition, tourist names, doctrine, and photographs with no museum or excavation catalog are not stored here as evidence.";
+  "This archive holds empirical evidence only: excavated objects, published inscriptions, laboratory measurements, and dated public records. Photographs are of the named object, site, or manuscript when a catalogued picture is stored. Reported claims are labeled as reported and are not stored as established fact.";
 
 function item(kind, n, fields) {
   const text = String(fields.full_text || "").trim();
@@ -32,7 +32,10 @@ function item(kind, n, fields) {
     verification_note: fields.verification_note || ARCHIVE_NOTICE,
     chronological_order: fields.order || n,
     confirms_scripture: false,
-    source_url: "",
+    evidence_status: fields.evidence_status || "established",
+    image_type: fields.image_type || "",
+    image_authenticity: fields.image_authenticity || "",
+    source_url: fields.source_url || "",
     document_url: "",
     article_url: "",
     image_url: "",
@@ -60,6 +63,13 @@ export const ARCHAEOLOGY = [
     era: "AD 26–36",
     location: "Caesarea Maritima",
     holding: "Israel Museum, Jerusalem. Found 1961 in the Roman theatre at Caesarea.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/pilate-stone.jpg",
+    image_caption:
+      "Photograph of the Pilate Stone. Latin dedicatory block naming Pontius Pilatus, prefect of Judaea. Israel Museum. Photo: BRBurton (CC0).",
+    source_url: "https://www.imj.org.il/en",
     order: 26,
     full_text: `[Latin dedicatory stone, reconstructed published reading]
 
@@ -79,6 +89,13 @@ The stone names Pontius Pilate as prefect (praefectus) of Judaea in the reign of
     era: "9th century BC",
     location: "Tel Dan, northern Israel",
     holding: "Israel Museum. Basalt fragments found 1993–1994.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/tel-dan-stele.jpg",
+    image_caption:
+      "Photograph of the Tel Dan Stele in the Israel Museum. Published reading includes “House of David.” Photo: Oren Rozen (CC BY-SA 4.0).",
+    source_url: "https://www.imj.org.il/en",
     order: -850,
     full_text: `Published English of the surviving Aramaic lines ( restorations marked ):
 
@@ -93,6 +110,13 @@ The phrase “House of David” (bytdwd) is the published reading of the royal l
     era: "c. 840 BC",
     location: "Dhiban (biblical Dibon), Moab",
     holding: "Louvre, Paris. Discovered 1868.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/mesha.jpg",
+    image_caption:
+      "Photograph of the Mesha Stele (AO 5066) in the Louvre, the holding museum. King Mesha of Moab names Omri and Israel.",
+    source_url: "https://collections.louvre.fr/en/ark:/53355/cl010120339",
     order: -840,
     full_text: `Published English of the opening of the Moabite inscription of King Mesha:
 
@@ -107,6 +131,13 @@ The phrase “House of David” (bytdwd) is the published reading of the royal l
     era: "539–538 BC",
     location: "Babylon",
     holding: "British Museum. Clay cylinder of Cyrus II, found 1879.",
+    evidence_status: "established_contextual",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/cyrus-cylinder.jpg",
+    image_caption:
+      "Photograph of the Cyrus Cylinder. University of Michigan Land of Israel/Palestine Image Database. The surviving text does not name the Jews or Jerusalem.",
+    source_url: "https://www.britishmuseum.org/collection/object/W_1880-0617-1941",
     order: -539,
     full_text: `Published English of the relevant lines of the Cyrus Cylinder (Babylonian):
 
@@ -121,6 +152,13 @@ Ezra 1 records a decree of Cyrus for the return to Jerusalem and the rebuilding 
     era: "late 8th century BC",
     location: "Hezekiah’s tunnel, Jerusalem",
     holding: "Istanbul Archaeology Museums. Found 1880 in the tunnel.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/siloam-inscription.jpg",
+    image_caption:
+      "Photograph of the Siloam Inscription in the Istanbul Archaeology Museums, the holding museum. Photo: Prof. Yong Woo Park (CC0).",
+    source_url: "https://muze.gov.tr/muze-detay?distid=MRK&sectionid=IAR",
     order: -701,
     full_text: `Published English of the Hebrew Siloam inscription:
 
@@ -135,6 +173,13 @@ Ezra 1 records a decree of Cyrus for the return to Jerusalem and the rebuilding 
     era: "late 7th / early 6th century BC",
     location: "Ketef Hinnom, Jerusalem",
     holding: "Israel Museum. Found 1979.",
+    evidence_status: "established",
+    image_type: "actual_artifact",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/ketef-hinnom.jpg",
+    image_caption:
+      "Photograph of a Ketef Hinnom silver amulet. University of Michigan Land of Israel/Palestine Image Database. Israel Museum holding.",
+    source_url: "https://image-database.nes.lsa.umich.edu/items/show/96",
     order: -600,
     full_text: `Published English of the priestly blessing on the two silver amulets (Ketef Hinnom I and II), the oldest known copies of a biblical text:
 
@@ -151,6 +196,13 @@ The amulets were found in a burial repository west of the Old City. The publishe
     era: "c. 1208 BC (year 5 of Merneptah)",
     location: "Thebes, Egypt",
     holding: "Egyptian Museum, Cairo. Granite victory stele.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/merneptah.jpg",
+    image_caption:
+      "Photograph of the Merneptah Stele (Israel Stele). University of Michigan Land of Israel/Palestine Image Database, item 45. Egyptian Museum, Cairo. A stored detail of the “Israel” line is /evidence/artifacts/merneptah-israel.jpg (item 61).",
+    source_url: "https://image-database.nes.lsa.umich.edu/items/show/45",
     order: -1208,
     full_text: `Published English of the closing lines of the Merneptah Stele:
 
@@ -173,6 +225,13 @@ This is the earliest published extra-biblical occurrence of the name Israel in a
     era: "701 BC",
     location: "Nineveh",
     holding: "British Museum (Taylor Prism). Parallel copies in Chicago and Jerusalem.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/taylor-prism.jpg",
+    image_caption:
+      "Photograph of a Sennacherib prism (Nineveh). University of Michigan Land of Israel/Palestine Image Database, item 91. British Museum holding of the Taylor Prism: 1855,1003.1.",
+    source_url: "https://www.britishmuseum.org/collection/object/W_1855-1003-1",
     order: -701,
     full_text: `Published English of Sennacherib’s account of the campaign against Judah:
 
@@ -187,6 +246,13 @@ This is the earliest published extra-biblical occurrence of the name Israel in a
     era: "825 BC (carved); the Jehu panel records tribute after 841 BC",
     location: "Nimrud (Kalhu)",
     holding: "British Museum. Found 1846 by Austen Henry Layard.",
+    evidence_status: "established",
+    image_type: "actual_artifact",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/black-obelisk.jpg",
+    image_caption:
+      "Photograph of the Black Obelisk of Shalmaneser III. University of Michigan Land of Israel/Palestine Image Database, item 76. The Jehu tribute register is stored as /evidence/artifacts/black-obelisk-jehu.jpg (item 78).",
+    source_url: "https://image-database.nes.lsa.umich.edu/items/show/76",
     order: -841,
     full_text: `Published English of the caption on the second register:
 
@@ -259,6 +325,13 @@ The papyri name a temple of YHW on the island, a governor of Judah, and priests 
     era: "1st century AD",
     location: "Jerusalem (Peace Forest), found 1990",
     holding: "Israel Museum.",
+    evidence_status: "likely",
+    image_type: "actual_artifact",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/caiaphas-ossuary.jpg",
+    image_caption:
+      "Photograph of the ornate ossuary inscribed Yehosef bar Qayafa, Israel Museum. Photo: deror avi (CC BY-SA 3.0). Identification with the high priest of the Gospels is the published likely reading, not a certainty of the bone contents.",
+    source_url: "https://www.imj.org.il/en",
     order: 30,
     full_text: `Published reading of the Aramaic inscription on the ornate ossuary:
 
@@ -275,6 +348,13 @@ Josephus (Antiquities 18.2.2; 18.4.3) names Joseph called Caiaphas as high pries
     era: "AD 51–52",
     location: "Delphi, Greece",
     holding: "Delphi Archaeological Museum. Claudius’ letter naming Gallio.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/gallio.jpg",
+    image_caption:
+      "Photograph of the Delphi inscription of Claudius naming Gallio, proconsul of Achaia. Photo: Gérard (CC BY-SA 4.0).",
+    source_url: "https://www.efa.gr/",
     order: 51,
     full_text: `Published English of the relevant lines of the Delphi inscription of Claudius:
 
@@ -289,6 +369,13 @@ The letter is dated by Claudius’ acclamation number to AD 51/52. Acts 18:12: �
     era: "1st century AD",
     location: "Corinth, near the theatre",
     holding: "In situ / Corinth excavations. Latin pavement inscription.",
+    evidence_status: "disputed_identification",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/erastus.jpg",
+    image_caption:
+      "Photograph of the Erastus pavement inscription at Corinth. Photo: Ktiv (CC BY-SA 4.0). The stone is established. Whether this Erastus is the city chamberlain of Romans 16:23 is disputed.",
+    source_url: "https://www.ascsa.edu.gr/",
     order: 55,
     full_text: `Published Latin of the pavement:
 
@@ -305,6 +392,13 @@ Romans 16:23: “Gaius mine host, and of the whole church, saluteth you. Erastus
     era: "1st century BC / 1st century AD (published palaeographic range)",
     location: "Jerusalem, Ophel (found 1913)",
     holding: "Israel Museum / Rockefeller collections.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/theodotus.jpg",
+    image_caption:
+      "Photograph of the Theodotus synagogue inscription. University of Michigan Land of Israel/Palestine Image Database, item 196.",
+    source_url: "https://image-database.nes.lsa.umich.edu/items/show/196",
     order: 10,
     full_text: `Published English of the Greek inscription:
 
@@ -319,6 +413,9 @@ Acts 6:9 names a synagogue of the Libertines, Cyrenians, Alexandrians, and of Ci
     era: "Second Temple period pool; excavated 2004",
     location: "City of David, Jerusalem",
     holding: "Israel Antiquities Authority excavations (Eli Shukron, Ronny Reich).",
+    evidence_status: "established",
+    image_type: "actual_excavation",
+    source_url: "https://www.iaa.org.il/",
     order: 30,
     full_text: `Published excavation note: in 2004 a stepped stone pool fed by Hezekiah’s tunnel was uncovered south of the earlier Byzantine pool long shown to visitors. The excavators identified it as the Second Temple period Pool of Siloam.
 
@@ -331,6 +428,13 @@ John 9:7: “And said unto him, Go, wash in the pool of Siloam, (which is by int
     era: "manuscripts copied c. 3rd century BC – 1st century AD; found 1946–1956",
     location: "Qumran and nearby caves, Judaean Desert",
     holding: "Israel Antiquities Authority; Shrine of the Book, Israel Museum. English of many works is stored in this app.",
+    evidence_status: "established",
+    image_type: "actual_excavation",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/qumran.jpg",
+    image_caption:
+      "Photograph of the Qumran settlement and cliff caves, the find-place of the Dead Sea Scrolls. University of Michigan Land of Israel/Palestine Image Database. This is the site, not a substitute picture of a single scroll.",
+    source_url: "https://www.deadseascrolls.org.il/",
     order: -150,
     full_text: `The published finds from the Qumran caves include copies of every book of the Hebrew Bible except Esther, plus the Community Rule, War Scroll, Pesher Habakkuk, Thanksgiving Hymns, Temple Scroll, Damascus Document, and many others.
 
@@ -369,6 +473,13 @@ The ostraca are military supply notes from a Judahite fortress in the Negev, usi
     era: "late 8th century BC",
     location: "Ophel, Jerusalem (published 2015)",
     holding: "Eilat Mazar excavations, Ophel. Israel.",
+    evidence_status: "established",
+    image_type: "actual_artifact",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/hezekiah-bulla.jpg",
+    image_caption:
+      "Photograph of the royal bulla reading “Belonging to Hezekiah [son of] Ahaz, king of Judah.” Photo: Tamir Zegman (CC BY-SA 4.0). Ophel excavations / Israel.",
+    source_url: "https://library.biblicalarchaeology.org/",
     order: -715,
     full_text: `Published Hebrew of the impression:
 
@@ -517,6 +628,224 @@ Daniel calls Belshazzar king at the fall of the city. The cuneiform record calls
     full_text: `Published English of 1 Kings 14:25–26: “And it came to pass in the fifth year of king Rehoboam, that Shishak king of Egypt came up against Jerusalem: And he took away the treasures of the house of the LORD, and the treasures of the king’s house; he even took away all: and he took away all the shields of gold which Solomon had made.”
 
 The Karnak relief of Shoshenq I lists towns in a Levantine campaign. Jerusalem is not clearly preserved among the surviving name-rings. Towns in the Negev and the hill country appear in the published lists. The relief is a real Egyptian campaign record of that king. It is not a line-by-line copy of 1 Kings 14.`,
+  }),
+  ev({
+    title: "Kurkh Monolith of Shalmaneser III",
+    evidence_type: "inscription",
+    scripture_reference: "1 Kings 16–22",
+    era: "9th century BC (Battle of Qarqar, 853 BC)",
+    location: "Kurkh (Üçtepe), near Diyarbakır; now British Museum",
+    holding: "British Museum.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/kurkh-monolith.jpg",
+    image_caption:
+      "Photograph of the Kurkh Monolith of Shalmaneser III in the British Museum. Photo: Osama Shukir Muhammed Amin (CC BY-SA 4.0). The text names “Ahab the Israelite.”",
+    source_url: "https://www.britishmuseum.org/collection",
+    order: -853,
+    full_text: `Published English of the Qarqar passage:
+
+Shalmaneser lists kings of a western coalition, including “2,000 chariots, 10,000 soldiers of Ahab the Israelite.”
+
+1 Kings 16–22 names Ahab king of Israel. The monolith is an Assyrian battle list. It does not narrate 1 Kings 22.`,
+  }),
+  ev({
+    title: "Lachish Reliefs (Nineveh palace)",
+    evidence_type: "artifact",
+    scripture_reference: "2 Kings 18:13–17; Isaiah 36",
+    era: "c. 700–681 BC",
+    location: "Southwest Palace, Nineveh; now British Museum",
+    holding: "British Museum.",
+    evidence_status: "established",
+    image_type: "actual_artifact",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/lachish-reliefs.jpg",
+    image_caption:
+      "Photograph of a Lachish siege relief from Sennacherib’s palace, British Museum. Photo: Mike Peel (CC BY-SA 4.0). These are the actual palace slabs, not a reconstruction.",
+    source_url: "https://www.britishmuseum.org/collection",
+    order: -701,
+    full_text: `The limestone slabs from Room XXXVI of Sennacherib’s Southwest Palace show the siege and capture of Lachish: ramps, slingers, deportees, and the city name in the captions.
+
+2 Kings 18:13–14: “Now in the fourteenth year of king Hezekiah did Sennacherib king of Assyria come up against all the fenced cities of Judah, and took them. And Hezekiah king of Judah sent to the king of Assyria to Lachish…”
+
+The reliefs depict Lachish. They do not depict the later failure to take Jerusalem.`,
+  }),
+  ev({
+    title: "Hezekiah’s Tunnel (Siloam Tunnel)",
+    evidence_type: "archaeological_site",
+    scripture_reference: "2 Kings 20:20; 2 Chronicles 32:30",
+    era: "Iron Age water tunnel; inscription late 8th / early 7th century BC",
+    location: "City of David, Jerusalem",
+    holding: "In situ. The Siloam Inscription removed from this tunnel is in Istanbul.",
+    evidence_status: "established",
+    image_type: "actual_structure",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/siloam-tunnel.jpg",
+    image_caption:
+      "Photograph of the actual Siloam / Hezekiah’s Tunnel water channel. University of Michigan Land of Israel/Palestine Image Database, item 95.",
+    source_url: "https://image-database.nes.lsa.umich.edu/items/show/95",
+    order: -701,
+    full_text: `The rock-cut tunnel still carries water from the Gihon Spring toward the Siloam pool system. 2 Chronicles 32:30: “This same Hezekiah also stopped the upper watercourse of Gihon, and brought it straight down to the west side of the city of David.”
+
+The tunnel is the structure. The inscription that described the boring-through is a separate object, now in Istanbul.`,
+  }),
+  ev({
+    title: "Great Isaiah Scroll (1QIsaᵃ)",
+    evidence_type: "manuscript",
+    scripture_reference: "Isaiah 1–66",
+    era: "approximately 2nd century BC",
+    location: "Qumran Cave 1; displayed at the Shrine of the Book",
+    holding: "Israel Museum / Shrine of the Book. Leon Levy Dead Sea Scrolls Digital Library (IAA).",
+    evidence_status: "established",
+    image_type: "actual_manuscript",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/isaiah-scroll.jpg",
+    image_caption:
+      "Photograph of the Great Isaiah Scroll (1QIsaᵃ). University of Michigan Land of Israel/Palestine Image Database, item 150. Israel Museum / Shrine of the Book.",
+    source_url: "https://www.deadseascrolls.org.il/",
+    order: -125,
+    full_text: `1QIsaᵃ is a nearly complete ancient Hebrew manuscript of Isaiah, copied about the second century BC. The English of Isaiah in this app is the King James. The IAA digital library publishes photographs of the columns.
+
+This is a transmission fact: a Hebrew Isaiah existed centuries before the medieval Masoretic copies. It is not a verdict on inspiration.`,
+  }),
+  ev({
+    title: "Yehohanan crucifixion remains",
+    evidence_type: "artifact",
+    scripture_reference: "Matthew 27; Mark 15; Luke 23; John 19",
+    era: "1st century AD",
+    location: "Givʿat ha-Mivtar, Jerusalem",
+    holding: "Israel Antiquities Authority / Israel Museum.",
+    evidence_status: "established",
+    image_type: "actual_artifact",
+    source_url: "https://www.iaa.org.il/",
+    verification_note:
+      "Empirical holding: published ossuary and heel bone of Yehohanan with an iron nail. This is not Jesus. No photograph is stored here unless its provenance is the published IAA object.",
+    order: 30,
+    full_text: `Published osteology: the right heel bone of a man named Yehohanan was found pierced by an iron nail, with wood fragments. The ossuary names him. The find is first-century Judean evidence of Roman crucifixion practice.
+
+This is not the body of Jesus. A generic bone photograph is not stored as if it were this find.`,
+  }),
+  ev({
+    title: "Pool of Bethesda (excavated complex)",
+    evidence_type: "archaeological_site",
+    scripture_reference: "John 5:1–9",
+    era: "Second Temple / Roman period remains; excavated from the 19th century",
+    location: "Jerusalem, near St. Anne’s",
+    holding: "Published excavations of the twin-pool complex with colonnades.",
+    evidence_status: "established",
+    image_type: "actual_excavation",
+    source_url: "https://www.iaa.org.il/",
+    order: 30,
+    full_text: `John 5:2: “Now there is at Jerusalem by the sheep market a pool, which is called in the Hebrew tongue Bethesda, having five porches.”
+
+Excavations north of the Temple Mount uncovered a pool complex matching the five-colonnade description (two basins with a dividing porch). The remains are the site. This corroborates the place John names. It does not photograph the healing.`,
+  }),
+  ev({
+    title: "Sea of Galilee boat (Yigal Allon Centre)",
+    evidence_type: "artifact",
+    scripture_reference: "Matthew 4:18–22; Mark 4:1; Luke 5:1–3; John 6:16–21",
+    era: "approximately 1st century BC – 1st century AD",
+    location: "Found in the mud of the Sea of Galilee, 1986; Ginosar",
+    holding: "Yigal Allon Centre, Kibbutz Ginosar.",
+    evidence_status: "established_contextual",
+    image_type: "actual_artifact",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/galilee-boat.jpg",
+    image_caption:
+      "Photograph of the ancient Galilee fishing boat conserved at the Yigal Allon Centre. Photo: Warfieldian (CC BY-SA 4.0). There is no evidence that Jesus used this particular boat.",
+    source_url: "https://www.kinneret.org.il/",
+    order: 1,
+    full_text: `A first-century-type fishing boat was recovered from the lakebed and conserved at Ginosar. It shows Galilean boat construction of the Gospel period.
+
+There is no inscription or find that ties this hull to Jesus or to a named disciple. It is contextual: the kind of boat the Gospels describe.`,
+  }),
+  ev({
+    title: "Magdala synagogue (first century)",
+    evidence_type: "archaeological_site",
+    scripture_reference: "Matthew 15:39; Mark 1:21–29; Luke 4:31–38",
+    era: "1st century AD",
+    location: "Magdala / Migdal, west shore of the Sea of Galilee",
+    holding: "Published excavations of the Magdala synagogue and stone.",
+    evidence_status: "established",
+    image_type: "actual_excavation",
+    source_url: "https://www.iaa.org.il/",
+    order: 30,
+    full_text: `A first-century synagogue was excavated at Magdala, with a decorated stone and benches. It is a Galilean assembly building from the lifetime of Jesus.
+
+The Gospels name Magdala (Mary Magdalene) and synagogue teaching in Galilee. This building is not labeled with a New Testament name in an inscription.`,
+  }),
+  ev({
+    title: "Rekhmire brickmaking scene (TT100)",
+    evidence_type: "historical_record",
+    scripture_reference: "Exodus 1:13–14; Exodus 5",
+    era: "18th Dynasty, Thebes",
+    location: "Tomb of Rekhmire, Thebes (TT100)",
+    holding: "Painted scene still in the tomb; published copies in museum collections.",
+    evidence_status: "established_contextual",
+    image_type: "actual_structure",
+    source_url: "https://www.metmuseum.org/art/collection/search/548575",
+    verification_note:
+      "Empirical holding: an Egyptian tomb scene of mudbrick manufacture under overseers. It does not identify the workers as the Israelites of Exodus.",
+    order: -1450,
+    full_text: `The tomb of Rekhmire, vizier of Thutmose III and Amenhotep II, includes a painted scene of men mixing mud, forming bricks, and stacking them under Egyptian officials.
+
+Exodus 1:14: “And they made their lives bitter with hard bondage, in morter, and in brick, and in all manner of service in the field.”
+
+The painting is Egyptian artwork of brickmaking. It does not name Israel.`,
+  }),
+  ev({
+    title: "Beni Hasan Asiatic caravan (Khnumhotep II)",
+    evidence_type: "historical_record",
+    scripture_reference: "Genesis 12; Genesis 37; Genesis 46",
+    era: "Middle Kingdom, tomb of Khnumhotep II",
+    location: "Beni Hasan, Egypt",
+    holding: "Painted scene in tomb BH 3; published copies.",
+    evidence_status: "established_contextual",
+    image_type: "actual_structure",
+    source_url: "https://www.metmuseum.org/",
+    verification_note:
+      "Empirical holding: a Middle Kingdom tomb painting of Levantine / Asiatic people entering Egypt. It does not identify Abraham, Jacob, Joseph, or Israel.",
+    order: -1890,
+    full_text: `The tomb of Khnumhotep II at Beni Hasan shows a labeled group of Asiatics (Aamu) led by a man named Absha, with colored garments, donkeys, and weapons, entering Egypt.
+
+Genesis records movement of Semitic families into Egypt. This painting is that class of movement. It is not a portrait of the patriarchs.`,
+  }),
+  ev({
+    title: "Tell el-Dabʿa / Avaris (Levantine quarter)",
+    evidence_type: "archaeological_site",
+    scripture_reference: "Genesis 47; Exodus 1",
+    era: "Middle Kingdom – Second Intermediate Period",
+    location: "Eastern Nile Delta, Egypt",
+    holding: "Austrian excavations (Manfred Bietak) at Tell el-Dabʿa.",
+    evidence_status: "disputed_identification",
+    image_type: "actual_excavation",
+    source_url: "https://www.auaris.at/",
+    verification_note:
+      "Empirical holding: published remains of a substantial Levantine population in the eastern Delta. Israelite identification of that population is disputed.",
+    order: -1700,
+    full_text: `Excavations at Tell el-Dabʿa (Avaris) published Levantine houses, burials, and material culture in the Hyksos capital region.
+
+Genesis–Exodus set Israel in the eastern Delta. The archaeology of a Levantine population there is established. Naming that population “Israel” is not established by an inscription from the site.`,
+  }),
+  ev({
+    title: "Reported coral-encrusted wheel-shaped formations (Gulf of Aqaba)",
+    evidence_type: "other",
+    scripture_reference: "Exodus 14:23–28",
+    era: "Modern underwater photographs; claimed identification unpublished as a catalogued excavation",
+    location: "Gulf of Aqaba / Nuweiba region (reported)",
+    holding: "Claimant photographs exist. No museum or excavation catalog authenticates the objects as Egyptian chariot wheels.",
+    evidence_status: "reported",
+    image_type: "reported_claim",
+    image_authenticity: "verified photograph / disputed interpretation",
+    verification_note:
+      "Reported coral-encrusted wheel-shaped formation — identification as an Egyptian chariot wheel has not been independently archaeologically authenticated. No photograph is stored here as if it were a catalogued chariot wheel. Generic underwater pictures are not used.",
+    order: -1446,
+    full_text: `Investigators have published photographs of coral-encrusted, wheel-shaped formations in the Gulf of Aqaba and have interpreted some as four-spoke, six-spoke, or eight-spoke Egyptian chariot wheels, including a claimed gold-covered wheel.
+
+The photographs, where genuine, are photographs of underwater formations. That does not establish that the formations are ancient Egyptian chariot wheels. Identification and dating have not been independently established.
+
+Reported human or animal remains are not stored here as Pharaoh’s army. No generic bone photograph is used. Catalogued New Kingdom chariots from KV62 are a separate empirical holding in this archive.`,
   }),
 ];
 
@@ -829,7 +1158,7 @@ export function searchArchive(query, kind) {
   if (!q) return pool;
   const words = q.split(" ").filter((w) => w.length > 2);
   return pool.filter((item) => {
-    const hay = `${item.title} ${item.full_text} ${item.scripture_reference} ${item.holding} ${item.agency}`.toLowerCase();
+    const hay = `${item.title} ${item.full_text} ${item.scripture_reference} ${item.holding} ${item.agency} ${item.evidence_status}`.toLowerCase();
     if (hay.includes(q)) return true;
     return words.every((w) => hay.includes(w));
   });

@@ -1,7 +1,18 @@
 import { localEntities } from "./localEntities";
 import { requireAdmin, requireUser } from "./localAuth";
 import { normalizeSource } from "@/lib/truthMandate";
-import { matchesToResearchVerses, partitionMatches, searchCorpus, SEARCH_CORPORA } from "@/lib/localCorpusSearch";
+import {
+  contentWordsForQuestion,
+  extractReferencesFromQuestion,
+  findReferencedPassages,
+  KJV_TOPIC_ALIASES,
+  matchesToResearchVerses,
+  partitionMatches,
+  searchCorpus,
+  SEARCH_CORPORA,
+  SOURCE_LABEL,
+  wordHitsText,
+} from "@/lib/localCorpusSearch";
 import { ARCHIVE_NOTICE, searchArchive } from "@/data/inAppArchive";
 import { lookupLexicon } from "@/data/strongsLexicon";
 
@@ -136,57 +147,396 @@ function escapeMd(s) {
   return String(s || "").trim();
 }
 
-async function study_assistant({ question }) {
+const ASK_SCRIPTURE_SOURCES = [
+  "canon",
+  "apocrypha",
+  "enoch",
+  "dead_sea_scrolls",
+  "fathers",
+  "josephus",
+  "other",
+];
+
+const FOLLOW_UP_RE =
+  /^(and|also|what about|how about|why|more|continue|yes|no|again|same|that|those)\b/i;
+const PRONOUN_RE = /\b(he|she|they|it|this|that|those|him|his|them|their)\b/i;
+const EVIDENCE_HINT_RE =
+  /\b(evidence|inscription|stele|archaeology|excavation|museum|artifact|bulla|ossuary)\b/i;
+const BIBLE_REQUEST_RE =
+  /\b(?:bible|scripture|king james|kjv|holy bible|old testament|new testament|gospels?)\b/i;
+const LEAD_SOURCE_PATTERNS = [
+  { source: "josephus", re: /\b(?:josephus|antiquities of the jews)\b/i },
+  { source: "fathers", re: /\b(?:(?:church|early|ante-?nicene)\s+fathers?|ante-?nicene)\b/i },
+  { source: "dead_sea_scrolls", re: /\b(?:dead sea scrolls?|qumran scrolls?)\b/i },
+  { source: "enoch", re: /\b(?:(?:1|2|book of)\s+enoch|(?:in|from)\s+enoch|enoch says)\b/i },
+  { source: "apocrypha", re: /\b(?:apocrypha|deuterocanon(?:ical)?)\b/i },
+];
+const SOURCE_ORDER = [
+  "canon",
+  "apocrypha",
+  "enoch",
+  "dead_sea_scrolls",
+  "fathers",
+  "josephus",
+  "other",
+  "archaeology",
+  "science",
+  "government",
+  "vatican",
+  "modern",
+];
+
+function leadSourceFromQuestion(question) {
+  const q = String(question || "");
+  if (BIBLE_REQUEST_RE.test(q)) return "canon";
+  for (const { source, re } of LEAD_SOURCE_PATTERNS) {
+    if (re.test(q)) return source;
+  }
+  return "canon";
+}
+
+function sourceRank(source, lead) {
+  if (lead && lead !== "canon" && source === lead) return -1;
+  const i = SOURCE_ORDER.indexOf(source);
+  return i < 0 ? SOURCE_ORDER.length : i;
+}
+
+function uniqueWords(list) {
+  const seen = new Set();
+  const out = [];
+  for (const w of list || []) {
+    const key = String(w || "").toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(String(w));
+  }
+  return out;
+}
+
+function isComparisonQuestion(question) {
+  const q = String(question || "");
+  if (!/^\s*(?:is|are|was|were)\s+.+\s+the\s+.+/i.test(q) && !/\b(?:same as|instead of|rather than)\b/i.test(q)) {
+    return false;
+  }
+  return contentWordsForQuestion(q).some((w) => KJV_TOPIC_ALIASES[String(w).toLowerCase()]);
+}
+
+function topicWordsWithoutRefs(question, refs) {
+  const skip = new Set();
+  for (const ref of refs || []) {
+    String(ref.book || "")
+      .toLowerCase()
+      .split(/\s+/)
+      .forEach((w) => {
+        if (w.length > 1) skip.add(w);
+      });
+  }
+  return contentWordsForQuestion(question).filter((w) => !skip.has(w) && !/^\d+$/.test(w));
+}
+
+function parseAskShape(question) {
+  const q = String(question || "").trim();
+  const leadSource = leadSourceFromQuestion(q);
+  const comparison = isComparisonQuestion(q);
+  const refs = extractReferencesFromQuestion(q);
+  const about = q.match(
+    /\b(?:what|how|where)\s+do(?:es)?\s+(.+?)\s+(?:say|teach|tell|speak|command)\s+(?:about|of|concerning)\s+(.+)/i
+  );
+  if (about) {
+    return {
+      question: q,
+      search: contentWordsForQuestion(about[2]).join(" ") || q,
+      words: contentWordsForQuestion(about[2]),
+      boostWords: contentWordsForQuestion(about[1]),
+      refs,
+      preferSpeech: true,
+      leadSource,
+      comparison,
+    };
+  }
+  const bibleSay = q.match(
+    /\bdoes\s+(?:the\s+)?(?:bible|scripture|word|lord|god|jesus|messiah|moses|paul)\s+(?:say|teach|mention|speak|command)\s+(?:that\s+|about\s+|of\s+)?(.+)/i
+  );
+  if (bibleSay) {
+    const words = contentWordsForQuestion(bibleSay[1]);
+    return { question: q, search: words.join(" ") || q, words, boostWords: [], refs, preferSpeech: false, leadSource, comparison };
+  }
+  const tellAbout = q.match(/\b(?:tell me about|explain|define)\s+(.+)/i);
+  if (tellAbout) {
+    const words = contentWordsForQuestion(tellAbout[1]);
+    return { question: q, search: words.join(" ") || q, words, boostWords: [], refs, preferSpeech: false, leadSource, comparison };
+  }
+  const who = q.match(/^\s*who\s+(?:is|are|was|were)\s+(.+)/i);
+  if (who) {
+    const words = contentWordsForQuestion(who[1]);
+    return { question: q, search: words.join(" ") || q, words, boostWords: [], refs, preferSpeech: false, leadSource, comparison };
+  }
+  const what = q.match(/^\s*what\s+(?:is|are|was|were)\s+(.+)/i);
+  if (what) {
+    const words = contentWordsForQuestion(what[1]);
+    return { question: q, search: words.join(" ") || q, words, boostWords: [], refs, preferSpeech: false, leadSource, comparison };
+  }
+  const why = q.match(/^\s*why\s+(?:did|does|do|is|was|were)\s+(.+)/i);
+  if (why) {
+    const words = contentWordsForQuestion(why[1]);
+    return { question: q, search: words.join(" ") || q, words, boostWords: [], refs, preferSpeech: false, leadSource, comparison };
+  }
+  const words = topicWordsWithoutRefs(q, refs);
+  return {
+    question: q,
+    search: words.join(" ") || q,
+    words,
+    boostWords: [],
+    refs,
+    preferSpeech: false,
+    leadSource,
+    comparison,
+  };
+}
+
+function resolveAskQuestion(question, history) {
+  const q = String(question || "").trim();
+  const hist = Array.isArray(history) ? history : [];
+  const lastUser = [...hist].reverse().find((m) => m.role === "user" && String(m.content || "").trim());
+  const asked = parseAskShape(q);
+  const thin = !asked.words.length && !asked.refs.length;
+  const follow =
+    lastUser &&
+    (thin || FOLLOW_UP_RE.test(q) || (PRONOUN_RE.test(q) && asked.words.length <= 2));
+  if (!follow) return asked;
+  const prior = parseAskShape(String(lastUser.content).trim());
+  return {
+    question: `${prior.question}\n\nFollow-up: ${q}`,
+    search: uniqueWords([...asked.words, ...prior.words]).join(" ") || prior.search,
+    words: uniqueWords([...asked.words, ...prior.words]),
+    boostWords: uniqueWords([...asked.boostWords, ...prior.boostWords, ...prior.words]),
+    refs: asked.refs.length ? asked.refs : prior.refs,
+    preferSpeech: asked.preferSpeech || prior.preferSpeech,
+    leadSource: asked.leadSource !== "canon" ? asked.leadSource : prior.leadSource || "canon",
+    comparison: asked.comparison || prior.comparison,
+  };
+}
+
+function uniquePassages(rows) {
+  const seen = new Set();
+  const out = [];
+  for (const row of rows) {
+    const key = `${row.source}|${row.reference}|${String(row.text || "").slice(0, 80)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(row);
+  }
+  return out;
+}
+
+const JESUS_NAMES = new Set(["jesus", "christ", "messiah", "yeshua"]);
+const GOSPEL_BOOKS = new Set(["Matthew", "Mark", "Luke", "John"]);
+const SPEAKER_IGNORE = new Set(["bible", "scripture", "scriptures", "word", "texts", "text"]);
+
+function escapeAskRe(s) {
+  return String(s || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function hitsTopicTerm(text, word) {
+  const hay = String(text || "");
+  if (wordHitsText(hay, word)) return true;
+  return (KJV_TOPIC_ALIASES[String(word).toLowerCase()] || []).some((alias) =>
+    hay.toLowerCase().includes(String(alias).toLowerCase())
+  );
+}
+
+function termPosition(text, word) {
+  const hay = String(text || "");
+  if (wordHitsText(hay, word)) {
+    const m = hay.match(new RegExp(`\\b${escapeAskRe(word)}`, "i"));
+    return m ? m.index : -1;
+  }
+  for (const alias of KJV_TOPIC_ALIASES[String(word).toLowerCase()] || []) {
+    const i = hay.toLowerCase().indexOf(String(alias).toLowerCase());
+    if (i >= 0) return i;
+  }
+  return -1;
+}
+
+function termsNearEachOther(text, words, window = 240) {
+  const positions = words.map((w) => termPosition(text, w)).filter((i) => i >= 0);
+  if (positions.length < 2) return positions.length === words.length;
+  return Math.max(...positions) - Math.min(...positions) <= window;
+}
+
+function speakersForQuestion(asked) {
+  return (asked.boostWords || []).filter((w) => !SPEAKER_IGNORE.has(String(w).toLowerCase()));
+}
+
+function verseAppliesToQuestion(row, asked) {
+  const text = String(row.text || "").trim();
+  if (!text) return false;
+  const topic = asked.words || [];
+  if (row.askedReference && !topic.length) return true;
+  if (!topic.length) return false;
+
+  const hitCount = topic.filter((w) => hitsTopicTerm(text, w)).length;
+  if (asked.comparison) {
+    if (!hitCount) return false;
+  } else if (hitCount < topic.length) {
+    return false;
+  }
+
+  if (text.length > 800 && topic.length >= 2 && !asked.comparison && !termsNearEachOther(text, topic)) {
+    return false;
+  }
+
+  const speakers = speakersForQuestion(asked);
+  if (asked.preferSpeech && speakers.length) {
+    const jesusAsk = speakers.some((w) => JESUS_NAMES.has(String(w).toLowerCase()));
+    const speakerHit = speakers.some((w) => hitsTopicTerm(text, w));
+    const gospelSpeech = jesusAsk && GOSPEL_BOOKS.has(row.book);
+    if (!speakerHit && !gospelSpeech) return false;
+  }
+
+  return true;
+}
+
+function askSearchQueries(asked) {
+  const out = [];
+  const add = (value, requirePhrase = false) => {
+    const q = String(value || "").trim();
+    if (!q || out.some((item) => item.q === q)) return;
+    out.push({ q, requirePhrase });
+  };
+  if (asked.comparison) {
+    for (const w of asked.words || []) {
+      add(w);
+      for (const alias of KJV_TOPIC_ALIASES[String(w).toLowerCase()] || []) add(alias, true);
+    }
+    return out.length ? out : [{ q: asked.question, requirePhrase: false }];
+  }
+  add(asked.search);
+  for (const w of asked.words || []) {
+    for (const alias of KJV_TOPIC_ALIASES[String(w).toLowerCase()] || []) add(alias, true);
+  }
+  return out.length ? out : [{ q: asked.question, requirePhrase: false }];
+}
+
+function sourceLabel(source) {
+  return SOURCE_LABEL[source] || source || "stored text";
+}
+
+function sortAskPassages(rows, asked) {
+  const lead = asked?.leadSource || "canon";
+  return [...rows].sort((a, b) => {
+    const rank = sourceRank(a.source, lead) - sourceRank(b.source, lead);
+    if (rank) return rank;
+    const cited = (b.askedReference ? 1 : 0) - (a.askedReference ? 1 : 0);
+    if (cited) return cited;
+    return (b.score || 0) - (a.score || 0);
+  });
+}
+
+function selectRelevantPassages(passages, asked) {
+  return uniquePassages((passages || []).filter((p) => verseAppliesToQuestion(p, asked)));
+}
+
+function understoodAs(asked) {
+  const q = String(asked.question || "").split("\n")[0].trim();
+  const topic = (asked.words || []).join(", ");
+  const speakers = speakersForQuestion(asked);
+  if (asked.refs.length && topic) {
+    return `Does **${asked.refs[0].label}** address ${topic}? Only verses that address that are listed.`;
+  }
+  if (asked.preferSpeech && speakers.length && topic) {
+    return `What does ${speakers.join(", ")} say about ${topic}? Only verses that address that are listed.`;
+  }
+  if (topic) return `${q} Only verses that address ${topic} are listed.`;
+  return q;
+}
+
+function yesNoLine(passages, asked) {
+  const n = passages.length;
+  if (!n) {
+    return "**No.** The question is understood, but no stored verse applies. Nothing was invented.";
+  }
+  return `**Yes.** The question is understood. The answer is taken only from the ${n} verse${n === 1 ? "" : "s"} that apply.`;
+}
+
+function quoteOnlyAnswer(question, passages, asked) {
+  const relevant = selectRelevantPassages(passages, asked);
+  const lines = [];
+  lines.push(`### Your question`);
+  lines.push(String(question).split("\n")[0]);
+  lines.push("");
+  lines.push(`Understood as: ${understoodAs(asked)}`);
+  lines.push("");
+  lines.push(yesNoLine(relevant, asked));
+  lines.push("");
+  if (!relevant.length) {
+    lines.push("---");
+    lines.push(`**Completeness attestation:** ${ARCHIVE_NOTICE}`);
+    return lines.join("\n");
+  }
+  lines.push("### Applicable text");
+  lines.push("");
+  const body = sortAskPassages(relevant, asked);
+  let lastGroup = "";
+  for (const p of body) {
+    const group = sourceLabel(p.source);
+    if (group !== lastGroup) {
+      lines.push(`#### ${group}`);
+      lines.push("");
+      lastGroup = group;
+    }
+    lines.push(`**${escapeMd(p.reference)}**`);
+    lines.push(`> ${escapeMd(p.text)}`);
+    lines.push("");
+  }
+  lines.push("---");
+  lines.push(`**Completeness attestation:** ${ARCHIVE_NOTICE}`);
+  return lines.join("\n");
+}
+
+async function searchAskSources(asked, sources) {
+  const matches = [];
+  for (const { q, requirePhrase } of askSearchQueries(asked)) {
+    const found = await searchCorpus(q, {
+      limit: Infinity,
+      sources,
+      contentWords: requirePhrase ? [] : asked.words,
+      boostWords: asked.boostWords,
+      preferSpeech: asked.preferSpeech,
+      preferCanon: sources.includes("canon"),
+      requirePhrase,
+      mustHitAll: !asked.comparison && !requirePhrase && (asked.words || []).length > 1,
+    });
+    matches.push(...found.matches);
+  }
+  return matches;
+}
+
+async function gatherAskPassages(asked) {
+  const cited = await findReferencedPassages(asked.question);
+  const evidence = EVIDENCE_HINT_RE.test(asked.question);
+  const canon = await searchAskSources(asked, ["canon"]);
+  const moreSources = evidence
+    ? ASK_SCRIPTURE_SOURCES.filter((s) => s !== "canon").concat(["archaeology", "science", "government", "vatican", "modern"])
+    : ASK_SCRIPTURE_SOURCES.filter((s) => s !== "canon");
+  const extra = await searchAskSources(asked, moreSources);
+  return uniquePassages([...cited, ...sortAskPassages([...canon, ...extra], asked)]);
+}
+
+async function study_assistant({ question, history }) {
   requireUser();
   const q = String(question || "").trim();
   if (!q) return fail("A question is required.");
-  let found;
+  const asked = resolveAskQuestion(q, history);
+  let passages = [];
   try {
-    found = await searchCorpus(q, { limit: 80 });
+    passages = await gatherAskPassages(asked);
   } catch (error) {
     return fail(error.message);
   }
 
-  const lines = [];
-  lines.push(
-    found.matches.length
-      ? `### ANSWER: ${found.matches.length} record${found.matches.length === 1 ? "" : "s"} stored in this app contain that wording. Scripture, early writings, and published evidence are searched together. No outside opinion is added.`
-      : "### ANSWER: No record stored in this app contains that wording. Nothing was invented to fill the gap. The closed Vatican Apostolic Archive and paywalled journals are not copied here."
-  );
-  lines.push("");
-
-  const passages = found.matches.map((m) => ({
-    reference: m.reference,
-    source: m.source,
-    text: m.text,
-    relevance: "",
-  }));
-  lines.push(`### All relevant texts (${passages.length} passage${passages.length === 1 ? "" : "s"} reviewed)`);
-  lines.push("");
-  for (const p of passages) {
-    const ref = escapeMd(p.reference);
-    const src = escapeMd(p.source) || "canon";
-    const txt = escapeMd(p.text);
-    const rel = escapeMd(p.relevance);
-    lines.push(`**${ref}** (${src})`);
-    lines.push(`> ${txt}`);
-    if (rel) lines.push(`*Relevance: ${rel}*`);
-    lines.push("");
-  }
-
-  if (passages.length === 0) {
-    lines.push(
-      "No passage in the four admissible corpora (canon, Apocrypha, Dead Sea Scrolls, Book of Enoch) addresses this question. Nothing has been invented to fill the gap."
-    );
-    lines.push("");
-  }
-
-  lines.push("---");
-  lines.push(
-    `**Completeness attestation:** ${ARCHIVE_NOTICE}`
-  );
-
-  return { answer: lines.join("\n") };
+  const relevant = selectRelevantPassages(passages, asked);
+  return { answer: quoteOnlyAnswer(asked.question, relevant, asked) };
 }
 
 async function define_word({ word, reference }) {

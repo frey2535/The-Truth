@@ -44,7 +44,7 @@ const EXTRA = [
   },
   {
     file: "fathers/ante-nicene-vol1.txt",
-    url: "https://www.gutenberg.org/files/1654/1654-0.txt",
+    url: "https://ccel.org/ccel/s/schaff/anf01/cache/anf01.txt",
   },
   {
     file: "fathers/josephus-antiquities.txt",
@@ -52,7 +52,7 @@ const EXTRA = [
   },
   {
     file: "fathers/josephus-wars.txt",
-    url: "https://www.gutenberg.org/files/2850/2850-0.txt",
+    url: "https://www.gutenberg.org/files/2850/2850.txt",
   },
 ];
 

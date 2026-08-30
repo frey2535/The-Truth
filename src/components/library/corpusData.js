@@ -234,12 +234,18 @@ export const MANUSCRIPT_GROUPS = {
   },
   josephus: {
     title: "Josephus",
-    desc: "Flavius Josephus, Antiquities of the Jews, William Whiston translation (1737, public domain). Stored in this app. Josephus is a first-century Jewish historian, not Scripture.",
+    desc: "Flavius Josephus, Antiquities of the Jews and The Jewish War, William Whiston translation (public domain). Stored in this app. Josephus is a first-century Jewish historian, not Scripture.",
     items: [
       {
         title: "Antiquities of the Jews",
         desc: "From creation through the war with Rome, including the notices of Pilate, John, and James.",
         file: "/corpus/fathers/josephus-antiquities.txt",
+        plain: true,
+      },
+      {
+        title: "The Jewish War",
+        desc: "Josephus' account of the war with Rome. Not Scripture.",
+        file: "/corpus/fathers/josephus-wars.txt",
         plain: true,
       },
     ],

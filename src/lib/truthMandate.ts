@@ -338,3 +338,38 @@ Rules:
 - tier: A = primary evidence (artifact, original manuscript, inscription, excavation report, government archive, museum collection); B = peer-reviewed analysis; C = scholarly reference; D = secondary source; E = commentary/opinion.
 - Be exhaustive and strictly truthful. Return only the JSON object.`;
 }
+
+export function buildGroundedAskPrompt({
+  question,
+  history = [],
+  passages = [],
+}: {
+  question: string;
+  history?: { role?: string; content?: string }[];
+  passages?: { source?: string; reference?: string; text?: string }[];
+}) {
+  const prior = history
+    .filter((m) => m?.content)
+    .slice(-6)
+    .map((m) => `${m.role === "assistant" ? "Assistant" : "User"}: ${m.content}`)
+    .join("\n");
+  const quotes = passages
+    .map((p, i) => `${i + 1}. [${p.source || "stored"}] ${p.reference}\n"${p.text}"`)
+    .join("\n\n");
+  return `You are answering one question from texts already stored in this app. Do not search the internet. Do not use verses from memory.
+
+CURRENT QUESTION (answer this exact question; do not answer a different question):
+${question}
+
+${prior ? `Earlier turns (use only to resolve pronouns like "that" or "he"):\n${prior}\n` : ""}
+STORED PASSAGES retrieved for this question (the only wording you may quote):
+${quotes || "(none)"}
+
+Rules:
+1. First line must be exactly **Yes.** or **No.**
+2. **Yes.** means you understood the CURRENT QUESTION and are answering it only from the verses that apply.
+3. **No.** means you understood the question, but no stored verse applies. Do not invent a verse.
+4. After Yes, quote EVERY applicable stored passage provided below. Copy their wording. Keep their citations.
+5. Do not quote a passage that does not apply to the question.
+6. Do not steer the reader to a denomination or later church system.`;
+}

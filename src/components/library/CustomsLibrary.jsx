@@ -7,8 +7,11 @@ import { CUSTOM_INTENT } from "@/data/customIntent";
 import { OCCULT_SYMBOLS, SYMBOL_SECTIONS } from "@/data/occultSymbols";
 import { ADVERSARY_NAMES, NAME_SECTIONS } from "@/data/adversaryNames";
 import { getDossier } from "@/data/originsEvidence";
-import BookCard from "./BookCard";
 import SymbolPhoto from "./SymbolPhoto";
+import HolidayEvidenceCard from "@/components/evidence/HolidayEvidenceCard";
+import { evidencePhotoIdForCustom, evidencePhotoIdForName, photoIdForHolidayItem } from "@/data/holidayEvidencePhotos";
+
+export const CUSTOMS_SECTION_TITLE = "Holidays and symbols";
 
 const mdComponents = {
   h1: ({ node, ...p }) => <h1 className="font-display text-2xl text-[#2b2620] mt-6 mb-3" {...p} />,
@@ -119,15 +122,21 @@ function CustomDetail({ item, onBack }) {
   const related = (intent?.relatedSymbols || [])
     .map((id) => OCCULT_SYMBOLS.find((s) => s.id === id))
     .filter(Boolean);
+  const photoId = evidencePhotoIdForCustom(item.id, intent?.relatedSymbols || []);
   return (
     <div className="max-w-3xl">
       <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm text-[#7a2e2e] hover:underline mb-4">
-        <ArrowLeft className="w-4 h-4" /> The Way of the Nations
+        <ArrowLeft className="w-4 h-4" /> {CUSTOMS_SECTION_TITLE}
       </button>
       <p className="text-xs uppercase tracking-wide text-[#b08d3c] mb-2">
         {CUSTOM_SECTIONS.find((s) => s.id === item.section)?.title}
       </p>
       <h1 className="font-display text-3xl text-[#2b2620] mb-4">{item.title}</h1>
+      {photoId ? (
+        <div className="w-full max-w-md mb-8">
+          <SymbolPhoto id={photoId} title={item.title} showCaption />
+        </div>
+      ) : null}
 
       <Callout label="Practiced today">{item.practicedToday}</Callout>
       {intent?.originalIntention ? <Callout label="Original intention of the rite" tone="gold">{intent.originalIntention}</Callout> : null}
@@ -171,7 +180,7 @@ function CustomDetail({ item, onBack }) {
                 className="p-3 rounded-xl border border-[#e8ddc7] bg-white/70 hover:border-[#b08d3c]/60"
               >
                 <div className="aspect-square mb-2 overflow-hidden rounded-lg">
-                  <SymbolPhoto id={s.id} glyph={s.glyph} title={s.title} />
+                  <SymbolPhoto id={s.id} title={s.title} />
                 </div>
                 <p className="font-display text-sm text-[#2b2620]">{s.title}</p>
               </Link>
@@ -189,14 +198,14 @@ function SymbolDetail({ item, onBack }) {
   return (
     <div className="max-w-3xl">
       <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm text-[#7a2e2e] hover:underline mb-4">
-        <ArrowLeft className="w-4 h-4" /> The Way of the Nations
+        <ArrowLeft className="w-4 h-4" /> {CUSTOMS_SECTION_TITLE}
       </button>
       <p className="text-xs uppercase tracking-wide text-[#b08d3c] mb-2">
         {SYMBOL_SECTIONS.find((s) => s.id === item.section)?.title}
       </p>
       <h1 className="font-display text-3xl text-[#2b2620] mb-6">{item.title}</h1>
-      <div className="w-full max-w-md aspect-square mb-8 overflow-hidden rounded-2xl border border-[#e8ddc7] shadow-sm">
-        <SymbolPhoto id={item.id} glyph={item.glyph} title={item.title} />
+      <div className="w-full max-w-md mb-8 overflow-hidden rounded-2xl border border-[#e8ddc7] shadow-sm p-2 bg-[#faf6ef]/80">
+        <SymbolPhoto id={item.id} title={item.title} showCaption />
       </div>
       <Callout label="Where you still see it">{item.seenToday}</Callout>
       <Callout label="Intention and what participation means" tone="warn">{item.intention}</Callout>
@@ -220,12 +229,17 @@ function NameDetail({ item, onBack }) {
   return (
     <div className="max-w-3xl">
       <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm text-[#7a2e2e] hover:underline mb-4">
-        <ArrowLeft className="w-4 h-4" /> The Way of the Nations
+        <ArrowLeft className="w-4 h-4" /> {CUSTOMS_SECTION_TITLE}
       </button>
       <p className="text-xs uppercase tracking-wide text-[#b08d3c] mb-2">
         {NAME_SECTIONS.find((s) => s.id === item.section)?.title}
       </p>
       <h1 className="font-display text-3xl text-[#2b2620] mb-4">{item.title}</h1>
+      {evidencePhotoIdForName(item.id) ? (
+        <div className="w-full max-w-md mb-8">
+          <SymbolPhoto id={evidencePhotoIdForName(item.id)} title={item.title} showCaption />
+        </div>
+      ) : null}
       {item.noSigil ? (
         <Callout label="No seal is drawn here" tone="warn">
           Scripture forbids consulting familiar spirits and curious arts (Deuteronomy 18; Acts 19:19). Later grimoires
@@ -263,7 +277,7 @@ function SymbolCard({ item, onClick }) {
       className="flex flex-col items-stretch text-left whitespace-normal p-4 rounded-2xl border border-[#e8ddc7] bg-white/70 hover:border-[#b08d3c]/60 hover:bg-white transition-colors"
     >
       <div className="aspect-square mb-3 overflow-hidden rounded-lg">
-        <SymbolPhoto id={item.id} glyph={item.glyph} title={item.title} />
+        <SymbolPhoto id={item.id} title={item.title} />
       </div>
       <span className="font-display text-lg text-[#2b2620] mb-1">{item.title}</span>
       <span className="text-sm text-[#6b6155] leading-relaxed">{item.card}</span>
@@ -332,7 +346,7 @@ export default function CustomsLibrary({ embedded = false, onBack }) {
     return (
       <div>
         <button onClick={close} className="inline-flex items-center gap-1.5 text-sm text-[#7a2e2e] hover:underline mb-4">
-          <ArrowLeft className="w-4 h-4" /> The Way of the Nations
+          <ArrowLeft className="w-4 h-4" /> {CUSTOMS_SECTION_TITLE}
         </button>
         <p className="text-[#5b5142]">That entry is not in this list.</p>
       </div>
@@ -360,7 +374,7 @@ export default function CustomsLibrary({ embedded = false, onBack }) {
           <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#f3e9c8]/50 text-[#b08d3c]">
             <Moon className="w-5 h-5" />
           </span>
-          <h1 className="font-display text-3xl sm:text-4xl text-[#2b2620]">The Way of the Nations</h1>
+          <h1 className="font-display text-3xl sm:text-4xl text-[#2b2620]">{CUSTOMS_SECTION_TITLE}</h1>
         </div>
         <p className="font-display text-lg text-[#7a2e2e] italic mb-4">
           “Learn not the way of the heathen.” — Jeremiah 10:2
@@ -378,9 +392,11 @@ export default function CustomsLibrary({ embedded = false, onBack }) {
           printed, and           the <strong>names</strong> Scripture gives the adversary, the gods of the nations, and the Watchers / fallen
           angels. Each entry now carries <strong>where</strong>, <strong>when</strong>, a chronology, and links to
           museum objects, imperial codes, church-father editions, and Scripture — so you can open the evidence yourself.
-          Images of the signs are photorealistic photographs of the physical forms. Later grimoires attached seals to
-          long lists of spirits; those working diagrams are not reproduced. Acts 19:19 records curious arts burned, not copied for completeness. Completeness of
-          the enemy&apos;s catalog is itself a snare.
+          Pictures here are photographs of catalogued museum or excavated objects stored in this app — not drawings
+          and not invented pictures. Where no such photograph is stored, the page says so and keeps the official catalog
+          links. Later grimoires attached seals to long lists of spirits; those working diagrams are not reproduced.
+          Acts 19:19 records curious arts burned, not copied for completeness. Completeness of the enemy&apos;s catalog
+          is itself a snare.
         </p>
         <p className="text-sm text-[#8a7f6f] max-w-3xl leading-relaxed">
           Deuteronomy 12:30–32 forbids inquiring how the nations served their gods in order to do the same unto the LORD.
@@ -417,7 +433,13 @@ export default function CustomsLibrary({ embedded = false, onBack }) {
               <h2 className="font-display text-xl text-[#2b2620] mb-3">Traditions</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredCustoms.map((c) => (
-                  <BookCard key={c.id} title={c.title} description={c.card} onClick={() => navigate(`/customs/${c.id}`)} />
+                  <HolidayEvidenceCard
+                    key={c.id}
+                    title={c.title}
+                    description={c.card}
+                    to={`/customs/${c.id}`}
+                    photoId={photoIdForHolidayItem("custom", c)}
+                  />
                 ))}
               </div>
             </section>
@@ -437,7 +459,13 @@ export default function CustomsLibrary({ embedded = false, onBack }) {
               <h2 className="font-display text-xl text-[#2b2620] mb-3">Names</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredNames.map((n) => (
-                  <BookCard key={n.id} title={n.title} description={n.card} onClick={() => navigate(`/customs/name/${n.id}`)} />
+                  <HolidayEvidenceCard
+                    key={n.id}
+                    title={n.title}
+                    description={n.card}
+                    to={`/customs/name/${n.id}`}
+                    photoId={photoIdForHolidayItem("name", n)}
+                  />
                 ))}
               </div>
             </section>
@@ -455,7 +483,13 @@ export default function CustomsLibrary({ embedded = false, onBack }) {
                   <p className="text-sm text-[#8a7f6f] mb-4 max-w-3xl">{section.blurb}</p>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {CUSTOMS.filter((c) => c.section === section.id).map((c) => (
-                      <BookCard key={c.id} title={c.title} description={c.card} onClick={() => navigate(`/customs/${c.id}`)} />
+                      <HolidayEvidenceCard
+                        key={c.id}
+                        title={c.title}
+                        description={c.card}
+                        to={`/customs/${c.id}`}
+                        photoId={photoIdForHolidayItem("custom", c)}
+                      />
                     ))}
                   </div>
                 </section>
@@ -483,7 +517,13 @@ export default function CustomsLibrary({ embedded = false, onBack }) {
                   <p className="text-sm text-[#8a7f6f] mb-4 max-w-3xl">{section.blurb}</p>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {ADVERSARY_NAMES.filter((n) => n.section === section.id).map((n) => (
-                      <BookCard key={n.id} title={n.title} description={n.card} onClick={() => navigate(`/customs/name/${n.id}`)} />
+                      <HolidayEvidenceCard
+                        key={n.id}
+                        title={n.title}
+                        description={n.card}
+                        to={`/customs/name/${n.id}`}
+                        photoId={photoIdForHolidayItem("name", n)}
+                      />
                     ))}
                   </div>
                 </section>
@@ -491,16 +531,6 @@ export default function CustomsLibrary({ embedded = false, onBack }) {
             : null}
         </>
       )}
-
-      {!embedded ? (
-        <p className="text-sm text-[#8a7f6f] mt-4">
-          Also listed in the{" "}
-          <Link to="/library" className="text-[#7a2e2e] underline">
-            Library
-          </Link>
-          .
-        </p>
-      ) : null}
     </div>
   );
 }

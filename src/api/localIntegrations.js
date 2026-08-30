@@ -133,7 +133,7 @@ export const localIntegrations = {
       }
 
       const res = await postOpenAI({
-        messages: [{ role: "user", content }],
+        messages: [{ role: "user", content: content.length === 1 ? textPrompt : content }],
         temperature: 0.2,
         ...(response_json_schema ? { response_format: { type: "json_object" } } : {}),
       });

@@ -12,6 +12,7 @@ import StudyPlanView from "@/pages/StudyPlanView";
 import WordStudy from "@/pages/WordStudy";
 import Assistant from "@/pages/Assistant";
 import Evidence from "@/pages/Evidence";
+import EvidenceHolidays from "@/pages/EvidenceHolidays";
 import ModernFulfillment from "@/pages/ModernFulfillment";
 import Scientific from "@/pages/Scientific";
 import Government from "@/pages/Government";
@@ -65,6 +66,7 @@ const AuthenticatedApp = () => {
         <Route path="/word-study" element={<WordStudy />} />
         <Route path="/assistant" element={<Assistant />} />
         <Route path="/evidence" element={<Evidence />} />
+        <Route path="/evidence/holidays" element={<EvidenceHolidays />} />
         <Route path="/modern" element={<ModernFulfillment />} />
         <Route path="/science" element={<Scientific />} />
         <Route path="/government" element={<Government />} />

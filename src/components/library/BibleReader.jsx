@@ -162,7 +162,7 @@ export default function BibleReader({ books, apocrypha, title, subtitle, onBack,
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
       {!loading && !error && (
-        <div className="space-y-1 rounded-2xl border border-[#e8ddc7] bg-[#fffdf8]/80 p-3 sm:p-5">
+        <div className="space-y-1 py-1">
           {verses
             .filter((v) => {
               if (!bookQuery.trim()) return true;

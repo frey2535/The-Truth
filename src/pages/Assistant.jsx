@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,8 @@ export default function Assistant() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const endRef = useRef(null);
+  const listRef = useRef(null);
+  const answerRef = useRef(null);
   const reqId = useRef(0);
 
   const [conversationId, setConversationId] = useState(null);
@@ -18,8 +19,17 @@ export default function Assistant() {
   const [conversations, setConversations] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  useLayoutEffect(() => {
+    const pane = listRef.current;
+    const answer = answerRef.current;
+    if (!pane || !answer || loading) return;
+    const pinAnswer = () => {
+      const top = answer.getBoundingClientRect().top - pane.getBoundingClientRect().top + pane.scrollTop;
+      pane.scrollTop = Math.max(0, top);
+    };
+    pinAnswer();
+    const frame = requestAnimationFrame(pinAnswer);
+    return () => cancelAnimationFrame(frame);
   }, [messages, loading]);
 
   async function loadConversations() {
@@ -117,7 +127,7 @@ export default function Assistant() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col h-[calc(100vh-13rem)]">
+    <div className="max-w-3xl mx-auto flex flex-col h-[calc(100vh-13rem)] min-h-0">
       <header className="mb-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
@@ -150,30 +160,46 @@ export default function Assistant() {
         </div>
       </header>
 
-      <div className="flex-1 overflow-y-auto rounded-2xl border border-[#e8ddc7] bg-white/60 p-4 space-y-4">
+      <div
+        ref={listRef}
+        className="flex-1 min-h-0 overflow-y-auto rounded-2xl border border-[#e8ddc7] bg-white/60 p-4 space-y-4"
+      >
         {messages.length === 0 && (
           <div className="text-center text-[#8a7f6f] py-16">
-            <p className="font-display text-2xl text-[#2b2620] mb-2">Ask anything.</p>
-            <p>The assistant searches every Christian text and published record stored in this app — not the internet, and not outside opinion.</p>
+            <p className="font-display text-2xl text-[#2b2620] mb-2">Ask a question.</p>
+            <p>
+              Yes means the question is understood and the answer is taken only from verses that address that
+              question. A shared word is not enough. King James is listed first unless you ask for another text.
+              Every applicable verse is quoted. It does not search the internet.
+            </p>
           </div>
         )}
-        {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+        {messages.map((m, i) => {
+          const latestAnswer = m.role === "assistant" && i === messages.length - 1;
+          return (
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-3 ${
-                m.role === "user" ? "bg-[#2b2620] text-[#f3e9c8]" : "bg-[#f0e6d2] text-[#2b2620]"
-              }`}
+              key={i}
+              ref={latestAnswer ? answerRef : null}
+              className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              {m.role === "assistant" ? (
-                <div className="text-[#3a3328] leading-relaxed space-y-2 [&_ul]:list-disc [&_ul]:pl-5 [&_li]:my-1 [&_a]:text-[#7a2e2e] [&_a]:underline">
-                  <ReactMarkdown>{m.content}</ReactMarkdown>
-                </div>
-              ) : (
-                <p className="leading-relaxed">{m.content}</p>
-              )}
+              <div
+                className={`rounded-2xl px-4 py-3 ${
+                  m.role === "user"
+                    ? "max-w-[85%] bg-[#2b2620] text-[#f3e9c8]"
+                    : "w-full bg-[#f0e6d2] text-[#2b2620]"
+                }`}
+              >
+                {m.role === "assistant" ? (
+                  <div className="text-[#3a3328] leading-relaxed space-y-2 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-[#2b2620] [&_h2]:mt-0 [&_h3]:font-display [&_h3]:text-xl [&_h3]:text-[#2b2620] [&_h4]:font-display [&_h4]:text-lg [&_h4]:text-[#7a2e2e] [&_ul]:list-disc [&_ul]:pl-5 [&_li]:my-1 [&_a]:text-[#7a2e2e] [&_a]:underline">
+                    <ReactMarkdown>{m.content}</ReactMarkdown>
+                  </div>
+                ) : (
+                  <p className="leading-relaxed">{m.content}</p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         {loading && (
           <div className="flex justify-start">
             <div className="bg-[#f0e6d2] rounded-2xl px-4 py-3 inline-flex items-center gap-2 text-[#8a7f6f]">
@@ -181,7 +207,6 @@ export default function Assistant() {
             </div>
           </div>
         )}
-        <div ref={endRef} />
       </div>
 
       <form onSubmit={send} className="flex gap-3 mt-4">

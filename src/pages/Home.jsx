@@ -14,15 +14,17 @@ import {
   GraduationCap,
   ArrowRight,
   Download,
+  Moon,
 } from "lucide-react";
 import PlanCard from "@/components/study/PlanCard";
 
 const ACTIONS = [
-  { to: "/library", label: "Read", desc: "Bible, Apocrypha, Enoch, DSS, fathers, and Josephus — stored here", icon: BookOpenText },
+  { to: "/library", label: "Read", desc: "Master catalog of Christian and comparative texts — stored wording plus honest gaps", icon: BookOpenText },
   { to: "/search", label: "Search a text", desc: "Search inside the Bible, Apocrypha, scrolls, or records only", icon: Search },
   { to: "/map", label: "Biblical map", desc: "Ancient names on today's map — fade layers to compare", icon: Sparkles },
   { to: "/notebook", label: "Notebook", desc: "Your plans, notes, highlights, and favorites", icon: GraduationCap },
   { to: "/word-study", label: "Word study", desc: "Strong's definition and etymology, plus the verses", icon: Microscope },
+  { to: "/customs", label: "Holidays and symbols", desc: "Christmas, Easter, Halloween, worn signs, and names Scripture gives the adversary", icon: Moon },
   { to: "/evidence", label: "Evidence", desc: "Empirical finds only — inscriptions, excavations, and measured science", icon: ScrollText },
   { to: "/investigate", label: "Investigate", desc: "Quote every stored text and record for a claim", icon: Search },
   { to: "/assistant", label: "Ask", desc: "Answers quote only what is stored in this app", icon: Sparkles },

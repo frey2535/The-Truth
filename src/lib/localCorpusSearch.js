@@ -10,6 +10,28 @@ const STOP = new Set([
   "into", "upon", "also", "all", "any", "can", "may", "our", "out", "about",
 ]);
 
+/** Question filler that pulls the wrong verses if used as search keys. */
+const QUESTION_WEAK = new Set([
+  "say", "said", "saith", "saying", "says", "ask", "asked", "asking", "tell", "told",
+  "mean", "means", "meaning", "please", "explain", "describe", "define", "defined",
+  "definition", "difference", "between", "versus", "compare", "related", "verse",
+  "verses", "passage", "passages", "bible", "scripture", "scriptures", "text", "texts",
+  "word", "words", "teach", "teaches", "taught", "teaching", "show", "shows", "shown",
+  "please", "really", "just", "like", "thing", "things", "someone", "something",
+  "should", "would", "could", "yes", "very", "always", "still", "even", "because",
+  "whether", "thanks", "thank", "everyone", "anybody", "somebody",
+]);
+
+/** Modern question words that are rare or absent in the King James wording. */
+export const KJV_TOPIC_ALIASES = {
+  sunday: ["first day of the week"],
+  saturday: ["seventh day", "sabbath"],
+  christmas: ["bethlehem"],
+  easter: ["passover"],
+  murder: ["kill"],
+  rapture: ["caught up"],
+};
+
 const bookCache = new Map();
 
 const MANUSCRIPT_SLUGS = [
@@ -36,6 +58,7 @@ const LOCAL_MARKDOWN = [
 const LOCAL_PLAIN = [
   { title: "Ante-Nicene Fathers, Volume 1", file: "/corpus/fathers/ante-nicene-vol1.txt", source: "fathers" },
   { title: "Josephus, Antiquities of the Jews", file: "/corpus/fathers/josephus-antiquities.txt", source: "josephus" },
+  { title: "Josephus, The Jewish War", file: "/corpus/fathers/josephus-wars.txt", source: "josephus" },
 ];
 
 const WEB_BOOKS = [
@@ -67,6 +90,52 @@ export function expandSearchForms(topic) {
     }
   }
   return { phrase, words, forms: [...forms].filter((f) => f.length >= 3) };
+}
+
+export function contentWordsForQuestion(topic) {
+  const { words } = expandSearchForms(topic);
+  const focused = words.filter((w) => !QUESTION_WEAK.has(w));
+  return focused.length ? focused : words;
+}
+
+export function extractReferencesFromQuestion(question) {
+  const q = String(question || "");
+  const out = [];
+  const re =
+    /((?:\d+\s+)?[A-Za-z][A-Za-z'.]+(?:\s+(?:of\s+)?[A-Za-z][A-Za-z'.]+){0,2})\s+(\d{1,3}):(\d{1,3})(?:-(\d{1,3}))?/g;
+  let m;
+  while ((m = re.exec(q))) {
+    const parts = m[1].trim().split(/\s+/);
+    while (
+      parts.length > 1 &&
+      (STOP.has(parts[0].toLowerCase()) || QUESTION_WEAK.has(parts[0].toLowerCase()))
+    ) {
+      parts.shift();
+    }
+    if (!parts.length) continue;
+    const book = parts.join(" ");
+    out.push({
+      book,
+      chapter: m[2],
+      verse: m[3],
+      endVerse: m[4] || "",
+      label: `${book} ${m[2]}:${m[3]}${m[4] ? `-${m[4]}` : ""}`,
+    });
+  }
+  return out;
+}
+
+function sameBookName(a, b) {
+  const na = String(a || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  const nb = String(b || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  return na === nb || na === `${nb}s` || nb === `${na}s`;
+}
+
+export function wordHitsText(text, word) {
+  const hay = String(text || "");
+  if (new RegExp(`\\b${escapeRe(word)}\\b`, "i").test(hay)) return true;
+  const stem = String(word || "").replace(/(eth|est|ing|ied|ies|ed|es|s|ly|er)$/i, "");
+  return stem.length >= 3 && new RegExp(`\\b${escapeRe(stem)}`, "i").test(hay);
 }
 
 function scoreText(text, { phrase, forms }) {
@@ -282,12 +351,15 @@ function loadArchiveRows() {
 let corpusPromise = null;
 async function loadCorpus() {
   if (!corpusPromise) {
-    corpusPromise = Promise.all([loadScriptureRows(), loadManuscriptRows()]).then(([scripture, manuscripts]) => [
-      ...scripture,
-      ...manuscripts,
-      ...loadDssInlineRows(),
-      ...loadArchiveRows(),
-    ]);
+    corpusPromise = Promise.all([loadScriptureRows(), loadManuscriptRows()])
+      .then(([scripture, manuscripts]) => {
+        if (!scripture.length) corpusPromise = null;
+        return [...scripture, ...manuscripts, ...loadDssInlineRows(), ...loadArchiveRows()];
+      })
+      .catch((error) => {
+        corpusPromise = null;
+        throw error;
+      });
   }
   return corpusPromise;
 }
@@ -306,32 +378,84 @@ export const SEARCH_CORPORA = [
   { id: "government", label: "Dated public records", sources: ["government", "vatican", "modern"] },
 ];
 
-export async function searchCorpus(topic, { limit = 180, sources } = {}) {
+const JESUS_NAMES = new Set(["jesus", "christ", "messiah", "yeshua"]);
+const GOSPEL_BOOKS = new Set(["Matthew", "Mark", "Luke", "John"]);
+
+export async function searchCorpus(topic, { limit = 180, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll } = {}) {
   const q = String(topic || "").trim();
   if (!q) return { query: q, forms: [], matches: [] };
   const forms = expandSearchForms(q);
   if (!forms.forms.length && !forms.phrase) return { query: q, forms: [], matches: [] };
+  const must = (contentWords || []).filter(Boolean);
+  const boost = (boostWords || []).filter(Boolean);
 
   const corpus = await loadCorpus();
   const allow = Array.isArray(sources) && sources.length ? new Set(sources) : null;
   const scored = [];
   for (const row of corpus) {
     if (allow && !allow.has(row.source)) continue;
-    const score = scoreText(row.text, forms);
+    if (requirePhrase && forms.phrase && !String(row.text || "").toLowerCase().includes(forms.phrase)) continue;
+    let score = scoreText(row.text, forms);
     if (score <= 0) continue;
+    if (must.length) {
+      const hits = must.filter((w) => wordHitsText(row.text, w)).length;
+      if (mustHitAll) {
+        if (hits < must.length) continue;
+      } else if (hits < 1 && score < 10) {
+        continue;
+      }
+      score += hits * 4;
+    }
+    if (boost.length) {
+      score += boost.filter((w) => wordHitsText(row.text, w)).length * 6;
+      if (boost.some((w) => JESUS_NAMES.has(w)) && GOSPEL_BOOKS.has(row.book)) score += 8;
+    }
+    if (preferSpeech) {
+      if (/\b(saith|said|verily|commandment|command)\b/i.test(row.text)) score += 5;
+      if (/\b(thou shalt|ye shall|love one another|love thy|love your)\b/i.test(row.text)) score += 8;
+    }
+    if (preferCanon && row.source === "canon") score += 3;
     scored.push({ ...row, score });
   }
-  scored.sort(
-    (a, b) => b.score - a.score || a.book.localeCompare(b.book) || Number(a.chapter) - Number(b.chapter)
-  );
+  scored.sort((a, b) => {
+    if (preferCanon) {
+      const ac = a.source === "canon" ? 0 : 1;
+      const bc = b.source === "canon" ? 0 : 1;
+      if (ac !== bc) return ac - bc;
+    }
+    return b.score - a.score || a.book.localeCompare(b.book) || Number(a.chapter) - Number(b.chapter);
+  });
   return {
     query: q,
     forms: forms.forms,
-    matches: scored.slice(0, limit),
+    matches: Number.isFinite(limit) && limit > 0 ? scored.slice(0, limit) : scored,
   };
 }
 
-const SOURCE_LABEL = {
+export async function findReferencedPassages(question) {
+  const refs = extractReferencesFromQuestion(question);
+  if (!refs.length) return [];
+  const corpus = await loadCorpus();
+  const found = [];
+  for (const ref of refs) {
+    for (const row of corpus) {
+      const parsed = String(row.reference || "").match(
+        /^((?:\d+\s+)?[A-Za-z][A-Za-z'.]+(?:\s+(?:of\s+)?[A-Za-z][A-Za-z'.]+){0,3})\s+(\d+)(?::(\d+))?/
+      );
+      if (!parsed) continue;
+      if (!sameBookName(parsed[1], ref.book)) continue;
+      if (String(parsed[2]) !== String(ref.chapter)) continue;
+      const verse = Number(parsed[3] || 0);
+      const start = Number(ref.verse);
+      const end = Number(ref.endVerse || ref.verse);
+      if (verse && (verse < start || verse > end)) continue;
+      found.push({ ...row, score: 100, askedReference: ref.label });
+    }
+  }
+  return found;
+}
+
+export const SOURCE_LABEL = {
   canon: "King James",
   apocrypha: "1611 Apocrypha / deuterocanon",
   enoch: "1 Enoch / 2 Enoch",

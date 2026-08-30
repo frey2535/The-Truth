@@ -1,6 +1,7 @@
 import React from "react";
 import { ExternalLink, MapPin, Clock, BookMarked } from "lucide-react";
 import EvidenceTypeBadge from "./EvidenceTypeBadge";
+import EvidenceStatusBadge from "./EvidenceStatusBadge";
 import EvidenceVisual from "./EvidenceVisual";
 
 export default function EvidenceCard({ item }) {
@@ -9,6 +10,7 @@ export default function EvidenceCard({ item }) {
       <div className="flex flex-wrap items-center gap-2 mb-2">
         <h3 className="font-display text-xl text-[#2b2620] leading-tight">{item.title}</h3>
         <EvidenceTypeBadge type={item.evidence_type} />
+        {item.archive === "archaeology" ? <EvidenceStatusBadge status={item.evidence_status} /> : null}
       </div>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#8a7f6f] mb-3">
         {item.scripture_reference && (

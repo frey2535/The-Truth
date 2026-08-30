@@ -4,3 +4,50 @@ dead-sea.jpg — NASA JPL PIA01916, “The Dead Sea”
 gulf-of-aqaba.jpg — NASA ISS iss071e183804, “The Gulf of Aqaba and Gulf of Suez”
 sinai-red-sea.jpg — NASA 41g-120-180, “Panoramic Sinai Peninsula, Red Sea”
 himalayas.jpg — NASA ISS iss069e003192, “The Himalayas and Mount Everest in Nepal”
+
+holidays/ — Metropolitan Museum of Art Open Access photographs of catalogued objects (not drawings):
+  ankh.jpg — Met 11.215.108, object 551457
+  baal.jpg — Met 32.161.45, object 322889
+  caduceus.jpg — Met 07.225.255, object 189526
+  circle-ring.jpg — Met 17.190.996, object 193714
+  crescent-moon.jpg — Met 11.215.212, object 551377
+  cupid-heart.jpg — Met 19.192.54, object 250787
+  dagon.jpg — Met 1988.158, object 469912
+  evergreen.jpg — Met 26.3.353c, object 552052
+  eye-of-horus.jpg — Met 11.215.130, object 551468
+  golden-calf.jpg — Met 30.8.103, object 570743
+  hamsa.jpg — Met 59.103.6, object 555583
+  latin-cross.jpg — Met 63.12, object 470305
+  masonic-square.jpg — Met 2000.192, object 4985
+  maypole.jpg — Met 64.101.1355, object 229052
+  nazar-eye.jpg — Met 17.194.805, object 250031
+  obelisk.jpg — Met 11.154.9, object 565085
+  ouroboros.jpg — Met 48.148(78b), object 367239
+  radiate-crown.jpg — Met 08.170.375, object 248055
+  skull.jpg — Met 17.190.305, object 464299
+  sun-disk.jpg — Met 1985.328.2, object 544056
+  uraeus.jpg — Met 50.198.3, object 546039
+  winged-sun.jpg — Met 26.7.1201, object 551581
+  zodiac-wheel.jpg — Met 2004.440.1, object 231027
+
+artifacts/ — photographs of the named object, site, or manuscript (not reconstructions):
+  merneptah.jpg, merneptah-israel.jpg — University of Michigan NES Image Database items 45 and 61
+  mesha.jpg — Louvre collections, Mesha Stele AO 5066
+  black-obelisk.jpg, black-obelisk-jehu.jpg — University of Michigan items 76 and 78
+  taylor-prism.jpg — University of Michigan item 91 (Sennacherib prism)
+  siloam-tunnel.jpg — University of Michigan item 95
+  ketef-hinnom.jpg — University of Michigan item 96
+  cyrus-cylinder.jpg — University of Michigan item 120
+  isaiah-scroll.jpg — University of Michigan item 150
+  qumran.jpg — University of Michigan item 155
+  theodotus.jpg — University of Michigan item 196
+  tel-dan-stele.jpg — Oren Rozen, Israel Museum, CC BY-SA 4.0
+  pilate-stone.jpg — BRBurton, CC0
+  lachish-reliefs.jpg — Mike Peel, British Museum slabs, CC BY-SA 4.0
+  kurkh-monolith.jpg — Osama Shukir Muhammed Amin, British Museum, CC BY-SA 4.0
+  caiaphas-ossuary.jpg — deror avi, Israel Museum, CC BY-SA 3.0
+  siloam-inscription.jpg — Prof. Yong Woo Park, Istanbul Archaeology Museums, CC0
+  erastus.jpg — Ktiv, Corinth pavement, CC BY-SA 4.0
+  gallio.jpg — Gérard, Delphi Gallio inscription, CC BY-SA 4.0
+  hezekiah-bulla.jpg — Tamir Zegman, CC BY-SA 4.0
+  galilee-boat.jpg — Warfieldian, Yigal Allon Centre boat, CC BY-SA 4.0

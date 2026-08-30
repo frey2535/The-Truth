@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { BookOpenText, ScrollText, Sparkles, BookOpen, Landmark, BookMarked, Moon } from "lucide-react";
+import { BookOpenText, ScrollText, Sparkles, BookOpen, Landmark, BookMarked } from "lucide-react";
 import {
   CANON_BOOK_ENTRIES,
   MANUSCRIPT_GROUPS,
@@ -8,6 +8,9 @@ import {
 import BibleReader from "@/components/library/BibleReader";
 import ManuscriptReader from "@/components/library/ManuscriptReader";
 import ApocryphaLibrary from "@/components/library/ApocryphaLibrary";
+import CatalogBrowser from "@/components/library/CatalogBrowser";
+import WorkRecord from "@/components/library/WorkRecord";
+import { getCatalogWork } from "@/data/textCatalog";
 
 const CORPORA = [
   {
@@ -74,14 +77,6 @@ const CORPORA = [
     kind: "manuscript",
     group: MANUSCRIPT_GROUPS.codices,
   },
-  {
-    key: "customs",
-    title: "The Way of the Nations",
-    desc: "Traditions still kept, signs still worn, and names Scripture gives the adversary — with intention, what participation means today, and identification drawings (not a rite manual).",
-    icon: Moon,
-    kind: "link",
-    to: "/customs",
-  },
 ];
 
 function corpusFromParam(param) {
@@ -94,6 +89,7 @@ export default function Library() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const requested = useMemo(() => corpusFromParam(params.get("corpus")), [params]);
+  const work = useMemo(() => getCatalogWork(params.get("work")), [params]);
   const [active, setActive] = useState(requested);
 
   useEffect(() => {
@@ -138,41 +134,49 @@ export default function Library() {
     );
   }
 
+  if (work) {
+    return (
+      <WorkRecord
+        work={work}
+        onBack={() => navigate("/library")}
+      />
+    );
+  }
+
   return (
     <div>
-      <header className="text-center mb-10">
-        <h1 className="font-display text-4xl text-[#2b2620] mb-2">The Library</h1>
-        <p className="text-[#5b5142] max-w-2xl mx-auto">
-          Read the texts stored in this app — King James Scripture, the Apocrypha, Enoch, the Dead Sea Scrolls,
-          early Christian writings, Josephus, and the great codices. Tap a word to define it. Search one corpus at a time.
+      <CatalogBrowser onOpenWork={(id) => navigate(`/library?work=${encodeURIComponent(id)}`)} />
+      <section className="mt-12">
+        <h2 className="font-display text-2xl text-[#2b2620] mb-2">Stored collections</h2>
+        <p className="text-sm text-[#5b5142] mb-4">
+          Open a collection that already has English stored in this app. Search inside one corpus at a time.
         </p>
-        <div className="mt-4 flex flex-wrap justify-center gap-3 text-sm">
+        <div className="flex flex-wrap gap-3 text-sm mb-4">
           <Link to="/search?corpus=canon" className="text-[#7a2e2e] hover:underline">Search the Bible</Link>
           <Link to="/search?corpus=apocrypha" className="text-[#7a2e2e] hover:underline">Search the Apocrypha</Link>
           <Link to="/search?corpus=dead_sea_scrolls" className="text-[#7a2e2e] hover:underline">Search the Scrolls</Link>
-          <Link to="/search?corpus=other" className="text-[#7a2e2e] hover:underline">Search the codices</Link>
         </div>
-      </header>
-      <div className="grid sm:grid-cols-2 gap-5">
-        {CORPORA.map((c) => {
-          const Icon = c.icon;
-          return (
-            <button
-              key={c.key}
-              onClick={() => (c.kind === "link" ? navigate(c.to) : setActive(c))}
-              className="text-left p-6 rounded-2xl border border-[#e8ddc7] bg-white/70 hover:border-[#b08d3c]/60 hover:shadow-md transition-all"
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#f3e9c8]/50 text-[#b08d3c]">
-                  <Icon className="w-5 h-5" />
-                </span>
-                <h2 className="font-display text-2xl text-[#2b2620]">{c.title}</h2>
-              </div>
-              <p className="text-sm text-[#6b6155] leading-relaxed">{c.desc}</p>
-            </button>
-          );
-        })}
-      </div>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {CORPORA.map((c) => {
+            const Icon = c.icon;
+            return (
+              <button
+                key={c.key}
+                onClick={() => (c.kind === "link" ? navigate(c.to) : setActive(c))}
+                className="text-left p-5 rounded-2xl border border-[#e8ddc7] bg-white/70 hover:border-[#b08d3c]/60 hover:shadow-md transition-all"
+              >
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-[#f3e9c8]/50 text-[#b08d3c]">
+                    <Icon className="w-4 h-4" />
+                  </span>
+                  <h3 className="font-display text-xl text-[#2b2620]">{c.title}</h3>
+                </div>
+                <p className="text-sm text-[#6b6155] leading-relaxed">{c.desc}</p>
+              </button>
+            );
+          })}
+        </div>
+      </section>
     </div>
   );
 }

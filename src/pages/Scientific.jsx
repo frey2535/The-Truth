@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { FlaskConical } from "lucide-react";
 import ScientificCard from "@/components/study/ScientificCard";
+import EvidenceSectionNav from "@/components/evidence/EvidenceSectionNav";
 import { ARCHIVE_NOTICE, SCIENCE, searchArchive } from "@/data/inAppArchive";
 
 export default function Scientific() {
@@ -18,6 +19,7 @@ export default function Scientific() {
         </p>
         <p className="text-[#8a7f6f] text-sm max-w-2xl mx-auto mt-3">{ARCHIVE_NOTICE}</p>
       </header>
+      <EvidenceSectionNav />
 
       <div className="max-w-xl mx-auto mb-8">
         <Input

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Building2 } from "lucide-react";
 import GovernmentCard from "@/components/study/GovernmentCard";
+import EvidenceSectionNav from "@/components/evidence/EvidenceSectionNav";
 import { ARCHIVE_NOTICE, archiveByKind, searchArchive } from "@/data/inAppArchive";
 
 const TYPES = [
@@ -39,6 +40,7 @@ export default function Government() {
         </p>
         <p className="text-[#8a7f6f] text-sm max-w-2xl mx-auto mt-3">{ARCHIVE_NOTICE}</p>
       </header>
+      <EvidenceSectionNav />
 
       <div className="max-w-xl mx-auto mb-8">
         <Input
