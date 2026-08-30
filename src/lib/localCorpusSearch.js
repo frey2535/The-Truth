@@ -1,6 +1,7 @@
 import { APOCRYPHA_BOOKS, CANON_BOOKS, bibleBookUrl, manuscriptUrl } from "@/components/library/corpusData";
 import { DSS_LOCAL_TEXT } from "@/components/library/dssLocalTexts";
 import { ALL_ARCHIVE } from "@/data/inAppArchive";
+import { fetchStoredText, looksLikeHtmlDocument } from "@/lib/fetchStoredText";
 
 const STOP = new Set([
   "the", "and", "of", "to", "a", "in", "that", "is", "was", "for", "it", "with", "as",
@@ -30,6 +31,17 @@ export const KJV_TOPIC_ALIASES = {
   easter: ["passover"],
   murder: ["kill"],
   rapture: ["caught up"],
+  "holy spirit": ["holy ghost"],
+  spirit: ["holy ghost"],
+  forgive: ["forgiveness", "remission"],
+  forgiveness: ["remission"],
+  baptize: ["baptism", "baptist"],
+  baptism: ["baptize", "baptist"],
+  repent: ["repentance"],
+  repentance: ["repent"],
+  sabbath: ["seventh day"],
+  sheol: ["grave", "hell"],
+  hell: ["sheol", "grave"],
 };
 
 const bookCache = new Map();
@@ -155,7 +167,11 @@ async function loadBook(book, apocrypha) {
   if (bookCache.has(key)) return bookCache.get(key);
   const res = await fetch(bibleBookUrl(book, apocrypha));
   if (!res.ok) throw new Error(`Could not load ${book}`);
-  const json = await res.json();
+  const raw = await res.text();
+  if (looksLikeHtmlDocument(raw, res.headers.get("content-type") || "")) {
+    throw new Error(`Could not load ${book}`);
+  }
+  const json = JSON.parse(raw);
   bookCache.set(key, json);
   return json;
 }
@@ -262,9 +278,8 @@ function rowsFromChunks(title, text, source, maxChunk = 1600) {
 }
 
 async function fetchText(url) {
-  const res = await fetch(url);
-  if (!res.ok) return "";
-  return res.text();
+  const fetched = await fetchStoredText(url);
+  return fetched.ok ? fetched.text : "";
 }
 
 function stripHtml(html) {
@@ -299,6 +314,7 @@ async function loadManuscriptRows() {
   const plain = await mapPool(LOCAL_PLAIN, 2, async (item) => {
     try {
       const txt = await fetchText(item.file);
+      if (!txt) return [];
       return rowsFromChunks(item.title, txt, item.source);
     } catch {
       return [];
@@ -351,15 +367,25 @@ function loadArchiveRows() {
 let corpusPromise = null;
 async function loadCorpus() {
   if (!corpusPromise) {
-    corpusPromise = Promise.all([loadScriptureRows(), loadManuscriptRows()])
-      .then(([scripture, manuscripts]) => {
-        if (!scripture.length) corpusPromise = null;
-        return [...scripture, ...manuscripts, ...loadDssInlineRows(), ...loadArchiveRows()];
-      })
-      .catch((error) => {
-        corpusPromise = null;
-        throw error;
-      });
+    corpusPromise = (async () => {
+      let scripture = [];
+      try {
+        scripture = await loadScriptureRows();
+      } catch {
+        scripture = [];
+      }
+      if (!scripture.length) corpusPromise = null;
+      let manuscripts = [];
+      try {
+        manuscripts = await loadManuscriptRows();
+      } catch {
+        manuscripts = [];
+      }
+      return [...scripture, ...manuscripts, ...loadDssInlineRows(), ...loadArchiveRows()];
+    })().catch((error) => {
+      corpusPromise = null;
+      throw error;
+    });
   }
   return corpusPromise;
 }
@@ -488,6 +514,19 @@ export async function findRelatedVerses(text, currentRef, { limit = 10 } = {}) {
   const found = await searchCorpus(words.join(" "), { limit: 40, sources: ["canon", "apocrypha", "enoch", "dead_sea_scrolls"] });
   const self = String(currentRef || "").toLowerCase();
   return found.matches.filter((m) => String(m.reference || "").toLowerCase() !== self).slice(0, limit);
+}
+
+export async function corpusCoverage() {
+  const corpus = await loadCorpus();
+  const bySource = {};
+  for (const row of corpus) {
+    bySource[row.source] = (bySource[row.source] || 0) + 1;
+  }
+  return {
+    total: corpus.length,
+    canonVerses: bySource.canon || 0,
+    bySource,
+  };
 }
 
 export function partitionMatches(matches) {

@@ -1,8 +1,9 @@
 import { localEntities } from "./localEntities";
 import { requireAdmin, requireUser } from "./localAuth";
-import { normalizeSource } from "@/lib/truthMandate";
+import { LOCAL_ASSISTANT_ATTESTATION, normalizeSource } from "@/lib/truthMandate";
 import {
   contentWordsForQuestion,
+  corpusCoverage,
   extractReferencesFromQuestion,
   findReferencedPassages,
   KJV_TOPIC_ALIASES,
@@ -15,6 +16,7 @@ import {
 } from "@/lib/localCorpusSearch";
 import { ARCHIVE_NOTICE, searchArchive } from "@/data/inAppArchive";
 import { lookupLexicon } from "@/data/strongsLexicon";
+import { looksLikeAppShell } from "@/lib/fetchStoredText";
 
 function wrapResult(result) {
   if (result && typeof result === "object") {
@@ -160,8 +162,6 @@ const ASK_SCRIPTURE_SOURCES = [
 const FOLLOW_UP_RE =
   /^(and|also|what about|how about|why|more|continue|yes|no|again|same|that|those)\b/i;
 const PRONOUN_RE = /\b(he|she|they|it|this|that|those|him|his|them|their)\b/i;
-const EVIDENCE_HINT_RE =
-  /\b(evidence|inscription|stele|archaeology|excavation|museum|artifact|bulla|ossuary)\b/i;
 const BIBLE_REQUEST_RE =
   /\b(?:bible|scripture|king james|kjv|holy bible|old testament|new testament|gospels?)\b/i;
 const LEAD_SOURCE_PATTERNS = [
@@ -442,41 +442,35 @@ function understoodAs(asked) {
   const topic = (asked.words || []).join(", ");
   const speakers = speakersForQuestion(asked);
   if (asked.refs.length && topic) {
-    return `Does **${asked.refs[0].label}** address ${topic}? Only verses that address that are listed.`;
+    return `Does **${asked.refs[0].label}** address ${topic}?`;
   }
   if (asked.preferSpeech && speakers.length && topic) {
-    return `What does ${speakers.join(", ")} say about ${topic}? Only verses that address that are listed.`;
+    return `What does ${speakers.join(", ")} say about ${topic}?`;
   }
-  if (topic) return `${q} Only verses that address ${topic} are listed.`;
+  if (topic) return `${q} Topic words used to search the stored texts: ${topic}.`;
   return q;
 }
 
-function yesNoLine(passages, asked) {
-  const n = passages.length;
+function yesNoLine(primary) {
+  const n = primary.length;
   if (!n) {
-    return "**No.** The question is understood, but no stored verse applies. Nothing was invented.";
+    return "**No.** The question is understood, but no stored verse directly answers it. Other stored wording is listed below when any was found. Nothing was invented.";
   }
-  return `**Yes.** The question is understood. The answer is taken only from the ${n} verse${n === 1 ? "" : "s"} that apply.`;
+  return `**Yes.** The question is understood. The first section quotes the stored texts that answer it. Conflicting stored wording, if any, is quoted in the second section.`;
 }
 
-function quoteOnlyAnswer(question, passages, asked) {
-  const relevant = selectRelevantPassages(passages, asked);
-  const lines = [];
-  lines.push(`### Your question`);
-  lines.push(String(question).split("\n")[0]);
-  lines.push("");
-  lines.push(`Understood as: ${understoodAs(asked)}`);
-  lines.push("");
-  lines.push(yesNoLine(relevant, asked));
-  lines.push("");
-  if (!relevant.length) {
-    lines.push("---");
-    lines.push(`**Completeness attestation:** ${ARCHIVE_NOTICE}`);
-    return lines.join("\n");
-  }
-  lines.push("### Applicable text");
-  lines.push("");
-  const body = sortAskPassages(relevant, asked);
+function passageKey(row) {
+  return `${row.source}|${row.reference}|${String(row.text || "").slice(0, 80)}`;
+}
+
+function hasNegation(text) {
+  return /\b(not|neither|never|no more|cannot|shall not|shalt not|ye shall not|thou shalt not)\b/i.test(
+    String(text || "")
+  );
+}
+
+function writePassageBlock(lines, rows, asked) {
+  const body = sortAskPassages(rows, asked);
   let lastGroup = "";
   for (const p of body) {
     const group = sourceLabel(p.source);
@@ -489,8 +483,86 @@ function quoteOnlyAnswer(question, passages, asked) {
     lines.push(`> ${escapeMd(p.text)}`);
     lines.push("");
   }
+}
+
+function splitRelatedPassages(primary, leftover, asked) {
+  const canonPrimary = primary.filter((p) => p.source === "canon");
+  const sample = canonPrimary.length ? canonPrimary : primary;
+  const negCount = sample.filter((p) => hasNegation(p.text)).length;
+  const majorityNeg = sample.length ? negCount > sample.length / 2 : null;
+  const conflicting = [];
+  const related = [];
+  for (const row of leftover) {
+    const disputed = String(row.archiveItem?.evidence_status || "").toLowerCase() === "disputed";
+    const differs =
+      majorityNeg !== null &&
+      sample.length &&
+      hasNegation(row.text) !== majorityNeg &&
+      (asked.words || []).some((w) => hitsTopicTerm(row.text, w));
+    if (disputed || differs) conflicting.push(row);
+    else related.push(row);
+  }
+  return { conflicting, related };
+}
+
+function quoteOnlyAnswer(question, passages, asked) {
+  const all = uniquePassages(passages || []);
+  const primary = selectRelevantPassages(all, asked);
+  const primaryKeys = new Set(primary.map(passageKey));
+  const leftover = all.filter((row) => !primaryKeys.has(passageKey(row)));
+  const { conflicting, related } = splitRelatedPassages(primary, leftover, asked);
+  const bySource = {};
+  for (const p of primary) {
+    const label = sourceLabel(p.source);
+    bySource[label] = (bySource[label] || 0) + 1;
+  }
+  const abundance = Object.entries(bySource)
+    .map(([label, n]) => `${n} from ${label}`)
+    .join("; ");
+
+  const lines = [];
+  lines.push(`### Your question`);
+  lines.push(String(question).split("\n")[0]);
+  lines.push("");
+  lines.push(`Understood as: ${understoodAs(asked)}`);
+  lines.push("");
+  lines.push(yesNoLine(primary));
+  lines.push("");
+  if (primary.length) {
+    lines.push("### Answer from the stored texts");
+    lines.push("");
+    if (abundance) {
+      lines.push(
+        `These passages answer the question. Count by stored source: ${abundance}. The reader weighs abundance and agreement. No opinion is added.`
+      );
+      lines.push("");
+    }
+    writePassageBlock(lines, primary, asked);
+  }
+  if (conflicting.length) {
+    lines.push("### Conflicting stored wording");
+    lines.push("");
+    lines.push(
+      "These stored texts also address the topic but differ from the wording above. They are not omitted. The reader decides."
+    );
+    lines.push("");
+    writePassageBlock(lines, conflicting, asked);
+  }
+  if (related.length) {
+    lines.push("### Other stored wording on this topic");
+    lines.push("");
+    lines.push(
+      "These stored passages were found while searching the same topic. They did not pass the direct-answer test, so they are listed here rather than treated as the answer."
+    );
+    lines.push("");
+    writePassageBlock(lines, related, asked);
+  }
+  if (!primary.length && !conflicting.length && !related.length) {
+    lines.push("No stored passage in this app uses wording that matches the question.");
+    lines.push("");
+  }
   lines.push("---");
-  lines.push(`**Completeness attestation:** ${ARCHIVE_NOTICE}`);
+  lines.push(`**Completeness attestation:** ${LOCAL_ASSISTANT_ATTESTATION} ${ARCHIVE_NOTICE}`);
   return lines.join("\n");
 }
 
@@ -512,14 +584,21 @@ async function searchAskSources(asked, sources) {
   return matches;
 }
 
+const ASK_ALL_SOURCES = ASK_SCRIPTURE_SOURCES.concat([
+  "archaeology",
+  "science",
+  "government",
+  "vatican",
+  "modern",
+]);
+
 async function gatherAskPassages(asked) {
   const cited = await findReferencedPassages(asked.question);
-  const evidence = EVIDENCE_HINT_RE.test(asked.question);
   const canon = await searchAskSources(asked, ["canon"]);
-  const moreSources = evidence
-    ? ASK_SCRIPTURE_SOURCES.filter((s) => s !== "canon").concat(["archaeology", "science", "government", "vatican", "modern"])
-    : ASK_SCRIPTURE_SOURCES.filter((s) => s !== "canon");
-  const extra = await searchAskSources(asked, moreSources);
+  const extra = await searchAskSources(
+    asked,
+    ASK_ALL_SOURCES.filter((s) => s !== "canon")
+  );
   return uniquePassages([...cited, ...sortAskPassages([...canon, ...extra], asked)]);
 }
 
@@ -528,6 +607,17 @@ async function study_assistant({ question, history }) {
   const q = String(question || "").trim();
   if (!q) return fail("A question is required.");
   const asked = resolveAskQuestion(q, history);
+  let coverage;
+  try {
+    coverage = await corpusCoverage();
+  } catch (error) {
+    return fail(error.message);
+  }
+  if (!coverage.canonVerses) {
+    return fail(
+      "The King James text is not loaded in this browser session. Open Library and read a book once, or run npm run vendor-corpus, then ask again. Nothing was invented."
+    );
+  }
   let passages = [];
   try {
     passages = await gatherAskPassages(asked);
@@ -535,8 +625,7 @@ async function study_assistant({ question, history }) {
     return fail(error.message);
   }
 
-  const relevant = selectRelevantPassages(passages, asked);
-  return { answer: quoteOnlyAnswer(asked.question, relevant, asked) };
+  return { answer: quoteOnlyAnswer(asked.question, passages, asked) };
 }
 
 async function define_word({ word, reference }) {
@@ -629,7 +718,10 @@ async function fetch_apocrypha_text({ bookId, chapter }) {
   let html = "";
   try {
     const res = await fetch(localUrl);
-    if (res.ok) html = await res.text();
+    if (res.ok) {
+      const body = await res.text();
+      if (!looksLikeAppShell(body)) html = body;
+    }
   } catch {
     /* missing local chapter */
   }

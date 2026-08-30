@@ -1,28 +1,14 @@
 import React, { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import { Loader2, ArrowLeft, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { base44 } from "@/api/base44Client";
 import { manuscriptUrl, bibleBookUrl } from "./corpusData";
 import BookCard from "./BookCard";
 import { DSS_LOCAL_TEXT } from "./dssLocalTexts";
 import { LEON_LEVY_URL } from "./dssWorks";
-
-const mdComponents = {
-  h1: ({ node, ...p }) => <h1 className="font-display text-2xl text-[#2b2620] mt-6 mb-3" {...p} />,
-  h2: ({ node, ...p }) => <h2 className="font-display text-xl text-[#2b2620] mt-5 mb-2" {...p} />,
-  h3: ({ node, ...p }) => <h3 className="font-display text-lg text-[#2b2620] mt-4 mb-2" {...p} />,
-  p: ({ node, ...p }) => <p className="text-[#2b2620] leading-relaxed mb-3" {...p} />,
-  strong: ({ node, ...p }) => <strong className="text-[#7a2e2e] font-semibold" {...p} />,
-  blockquote: ({ node, ...p }) => (
-    <blockquote className="border-l-2 border-[#d8c9a8] pl-4 italic text-[#6b6155] my-3" {...p} />
-  ),
-  hr: ({ node, ...p }) => <hr className="border-[#e8ddc7] my-6" {...p} />,
-  a: ({ node, ...p }) => (
-    <a className="text-[#7a2e2e] underline" target="_blank" rel="noopener noreferrer" {...p} />
-  ),
-  ul: ({ node, ...p }) => <ul className="list-disc pl-5 mb-3 space-y-1" {...p} />,
-  ol: ({ node, ...p }) => <ol className="list-decimal pl-5 mb-3 space-y-1" {...p} />,
-};
+import { scrollReadingToTop } from "@/lib/scrollReading";
+import { textToNumberedVerses } from "@/lib/readingVerses";
+import { fetchStoredText, looksLikeHtmlDocument } from "@/lib/fetchStoredText";
+import ReadingVerseList from "./ReadingVerseList";
 
 function itemKey(item) {
   return item.id || item.slug || item.title;
@@ -109,19 +95,6 @@ function LeonLevyFooter({ group, item }) {
   );
 }
 
-function VerseArticle({ verses }) {
-  return (
-    <article className="max-w-none space-y-3">
-      {verses.map((v) => (
-        <p key={v.verse} className="text-[#2b2620] leading-relaxed">
-          <sup className="text-[#b08d3c] font-medium mr-1.5">{v.verse}</sup>
-          {v.text}
-        </p>
-      ))}
-    </article>
-  );
-}
-
 function ChapterNav({ chapter, chapterCount, onChange, loading }) {
   return (
     <div className="flex items-center gap-2">
@@ -174,9 +147,13 @@ function ScriptureReader({ item, group, groupTitle, onBack }) {
     setLoading(true);
     setError("");
     fetch(bibleBookUrl(book, apocrypha))
-      .then((r) => {
+      .then(async (r) => {
         if (!r.ok) throw new Error("Could not load " + book + ".");
-        return r.json();
+        const raw = await r.text();
+        if (looksLikeHtmlDocument(raw, r.headers.get("content-type") || "")) {
+          throw new Error("Could not load " + book + ".");
+        }
+        return JSON.parse(raw);
       })
       .then((json) => {
         if (!cancelled) setData(json);
@@ -236,7 +213,7 @@ function ScriptureReader({ item, group, groupTitle, onBack }) {
         </div>
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
-      {!loading && !error && <VerseArticle verses={verses} />}
+      {!loading && !error && <ReadingVerseList book={book} chapter={chapter} verses={verses} />}
       <LeonLevyFooter group={group} item={item} />
     </div>
   );
@@ -291,7 +268,11 @@ function WebReader({ item, group, groupTitle, onBack }) {
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
       {!loading && !error && data?.text && (
-        <article className="max-w-none whitespace-pre-wrap text-[#2b2620] leading-relaxed">{data.text}</article>
+        <ReadingVerseList
+          book={item.title}
+          chapter={chapter}
+          verses={textToNumberedVerses(data.text)}
+        />
       )}
       <LeonLevyFooter group={group} item={item} />
     </div>
@@ -323,12 +304,11 @@ function MarkdownReader({ item, group, groupTitle, onBack }) {
     }
     setLoading(true);
     setError("");
-    fetch(fetchUrl)
-      .then((r) => {
-        if (!r.ok) throw new Error("Could not load this text.");
-        return r.text();
+    fetchStoredText(fetchUrl)
+      .then((fetched) => {
+        if (!fetched.ok) throw new Error("Could not load this text.");
+        setText(fetched.text);
       })
-      .then(setText)
       .catch(() => {
         const fallback = DSS_LOCAL_TEXT[item.id] || overviewMarkdown(item);
         setText(fallback);
@@ -346,16 +326,8 @@ function MarkdownReader({ item, group, groupTitle, onBack }) {
         </div>
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
-      {!loading && !error && (item.plain || (item.file || "").endsWith(".txt")) ? (
-        <article className="max-w-none whitespace-pre-wrap text-[#2b2620] leading-relaxed text-sm">
-          {text}
-        </article>
-      ) : (
-        !loading && !error && (
-          <article className="max-w-none">
-            <ReactMarkdown components={mdComponents}>{text}</ReactMarkdown>
-          </article>
-        )
+      {!loading && !error && text && (
+        <ReadingVerseList book={item.title} chapter={1} verses={textToNumberedVerses(text)} />
       )}
       <LeonLevyFooter group={group} item={item} />
     </div>
@@ -364,6 +336,10 @@ function MarkdownReader({ item, group, groupTitle, onBack }) {
 
 export default function ManuscriptReader({ group, onBack }) {
   const [selected, setSelected] = useState(null);
+
+  useEffect(() => {
+    scrollReadingToTop();
+  }, [selected]);
   const sections = group.sections?.length
     ? group.sections
     : [{ heading: null, intro: null, items: group.items || [] }];

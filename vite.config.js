@@ -138,6 +138,19 @@ function googleTokenPlugin() {
   };
 }
 
+function truthVersionPlugin(id) {
+  return {
+    name: "truth-version",
+    generateBundle() {
+      this.emitFile({
+        type: "asset",
+        fileName: "version.json",
+        source: JSON.stringify({ id }),
+      });
+    },
+  };
+}
+
 function lanInfoPlugin() {
   const handler = (getPort) => (_req, res) => {
     res.setHeader("Content-Type", "application/json");
@@ -175,8 +188,13 @@ export default defineConfig(({ mode }) => {
   if (env.GOOGLE_CLIENT_ID) process.env.GOOGLE_CLIENT_ID = env.GOOGLE_CLIENT_ID;
   if (env.GOOGLE_CLIENT_SECRET) process.env.GOOGLE_CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET;
 
+  const truthBuildId = new Date().toISOString();
+
   return {
-    plugins: [react(), lanInfoPlugin(), openaiProxyPlugin(), googleTokenPlugin()],
+    define: {
+      "import.meta.env.VITE_TRUTH_BUILD": JSON.stringify(truthBuildId),
+    },
+    plugins: [react(), truthVersionPlugin(truthBuildId), lanInfoPlugin(), openaiProxyPlugin(), googleTokenPlugin()],
     resolve: {
       alias: {
         "@": path.resolve(rootDir, "./src"),

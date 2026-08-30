@@ -1,2 +1,4 @@
 /api/openai  /.netlify/functions/openai-chat  200!
+/corpus/*  /404.html  404
+/dss/*  /404.html  404
 /*    /index.html   200

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Download, Share, PlusSquare, MoreVertical, X, ScrollText } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PUBLISHED_APP_URL } from "@/lib/appOrigin";
 import { getInstallPlatform, isStandaloneDisplay } from "@/lib/pwa";
 
 const DISMISS_KEY = "the_truth_install_dismissed_at";
@@ -107,7 +108,7 @@ export default function InstallAppPrompt() {
             </div>
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#b08d3c]">
-                Install on this device
+                Phone or computer
               </p>
               <h2 id="install-app-title" className="font-display text-xl leading-tight">
                 Add The Truth
@@ -115,9 +116,10 @@ export default function InstallAppPrompt() {
             </div>
           </div>
           <p className="text-sm text-[#f3e9c8]/80 mt-3 leading-relaxed">
-            Put it on your home screen. It opens like an app — no browser chrome — and the library stays
-            available when you are offline.
+            Install The Truth as an app on this phone or computer. It is the same site — no store
+            listing. If this page is inside Messages, open it in Safari or Chrome first.
           </p>
+          <p className="text-xs text-[#f3e9c8]/70 mt-2 break-all">{PUBLISHED_APP_URL}</p>
         </div>
 
         <div className="px-5 py-4 space-y-4">

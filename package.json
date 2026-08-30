@@ -11,7 +11,10 @@
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
     "share": "vite build && vite preview --host --port 4174 --strictPort",
-    "vendor-corpus": "node scripts/vendor-corpus.mjs"
+    "vendor-corpus": "node scripts/vendor-corpus.mjs",
+    "test:calendars": "node scripts/test-calendars.mjs",
+    "test:reading": "node scripts/test-reading-layout.mjs",
+    "vendor-catalog": "node scripts/vendor-catalog-texts.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

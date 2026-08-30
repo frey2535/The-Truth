@@ -1,19 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { base44 } from "@/api/base44Client";
-import ReactMarkdown from "react-markdown";
 import { Loader2, ArrowLeft, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { manuscriptUrl, bibleBookUrl } from "./corpusData";
-
-const mdComponents = {
-  h1: ({ node, ...p }) => <h1 className="font-display text-2xl text-[#2b2620] mt-6 mb-3" {...p} />,
-  h2: ({ node, ...p }) => <h2 className="font-display text-xl text-[#2b2620] mt-5 mb-2" {...p} />,
-  h3: ({ node, ...p }) => <h3 className="font-display text-lg text-[#2b2620] mt-4 mb-2" {...p} />,
-  p: ({ node, ...p }) => <p className="text-[#2b2620] leading-relaxed mb-3" {...p} />,
-  strong: ({ node, ...p }) => <strong className="text-[#7a2e2e] font-semibold" {...p} />,
-  a: ({ node, ...p }) => <a className="text-[#7a2e2e] underline" target="_blank" rel="noopener noreferrer" {...p} />,
-  ul: ({ node, ...p }) => <ul className="list-disc pl-5 mb-3 space-y-1" {...p} />,
-  ol: ({ node, ...p }) => <ol className="list-decimal pl-5 mb-3 space-y-1" {...p} />,
-};
+import { textToNumberedVerses } from "@/lib/readingVerses";
+import { fetchStoredText } from "@/lib/fetchStoredText";
+import ReadingVerseList from "./ReadingVerseList";
 
 function MarkdownBook({ book, onBack }) {
   const [text, setText] = useState("");
@@ -24,12 +15,11 @@ function MarkdownBook({ book, onBack }) {
     const url = book.url || manuscriptUrl(book.slug);
     setLoading(true);
     setError("");
-    fetch(url)
-      .then((r) => {
-        if (!r.ok) throw new Error("Could not load this text.");
-        return r.text();
+    fetchStoredText(url)
+      .then((fetched) => {
+        if (!fetched.ok) throw new Error("Could not load this text.");
+        setText(fetched.text);
       })
-      .then((t) => setText(t))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [book.id]);
@@ -46,10 +36,8 @@ function MarkdownBook({ book, onBack }) {
         </div>
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
-      {!loading && !error && (
-        <article className="max-w-none">
-          <ReactMarkdown components={mdComponents}>{text}</ReactMarkdown>
-        </article>
+      {!loading && !error && text && (
+        <ReadingVerseList book={book.title} chapter={1} verses={textToNumberedVerses(text)} />
       )}
     </div>
   );
@@ -109,7 +97,11 @@ function WebBook({ book, onBack }) {
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
       {!loading && !error && data?.text && (
-        <article className="max-w-none whitespace-pre-wrap text-[#2b2620] leading-relaxed">{data.text}</article>
+        <ReadingVerseList
+          book={book.title}
+          chapter={chapter}
+          verses={textToNumberedVerses(data.text)}
+        />
       )}
     </div>
   );
@@ -195,14 +187,7 @@ function KjvBook({ book, onBack }) {
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
       {!loading && !error && verses.length > 0 && (
-        <article className="max-w-none text-[#2b2620] leading-relaxed">
-          {verses.map((v) => (
-            <React.Fragment key={v.verse}>
-              <sup className="text-[#b08d3c] font-medium mr-1">{v.verse}</sup>
-              {v.text}{" "}
-            </React.Fragment>
-          ))}
-        </article>
+        <ReadingVerseList book={book.bookName || book.title} chapter={chapter} verses={verses} />
       )}
     </div>
   );

@@ -59,13 +59,13 @@ export const CATALOG_SECTIONS = [
   { id: 13, title: "Apocryphal acts of the apostles", blurb: "Acts and martyrdoms of apostles beyond canonical Acts." },
   { id: 14, title: "Apocryphal letters", blurb: "Letters attributed to apostles, rulers, or Christ. Authorship is often unknown or later." },
   { id: 15, title: "Apocryphal apocalypses", blurb: "Revelations outside canonical Revelation." },
-  { id: 16, title: "Nag Hammadi library", blurb: "Coptic codices found in 1945. Entire collection is catalogued; stored English is marked when present." },
+  { id: 16, title: "Nag Hammadi library", blurb: "Coptic codices found in 1945. Only works with stored public-domain English are listed." },
   { id: 17, title: "Other gnostic / esoteric Christian texts", blurb: "Related Coptic and Greek works, including Bruce Codex materials." },
   { id: 18, title: "Mandaean texts", blurb: "Not Christian Scripture. Comparative Late Antique religious literature." },
   { id: 19, title: "Apostolic church orders", blurb: "Early church-order literature (Didache, Didascalia, Constitutions)." },
   { id: 20, title: "Justin Martyr", blurb: "Second-century apologies and the Dialogue with Trypho." },
   { id: 21, title: "Irenaeus", blurb: "Against Heresies and the Demonstration of the Apostolic Preaching." },
-  { id: 22, title: "Tertullian", blurb: "North African Latin corpus. All surviving authentic titles are catalogued." },
+  { id: 22, title: "Tertullian", blurb: "North African Latin corpus. Stored public-domain English is listed." },
   { id: 23, title: "Clement of Alexandria", blurb: "Protrepticus, Paedagogus, Stromata, and related works." },
   { id: 24, title: "Origen", blurb: "Commentaries, homilies, First Principles, Against Celsus. Much survives only in fragments or Latin." },
   { id: 25, title: "Hippolytus", blurb: "Refutation of All Heresies and related works. Apostolic Tradition attribution is disputed." },
@@ -142,8 +142,8 @@ export const TEXT_STATUS = {
   fragment_stored: "Stored fragment or extract",
   quoted_only: "Survives in quotations — not a complete book manuscript",
   reconstructed: "Reconstructed text — not a surviving autograph",
-  manuscript_witness: "Manuscript witness catalogued — no page-by-page transcription stored",
-  not_stored: "Catalogued. Complete wording is not stored in this app yet",
+  manuscript_witness: "Manuscript witness — stored English of the work it copies is opened when available",
+  not_stored: "Not shown. Complete wording is not stored in this app",
 };
 
 export const UNKNOWN = "UNKNOWN";

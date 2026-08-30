@@ -86,8 +86,18 @@
     @apply border-border outline-ring/50;
   }
 
+  html {
+    min-height: 100dvh;
+  }
+
   body {
     @apply bg-background text-foreground font-body;
+    min-height: 100dvh;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #root {
+    min-height: 100dvh;
   }
 }
 
@@ -95,6 +105,7 @@
   position: relative;
   isolation: isolate;
   background: #0c0806;
+  min-height: 100dvh;
 }
 
 .truth-heaven {
@@ -219,6 +230,10 @@
 
 .truth-chip {
   @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#e8ddc7] bg-white/80 text-[11px] text-[#5b5142] hover:border-[#b08d3c]/50 hover:bg-[#f3e9c8]/50;
+}
+
+.jesus-speech {
+  color: #c41e3a;
 }
 
 .truth-btn-sm {

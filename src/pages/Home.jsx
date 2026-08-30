@@ -15,13 +15,15 @@ import {
   ArrowRight,
   Download,
   Moon,
+  CalendarDays,
 } from "lucide-react";
 import PlanCard from "@/components/study/PlanCard";
 
 const ACTIONS = [
-  { to: "/library", label: "Read", desc: "Master catalog of Christian and comparative texts — stored wording plus honest gaps", icon: BookOpenText },
+  { to: "/library", label: "Read", desc: "Stored Christian and comparative texts — open a work and read the wording in this app", icon: BookOpenText },
   { to: "/search", label: "Search a text", desc: "Search inside the Bible, Apocrypha, scrolls, or records only", icon: Search },
-  { to: "/map", label: "Biblical map", desc: "Bible atlas plates with today's map faded over them", icon: Sparkles },
+  { to: "/map", label: "Biblical map", desc: "Places named in the texts on today's globe — journeys and kingdom outlines for study", icon: Sparkles },
+  { to: "/calendar", label: "Calendar", desc: "See any day on the Hebrew, Temple-era, Julian, and civil calendars", icon: CalendarDays },
   { to: "/notebook", label: "Notebook", desc: "Your plans, notes, highlights, and favorites", icon: GraduationCap },
   { to: "/word-study", label: "Word study", desc: "Strong's definition and etymology, plus the verses", icon: Microscope },
   { to: "/customs", label: "Holidays and symbols", desc: "Christmas, Easter, Halloween, worn signs, and names Scripture gives the adversary", icon: Moon },
@@ -107,7 +109,7 @@ export default function Home() {
             className="inline-flex items-center gap-2 text-sm text-[#f3e9c8] hover:underline drop-shadow"
           >
             <Download className="w-4 h-4" />
-            Install on a phone
+            Install on a phone or computer
           </Link>
         </div>
         {busy && (

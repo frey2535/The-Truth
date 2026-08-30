@@ -15,6 +15,7 @@ import {
   TEXT_STATUS,
   UNKNOWN,
 } from "@/data/textCatalogMeta";
+import { CATALOG_TEXT_MAP } from "@/data/catalogTextMap";
 
 export { CATALOG_FIELDS, CATALOG_SECTIONS, CLASSIFICATION_LABELS, TEXT_STATUS } from "@/data/textCatalogMeta";
 
@@ -237,20 +238,38 @@ const AUTO = [
   ...EXTRA_DEFS.map(fromExtraDef),
 ];
 
-export const CATALOG_WORKS = mergeWorks(AUTO);
+export const CATALOG_WORKS = mergeWorks(AUTO).map((work) => {
+  if (!CATALOG_TEXT_MAP[work.id] || work.stored) return work;
+  return {
+    ...work,
+    stored: { kind: "catalog", id: work.id },
+    textStatus: "complete_stored",
+    completeNote: "Public-domain English is stored in this app.",
+    translation: "Public-domain English stored in this app.",
+  };
+});
 
 export function getCatalogWork(id) {
   return CATALOG_WORKS.find((w) => w.id === id) || null;
 }
 
+export function isStoredWork(work) {
+  return Boolean(work?.stored);
+}
+
+export function storedCatalogWorks() {
+  return CATALOG_WORKS.filter(isStoredWork);
+}
+
 export function worksInSection(sectionId) {
-  return CATALOG_WORKS.filter((w) => w.sections.includes(sectionId));
+  return storedCatalogWorks().filter((w) => w.sections.includes(sectionId));
 }
 
 export function searchCatalog(query) {
   const q = String(query || "").trim().toLowerCase();
-  if (!q) return CATALOG_WORKS;
-  return CATALOG_WORKS.filter((w) => {
+  const pool = storedCatalogWorks();
+  if (!q) return pool;
+  return pool.filter((w) => {
     const hay = `${w.title} ${w.altDisplay} ${w.labels.join(" ")} ${w.background}`.toLowerCase();
     return hay.includes(q);
   });
@@ -277,5 +296,6 @@ export function libraryReadHref(work) {
     return "/library?corpus=fathers";
   }
   if (s.kind === "web" || s.kind === "url") return "/library?corpus=apocrypha";
+  if (s.kind === "catalog") return `/library?work=${encodeURIComponent(work.id)}`;
   return null;
 }

@@ -4,9 +4,10 @@ import { Loader2, ChevronLeft, ChevronRight, ArrowLeft, Search } from "lucide-re
 import { bibleBookUrl, CANON_BOOK_ENTRIES, CANON_BOOK_INFO } from "./corpusData";
 import BookCard from "./BookCard";
 import ChapterEvidencePanel from "./ChapterEvidencePanel";
-import { useChapterEvidence, itemsForVerse } from "./useChapterEvidence";
-import VerseStudyRow from "./VerseStudyRow";
+import { useChapterEvidence } from "./useChapterEvidence";
+import ReadingVerseList from "./ReadingVerseList";
 import { useStudyMarks } from "@/hooks/useStudyMarks";
+import { scrollReadingToTop } from "@/lib/scrollReading";
 
 export default function BibleReader({ books, apocrypha, title, subtitle, onBack, initialBook, initialChapter }) {
   const [book, setBook] = useState(initialBook || null);
@@ -29,7 +30,9 @@ export default function BibleReader({ books, apocrypha, title, subtitle, onBack,
     try {
       const res = await fetch(bibleBookUrl(b, apocrypha));
       if (!res.ok) throw new Error("Could not load " + b + ".");
-      const json = await res.json();
+      const raw = await res.text();
+      if (raw.trimStart().startsWith("<")) throw new Error("Could not load " + b + ".");
+      const json = JSON.parse(raw);
       cache.current[b] = json;
       setData(json);
     } catch (e) {
@@ -44,6 +47,10 @@ export default function BibleReader({ books, apocrypha, title, subtitle, onBack,
     if (book) loadBook(book);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [book]);
+
+  useEffect(() => {
+    scrollReadingToTop();
+  }, [book, chapter]);
 
   const chapterCount = data?.chapters?.length || 0;
   const current = data?.chapters?.find((c) => String(c.chapter) === String(chapter));
@@ -162,38 +169,17 @@ export default function BibleReader({ books, apocrypha, title, subtitle, onBack,
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
       {!loading && !error && (
-        <div className="space-y-1 py-1">
-          {verses
-            .filter((v) => {
-              if (!bookQuery.trim()) return true;
-              return `${v.verse} ${v.text}`.toLowerCase().includes(bookQuery.toLowerCase());
-            })
-            .map((v) => {
-              const evItems = itemsForVerse(evidence, "scripture_reference", book, chapter, v.verse)
-                .map((i) => ({ ...i, _kind: "evidence" }));
-              const moItems = itemsForVerse(modern, "prophecy_reference", book, chapter, v.verse)
-                .map((i) => ({ ...i, _kind: "modern" }));
-              const scItems = itemsForVerse(scientific, "scripture_reference", book, chapter, v.verse)
-                .map((i) => ({ ...i, _kind: "scientific" }));
-              const goItems = itemsForVerse(government, "scripture_reference", book, chapter, v.verse)
-                .map((i) => ({ ...i, _kind: "government" }));
-              const verseItems = [...evItems, ...moItems, ...scItems, ...goItems];
-              return (
-                <VerseStudyRow
-                  key={v.verse}
-                  book={book}
-                  chapter={chapter}
-                  verse={v}
-                  text={v.text}
-                  verses={verses}
-                  evidenceItems={verseItems}
-                  highlights={highlights}
-                  favorites={favorites}
-                  onChanged={reload}
-                />
-              );
-            })}
-        </div>
+        <ReadingVerseList
+          book={book}
+          chapter={chapter}
+          verses={verses.filter((v) => {
+            if (!bookQuery.trim()) return true;
+            return `${v.verse} ${v.text}`.toLowerCase().includes(bookQuery.toLowerCase());
+          })}
+          highlights={highlights}
+          favorites={favorites}
+          onChanged={reload}
+        />
       )}
     </div>
   );

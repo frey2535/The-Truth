@@ -1,68 +1,5 @@
-/** Public-domain Bible atlas plates and traditional study outlines. Not a modern border claim. */
+/** Traditional study outlines and journey lines. Approximate drawings, not surveyed borders. */
 
-export const ATLAS_PLATES = [
-  {
-    id: "holy-land",
-    label: "Holy Land plate",
-    title: "Palestine during the Monarchy",
-    year: "1895",
-    maker: "G. W. & C. B. Colton (Sunday School map no. 14)",
-    note: "The plate printed with latitude and longitude. Israel and Judah, the tribes, and the Salt Sea sit on today's coordinates. Insets (Solomon's temple plan; David and Solomon's reach) are on the engraving, as in the original atlas page.",
-    url: "/maps/canaan-monarchy-1895.jpg",
-    bounds: [
-      [31.0, 34.5],
-      [34.0, 36.5],
-    ],
-    source: "Library of Congress G7481.2 1895 .C6 / loc.gmd/g74812.ct006795",
-    default: true,
-  },
-  {
-    id: "oldest",
-    label: "Oldest Bible plate",
-    title: "Holy Land — Amsterdam Haggadah",
-    year: "1695",
-    maker: "Abraham ben Jacob, after Christiaan van Adrichem",
-    note: "Copperplate from the 1695 Amsterdam Haggadah. The original engraving had east at the top, as many early Bible maps did. It is turned so north is up, then laid on today's globe. The drawing is pictorial, not a survey, so coasts will not lock to modern tiles the way the 1895 plate does.",
-    url: "/maps/holy-land-1695.jpg",
-    bounds: [
-      [29.6, 31.6],
-      [33.7, 36.4],
-    ],
-    source: "Library of Congress 2021668293 / wdl_02887",
-  },
-  {
-    id: "exodus",
-    label: "Exodus plate",
-    title: "Journey of the children of Israel",
-    year: "1840",
-    maker: "Jachiel Bar-Joseph",
-    note: "Egypt, the wilderness, and the tribal allotments on one atlas page. The Sinai route on this plate is the traditional Bible-atlas line. The text does not fix every camp to a surveyed coordinate.",
-    url: "/maps/exodus-tribes.jpg",
-    bounds: [
-      [29.0, 30.4],
-      [33.55, 36.35],
-    ],
-    source: "Library of Congress 2014592002 / loc.gmd/g74812.ct004319",
-  },
-  {
-    id: "apostles",
-    label: "Apostles plate",
-    title: "Travels and voyages of the apostles",
-    year: "1680",
-    maker: "Richard Blome",
-    note: "Eastern Mediterranean plate of the apostles, especially Paul's voyage toward Rome. The portrait strip from the original sheet is not shown so the geography can sit on the map.",
-    url: "/maps/apostles-paul-1680.jpg",
-    bounds: [
-      [24.8, 10.0],
-      [45.2, 48.0],
-    ],
-    source: "Library of Congress 2005625328 / loc.gmd/g74813.ct001381",
-  },
-];
-
-export const DEFAULT_PLATE_ID = ATLAS_PLATES.find((p) => p.default)?.id || ATLAS_PLATES[0].id;
-
-/** Traditional Bible-atlas outlines. Approximate study drawings, not surveyed borders. */
 export const KINGDOM_POLYGONS = [
   {
     id: "judah",
@@ -102,7 +39,7 @@ export const KINGDOM_POLYGONS = [
 export const BIBLE_ROUTES = [
   {
     id: "exodus-route",
-    name: "Wilderness road (traditional atlas line)",
+    name: "Wilderness road (traditional line)",
     scripture: "Exodus 12–19; Numbers 33; Joshua 3",
     color: "#8a5a12",
     layers: ["exodus"],
@@ -171,3 +108,62 @@ export const BIBLE_ROUTES = [
     ],
   },
 ];
+
+export const MAP_VIEWS = [
+  {
+    id: "land",
+    label: "The land",
+    bounds: [
+      [29.4, 33.9],
+      [33.5, 36.4],
+    ],
+  },
+  {
+    id: "exodus",
+    label: "Egypt and Sinai",
+    bounds: [
+      [27.8, 30.2],
+      [32.2, 36.2],
+    ],
+  },
+  {
+    id: "exile",
+    label: "Exile cities",
+    bounds: [
+      [29.8, 42.8],
+      [37.2, 48.8],
+    ],
+  },
+  {
+    id: "apostles",
+    label: "Apostles",
+    bounds: [
+      [30.8, 10.2],
+      [43.2, 37.5],
+    ],
+  },
+];
+
+export const ERA_COLOR = {
+  patriarchs: "#b08d3c",
+  exodus: "#8a5a12",
+  kingdoms: "#7a2e2e",
+  exile: "#4a5560",
+  nt: "#5e2222",
+};
+
+export function placeColor(place) {
+  const layer = (place.layers || []).find((id) => ERA_COLOR[id]);
+  return ERA_COLOR[layer] || "#7a2e2e";
+}
+
+export function boundsForPlaces(places) {
+  if (!places?.length) return null;
+  const lats = places.map((p) => p.lat);
+  const lngs = places.map((p) => p.lng);
+  const pad = places.length === 1 ? 0.35 : 0.15;
+  return [
+    [Math.min(...lats) - pad, Math.min(...lngs) - pad],
+    [Math.max(...lats) + pad, Math.max(...lngs) + pad],
+  ];
+}

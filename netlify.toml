@@ -9,6 +9,31 @@
 [functions."openai-chat"]
   timeout = 26
 
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/version.json"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
 [[redirects]]
   from = "/api/openai"
   to = "/.netlify/functions/openai-chat"
@@ -20,6 +45,16 @@
   to = "/.netlify/functions/google-token"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/corpus/*"
+  to = "/404.html"
+  status = 404
+
+[[redirects]]
+  from = "/dss/*"
+  to = "/404.html"
+  status = 404
 
 [[redirects]]
   from = "/*"

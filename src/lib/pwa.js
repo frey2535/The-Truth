@@ -1,3 +1,5 @@
+import { isLocalInstallOrigin, isPublishedOrigin } from "@/lib/appOrigin";
+
 const TRUTH_CACHE_PREFIX = "the-truth-";
 
 function clearForeignCaches() {
@@ -9,6 +11,43 @@ function clearForeignCaches() {
         .map((key) => caches.delete(key))
     )
   );
+}
+
+function reloadOnce() {
+  const key = "truth_reloaded_for_sw";
+  try {
+    if (sessionStorage.getItem(key) === "1") return;
+    sessionStorage.setItem(key, "1");
+  } catch {
+    /* ignore */
+  }
+  window.location.reload();
+}
+
+export async function checkPublishedBuild() {
+  if (import.meta.env.DEV) return { stale: false };
+  const local = import.meta.env.VITE_TRUTH_BUILD;
+  if (!local) return { stale: false };
+  try {
+    const res = await fetch(`/version.json?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) return { stale: false };
+    const data = await res.json();
+    return { stale: Boolean(data.id && data.id !== local), remote: data.id, local };
+  } catch {
+    return { stale: false };
+  }
+}
+
+export async function applyAppUpdate() {
+  if (!("serviceWorker" in navigator)) {
+    window.location.reload();
+    return;
+  }
+  const regs = await navigator.serviceWorker.getRegistrations();
+  await Promise.all(regs.map((reg) => reg.update().catch(() => undefined)));
+  const waiting = regs.map((reg) => reg.waiting).find(Boolean);
+  if (waiting) waiting.postMessage("skipWaiting");
+  window.setTimeout(() => window.location.reload(), 400);
 }
 
 export function registerServiceWorker() {
@@ -37,7 +76,28 @@ export function registerServiceWorker() {
         })
         .map((reg) => reg.unregister())
     );
-    await navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+
+    navigator.serviceWorker.addEventListener("controllerchange", reloadOnce);
+
+    const reg = await navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" });
+    const poke = () => {
+      reg.update().catch(() => undefined);
+      checkPublishedBuild().then((result) => {
+        if (!result.stale) return;
+        try {
+          if (sessionStorage.getItem("truth_reloaded_for_build") === result.remote) return;
+          sessionStorage.setItem("truth_reloaded_for_build", result.remote);
+        } catch {
+          /* ignore */
+        }
+        applyAppUpdate();
+      });
+    };
+    poke();
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") poke();
+    });
+    window.setInterval(poke, 5 * 60 * 1000);
   };
 
   window.addEventListener("load", () => {
@@ -52,6 +112,17 @@ export function isStandaloneDisplay() {
     window.matchMedia("(display-mode: fullscreen)").matches ||
     window.navigator.standalone === true
   );
+}
+
+export function getInstallKind() {
+  if (typeof window === "undefined") {
+    return { standalone: false, local: false, published: false };
+  }
+  return {
+    standalone: isStandaloneDisplay(),
+    local: isLocalInstallOrigin(),
+    published: isPublishedOrigin(),
+  };
 }
 
 export function getInstallPlatform() {

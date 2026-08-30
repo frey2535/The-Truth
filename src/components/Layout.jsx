@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { GUEST_EMAIL } from "@/api/localAuth";
 import HeavenBackdrop from "@/components/HeavenBackdrop";
 import PapyrusBackdrop from "@/components/PapyrusBackdrop";
+import AppUpdateBanner from "@/components/AppUpdateBanner";
 import { isEvidencePath } from "@/components/evidence/EvidenceSectionNav";
+import { isStandaloneDisplay } from "@/lib/pwa";
 import {
   BookOpenText,
   Sparkles,
@@ -14,6 +16,7 @@ import {
   Moon,
   Download,
   Map as MapIcon,
+  CalendarDays,
   BookMarked,
 } from "lucide-react";
 
@@ -21,6 +24,7 @@ const PRIMARY = [
   { to: "/library", label: "Read", icon: BookOpenText },
   { to: "/search", label: "Search", icon: Search },
   { to: "/map", label: "Map", icon: MapIcon },
+  { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/customs", label: "Holidays", icon: Moon },
   { to: "/evidence", label: "Evidence", icon: Landmark, matchEvidence: true },
   { to: "/notebook", label: "Notebook", icon: BookMarked },
@@ -29,12 +33,15 @@ const PRIMARY = [
 const MOBILE_NAV = [
   { to: "/library", label: "Read", icon: BookOpenText },
   { to: "/search", label: "Search", icon: Search },
+  { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/map", label: "Map", icon: MapIcon },
-  { to: "/customs", label: "Holidays", icon: Moon },
   { to: "/evidence", label: "Evidence", icon: Landmark, matchEvidence: true },
-  { to: "/notebook", label: "Notes", icon: BookMarked },
   { to: "/assistant", label: "Ask", icon: Sparkles },
 ];
+
+function navActive(pathname, to, matchEvidence) {
+  return matchEvidence ? isEvidencePath(pathname) : pathname.startsWith(to);
+}
 
 export default function Layout() {
   const { pathname } = useLocation();
@@ -42,29 +49,37 @@ export default function Layout() {
   const isGuest = !user || user.email === GUEST_EMAIL || user.is_guest;
   const isHome = pathname === "/";
   const usePapyrus = !isHome;
+  const standalone = isStandaloneDisplay();
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("truth-standalone", standalone);
+    return () => document.documentElement.classList.remove("truth-standalone");
+  }, [standalone]);
+
   return (
-    <div className={`min-h-screen truth-app text-[#2b2620] flex flex-col${usePapyrus ? " truth-app--read" : ""}`}>
+    <div className={`min-h-dvh truth-app text-[#2b2620] flex flex-col${usePapyrus ? " truth-app--read" : ""}`}>
       {usePapyrus ? <PapyrusBackdrop /> : <HeavenBackdrop />}
+      <AppUpdateBanner />
       <header
-        className={`sticky top-0 z-40 border-b backdrop-blur-xl ${
+        className={`sticky top-0 z-40 border-b backdrop-blur-xl pt-[env(safe-area-inset-top)] ${
           usePapyrus
             ? "border-[#c9b27c]/50 bg-[#efe0b8]/90"
             : "border-[#e8c97a]/25 bg-[#120c08]/55"
         }`}
       >
-        <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5 group">
-            <span className="w-9 h-9 rounded-full bg-[#f3e9c8] text-[#2b2620] grid place-items-center shadow-[0_0_24px_rgba(243,221,150,0.45)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 sm:h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2.5 group min-w-0">
+            <span className="w-9 h-9 shrink-0 rounded-full bg-[#f3e9c8] text-[#2b2620] grid place-items-center shadow-[0_0_24px_rgba(243,221,150,0.45)]">
               <ScrollText className="w-5 h-5" />
             </span>
-            <span className="flex flex-col leading-none">
+            <span className="flex flex-col leading-none min-w-0">
               <span className={`font-display text-2xl tracking-wide ${usePapyrus ? "text-[#2b2620]" : "text-[#f3e9c8]"}`}>The Truth</span>
-              <span className={`text-[10px] tracking-[0.25em] uppercase ${usePapyrus ? "text-[#7a2e2e]" : "text-[#e8c97a]"}`}>Read · Investigate · Learn</span>
+              <span className={`hidden sm:block text-[10px] tracking-[0.25em] uppercase ${usePapyrus ? "text-[#7a2e2e]" : "text-[#e8c97a]"}`}>Read · Investigate · Learn</span>
             </span>
           </Link>
           <nav className="flex items-center gap-1">
             {PRIMARY.map(({ to, label, icon: Icon, matchEvidence }) => {
-              const active = matchEvidence ? isEvidencePath(pathname) : pathname.startsWith(to);
+              const active = navActive(pathname, to, matchEvidence);
               return (
                 <Link
                   key={to}
@@ -87,19 +102,19 @@ export default function Layout() {
             })}
             <Link
               to="/assistant"
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 pathname.startsWith("/assistant")
                   ? "bg-[#5e2222] text-[#f3e9c8]"
                   : "bg-[#7a2e2e] text-[#f3e9c8] hover:bg-[#5e2222]"
               }`}
             >
               <Sparkles className="w-4 h-4" />
-              <span className="hidden sm:inline">Truth Assistant</span>
+              Truth Assistant
             </Link>
             {isGuest ? (
               <Link
                 to="/login"
-                className={`hidden sm:inline-flex items-center px-3 py-2 rounded-full text-sm ${
+                className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${
                   usePapyrus ? "text-[#3a3328] hover:bg-[#2b2620]/8" : "text-[#f3e9c8]/90 hover:bg-white/10"
                 }`}
               >
@@ -109,7 +124,7 @@ export default function Layout() {
               <button
                 type="button"
                 onClick={() => logout(true)}
-                className={`hidden sm:inline-flex items-center px-3 py-2 rounded-full text-sm ${
+                className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${
                   usePapyrus ? "text-[#3a3328] hover:bg-[#2b2620]/8" : "text-[#f3e9c8]/90 hover:bg-white/10"
                 }`}
                 title={user.email}
@@ -119,14 +134,44 @@ export default function Layout() {
             )}
           </nav>
         </div>
-        <div className={`sm:hidden border-t flex justify-around py-2 ${usePapyrus ? "border-[#c9b27c]/40" : "border-[#e8c97a]/20"}`}>
+      </header>
+      <main className="relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-5 py-6 sm:py-8 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8">
+        <Outlet />
+      </main>
+      <footer className="relative z-10 border-t border-[#e8ddc7]/70 bg-[#faf6ef]/70 backdrop-blur-md py-6 mb-[calc(4.25rem+env(safe-area-inset-bottom))] md:mb-0">
+        <div className="max-w-6xl mx-auto px-5 text-center text-xs text-[#8a7f6f]">
+          <p className="font-display italic text-[#5b5142]">
+            “And you will know the truth, and the truth will set you free.” — John 8:32
+          </p>
+          {standalone ? (
+            <p className="mt-3 text-[#5b5142]">Running as an installed app on this device.</p>
+          ) : (
+            <Link
+              to="/install"
+              className="inline-flex items-center gap-1.5 mt-3 text-[#7a2e2e] hover:underline"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Install this app
+            </Link>
+          )}
+        </div>
+      </footer>
+      <nav
+        aria-label="App"
+        className={`md:hidden fixed bottom-0 inset-x-0 z-40 border-t backdrop-blur-xl pb-[env(safe-area-inset-bottom)] ${
+          usePapyrus
+            ? "border-[#c9b27c]/50 bg-[#efe0b8]/95"
+            : "border-[#e8c97a]/25 bg-[#120c08]/90"
+        }`}
+      >
+        <div className="grid grid-cols-6 h-[4.25rem]">
           {MOBILE_NAV.map(({ to, label, icon: Icon, matchEvidence }) => {
-            const active = matchEvidence ? isEvidencePath(pathname) : pathname.startsWith(to);
+            const active = navActive(pathname, to, matchEvidence);
             return (
               <Link
                 key={to}
                 to={to}
-                className={`flex flex-col items-center gap-0.5 text-[11px] ${
+                className={`flex flex-col items-center justify-center gap-0.5 text-[11px] min-h-[44px] ${
                   usePapyrus
                     ? active
                       ? "text-[#7a2e2e]"
@@ -142,24 +187,7 @@ export default function Layout() {
             );
           })}
         </div>
-      </header>
-      <main className="relative z-10 flex-1 max-w-6xl w-full mx-auto px-5 py-8">
-        <Outlet />
-      </main>
-      <footer className="relative z-10 border-t border-[#e8ddc7]/70 bg-[#faf6ef]/70 backdrop-blur-md py-6">
-        <div className="max-w-6xl mx-auto px-5 text-center text-xs text-[#8a7f6f]">
-          <p className="font-display italic text-[#5b5142]">
-            “And you will know the truth, and the truth will set you free.” — John 8:32
-          </p>
-          <Link
-            to="/install"
-            className="inline-flex items-center gap-1.5 mt-3 text-[#7a2e2e] hover:underline"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Install on a phone
-          </Link>
-        </div>
-      </footer>
+      </nav>
     </div>
   );
 }

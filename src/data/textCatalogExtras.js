@@ -132,8 +132,16 @@ export const EXTRA_DEFS = [
     stored: { kind: "md", slug: "1-enoch" },
     textStatus: "complete_stored",
   }),
-  E("apocalypse-of-weeks", "Apocalypse of Weeks", [6], [L.pse], { background: "Embedded in 1 Enoch." }),
-  E("animal-apocalypse", "Animal Apocalypse", [6], [L.pse], { background: "Embedded in 1 Enoch dream visions." }),
+  E("apocalypse-of-weeks", "Apocalypse of Weeks", [6], [L.pse], {
+    stored: { kind: "md", slug: "1-enoch" },
+    textStatus: "complete_stored",
+    background: "Embedded in the stored 1 Enoch text.",
+  }),
+  E("animal-apocalypse", "Animal Apocalypse", [6], [L.pse], {
+    stored: { kind: "md", slug: "1-enoch" },
+    textStatus: "complete_stored",
+    background: "Embedded in the stored 1 Enoch dream visions.",
+  }),
 
   ...pseudepigrapha(),
   ...apostolicFathers(),

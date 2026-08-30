@@ -11,7 +11,7 @@ export default function Assistant() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const listRef = useRef(null);
-  const answerRef = useRef(null);
+  const turnRef = useRef(null);
   const reqId = useRef(0);
 
   const [conversationId, setConversationId] = useState(null);
@@ -20,17 +20,12 @@ export default function Assistant() {
   const [historyLoading, setHistoryLoading] = useState(false);
 
   useLayoutEffect(() => {
+    if (loading) return;
     const pane = listRef.current;
-    const answer = answerRef.current;
-    if (!pane || !answer || loading) return;
-    const pinAnswer = () => {
-      const top = answer.getBoundingClientRect().top - pane.getBoundingClientRect().top + pane.scrollTop;
-      pane.scrollTop = Math.max(0, top);
-    };
-    pinAnswer();
-    const frame = requestAnimationFrame(pinAnswer);
-    return () => cancelAnimationFrame(frame);
-  }, [messages, loading]);
+    const turn = turnRef.current;
+    if (!pane || !turn) return;
+    pane.scrollTop = Math.max(0, turn.offsetTop);
+  }, [messages.length, loading]);
 
   async function loadConversations() {
     setHistoryLoading(true);
@@ -127,7 +122,7 @@ export default function Assistant() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col h-[calc(100vh-13rem)] min-h-0">
+    <div className="max-w-3xl mx-auto flex flex-col h-[calc(100dvh-12rem)] md:h-[calc(100dvh-13rem)] min-h-0">
       <header className="mb-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
@@ -168,18 +163,19 @@ export default function Assistant() {
           <div className="text-center text-[#8a7f6f] py-16">
             <p className="font-display text-2xl text-[#2b2620] mb-2">Ask a question.</p>
             <p>
-              Yes means the question is understood and the answer is taken only from verses that address that
-              question. A shared word is not enough. King James is listed first unless you ask for another text.
-              Every applicable verse is quoted. It does not search the internet.
+              The question is read first. Then every stored text in this app is searched — King James,
+              Apocrypha, Enoch, Dead Sea Scrolls, fathers, Josephus, other manuscripts, and the empirical
+              archive. The answer quotes what those texts say. Conflicting stored wording is listed in its
+              own section. Nothing is invented, guessed, or taken from the internet.
             </p>
           </div>
         )}
         {messages.map((m, i) => {
-          const latestAnswer = m.role === "assistant" && i === messages.length - 1;
+          const lastUser = [...messages].reduce((n, row, idx) => (row.role === "user" ? idx : n), -1);
           return (
             <div
               key={i}
-              ref={latestAnswer ? answerRef : null}
+              ref={i === lastUser ? turnRef : null}
               className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div

@@ -1,4 +1,4 @@
-const CACHE = "the-truth-shell-v3";
+const CACHE = "the-truth-shell-v5";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
@@ -24,6 +24,10 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+self.addEventListener("message", (event) => {
+  if (event.data === "skipWaiting") self.skipWaiting();
+});
+
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
@@ -35,8 +39,25 @@ self.addEventListener("fetch", (event) => {
   if (
     url.pathname.startsWith("/ebible") ||
     url.pathname.startsWith("/api/") ||
-    url.pathname === "/__lan.json"
+    url.pathname.startsWith("/corpus/") ||
+    url.pathname.startsWith("/dss/") ||
+    url.pathname === "/__lan.json" ||
+    url.pathname === "/version.json" ||
+    url.pathname === "/sw.js"
   ) {
+    return;
+  }
+
+  const isDocument =
+    request.mode === "navigate" ||
+    request.destination === "document" ||
+    url.pathname === "/" ||
+    url.pathname === "/index.html";
+
+  if (isDocument) {
+    event.respondWith(
+      fetch(request).catch(async () => (await caches.match("/")) || Response.error())
+    );
     return;
   }
 
@@ -52,7 +73,6 @@ self.addEventListener("fetch", (event) => {
       .catch(async () => {
         const cached = await caches.match(request);
         if (cached) return cached;
-        if (request.mode === "navigate") return caches.match("/");
         return Response.error();
       })
   );

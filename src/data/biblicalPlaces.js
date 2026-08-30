@@ -35,7 +35,8 @@ export const BIBLICAL_PLACES = [
   p({ id: "beersheba", ancient: "Beer-sheba", modern: "Beersheba / Tel Be'er Sheva", lat: 31.244, lng: 34.84, era: "Patriarchs", layers: ["patriarchs", "kingdoms"], scripture: "Genesis 21:31", note: "Well of the oath." }),
   p({ id: "goshen", ancient: "Goshen", modern: "Eastern Nile Delta, Egypt", lat: 30.7, lng: 31.8, era: "Exodus", layers: ["exodus"], scripture: "Genesis 47:6; Exodus 8:22", note: "Israel's dwelling in Egypt." }),
   p({ id: "memphis", ancient: "Noph / Memphis", modern: "Mit Rahina, Egypt", lat: 29.85, lng: 31.25, era: "Exodus", layers: ["exodus"], scripture: "Isaiah 19:13; Jeremiah 46:19", note: "Egyptian capital named in the prophets." }),
-  p({ id: "sinai", ancient: "Mount Sinai / Horeb", modern: "Traditionally Jebel Musa, Sinai", lat: 28.539, lng: 33.975, era: "Exodus", layers: ["exodus"], scripture: "Exodus 19:1–2; Deuteronomy 5:2", note: "The traditional later identification; the text names Sinai/Horeb." }),
+  p({ id: "sinai", ancient: "Mount Sinai / Horeb", modern: "Traditionally Jebel Musa, Sinai", lat: 28.5395, lng: 33.9754, era: "Exodus", layers: ["exodus"], scripture: "Exodus 19:1–2; Deuteronomy 5:2", note: "The traditional later identification; the text names Sinai/Horeb." }),
+  p({ id: "horeb-rock", ancient: "The rock in Horeb", modern: "Traditional Rephidim / Wadi Feiran, Sinai", lat: 28.718, lng: 33.627, era: "Exodus", layers: ["exodus"], scripture: "Exodus 17:1–6", note: "Water from the rock at Rephidim, 'upon the rock in Horeb.' The later traditional site is Wadi Feiran; the text does not give a surveyed pin." }),
   p({ id: "kadesh", ancient: "Kadesh-barnea", modern: "Ain el-Qudeirat area", lat: 30.642, lng: 34.427, era: "Exodus", layers: ["exodus"], scripture: "Numbers 13:26; Deuteronomy 1:19", note: "Wilderness camp before the land." }),
   p({ id: "jericho", ancient: "Jericho", modern: "Tell es-Sultan / Jericho", lat: 31.871, lng: 35.444, era: "Conquest", layers: ["exodus", "kingdoms", "nt"], scripture: "Joshua 6; Luke 19:1", note: "First city taken west of Jordan; later Zacchaeus." }),
   p({ id: "jerusalem", ancient: "Jerusalem / Jebus / Zion", modern: "Jerusalem", lat: 31.778, lng: 35.236, era: "Kingdoms", layers: ["patriarchs", "kingdoms", "exile", "nt"], scripture: "2 Samuel 5:6–9; Psalm 122", note: "David's city; later the temple mount." }),
@@ -107,3 +108,12 @@ export const NAME_CHANGES = BIBLICAL_PLACES.filter((p) => p.ancient !== p.modern
   modern: p.modern,
   id: p.id,
 }));
+
+/** Major places tied to a named person in the stored texts. IDs match BIBLICAL_PLACES. */
+export const SCRIPTURE_PEOPLE = [
+  { id: "abraham", label: "Abraham", placeIds: ["ur", "haran", "shechem", "bethel", "hebron", "beersheba"] },
+  { id: "moses", label: "Moses", placeIds: ["goshen", "sinai", "horeb-rock", "kadesh", "jericho"] },
+  { id: "david", label: "David", placeIds: ["bethlehem", "hebron", "jerusalem"] },
+  { id: "jesus", label: "Jesus", placeIds: ["bethlehem", "nazareth", "capernaum", "cana", "sychar", "bethany", "jerusalem", "olives", "jericho"] },
+  { id: "paul", label: "Paul", placeIds: ["tarsus", "damascus", "antioch", "caesarea", "ephesus", "corinth", "athens", "philippi", "malta", "rome"] },
+];

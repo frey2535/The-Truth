@@ -24,6 +24,7 @@ import Install from "@/pages/Install";
 import Search from "@/pages/Search";
 import MyStudy from "@/pages/MyStudy";
 import MapExplore from "@/pages/MapExplore";
+import Calendar from "@/pages/Calendar";
 import Login from "@/pages/Login";
 import InstallAppPrompt from "@/components/InstallAppPrompt";
 import Register from "@/pages/Register";
@@ -74,6 +75,7 @@ const AuthenticatedApp = () => {
         <Route path="/search" element={<Search />} />
         <Route path="/notebook" element={<MyStudy />} />
         <Route path="/map" element={<MapExplore />} />
+        <Route path="/calendar" element={<Calendar />} />
         <Route path="/customs" element={<Customs />} />
         <Route path="/customs/symbol/:symbolId" element={<Customs />} />
         <Route path="/customs/name/:nameId" element={<Customs />} />
