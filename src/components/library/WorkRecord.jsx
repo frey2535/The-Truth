@@ -61,7 +61,9 @@ export default function WorkRecord({ work, onBack }) {
         <ArrowLeft className="w-4 h-4" /> Master library
       </button>
       <h1 className="font-display text-3xl text-[#2b2620] mb-2">{work.title}</h1>
-      <p className="text-sm text-[#7a2e2e] mb-3">{status}</p>
+      <p className="text-sm text-[#7a2e2e] mb-3">
+        {!loading && missing ? TEXT_STATUS.not_stored : status}
+      </p>
       <div className="flex flex-wrap gap-1.5 mb-6">
         {work.labels.map((label) => (
           <ClassificationBadge key={label} label={label} />
@@ -92,7 +94,7 @@ export default function WorkRecord({ work, onBack }) {
         {!loading && !text ? (
           <p className="text-sm text-[#5b5142] border border-[#e8ddc7] rounded-xl p-3 bg-white/70">
             {missing
-              ? "The complete wording is not stored in this app yet. Nothing was invented to fill the gap. Catalog notes are below."
+              ? "The document itself is not stored in this app. The notes below are a catalog record, not a substitute for the wording."
               : "Open this work to read the stored wording."}
           </p>
         ) : null}

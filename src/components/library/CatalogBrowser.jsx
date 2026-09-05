@@ -23,9 +23,9 @@ export default function CatalogBrowser({ onOpenWork }) {
       <header className="text-center mb-8">
         <h1 className="font-display text-4xl text-[#2b2620] mb-2">Stored Christian Text Library</h1>
         <p className="text-[#5b5142] max-w-2xl mx-auto">
-          Every work listed here has English stored in this app. Titles without stored wording are not shown. A
-          church’s rejection or a “heretical” label does not remove a stored text. Noncanonical is not the same as
-          false. Nothing is invented to fill a gap.
+          Every work listed here has English stored in this published app. Anyone who opens the site reads the
+          same wording from the app, not from one person’s computer. Titles without stored wording are not shown.
+          A church’s rejection does not remove a stored text. Nothing is invented to fill a gap.
         </p>
       </header>
 
@@ -98,7 +98,7 @@ export default function CatalogBrowser({ onOpenWork }) {
                 <h3 className="font-display text-lg text-[#2b2620]">{w.title}</h3>
                 <p className="text-xs text-[#7a2e2e] mt-1">{TEXT_STATUS[w.textStatus]}</p>
                 <p className="text-sm text-[#5b5142] mt-2 leading-relaxed">
-                  Stored wording is in this app. Open the card to read from the beginning.
+                  Open to read the stored wording from the start of the work.
                 </p>
                 <div className="flex flex-wrap gap-1 mt-2">
                   {w.labels.slice(0, 4).map((label) => (

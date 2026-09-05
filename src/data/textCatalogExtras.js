@@ -167,6 +167,7 @@ function pseudepigrapha() {
     ["vita-adae", "Latin Life of Adam and Eve / Vita Adae et Evae", []],
     ["apocalypse-of-adam", "Apocalypse of Adam", []],
     ["testament-of-adam", "Testament of Adam", []],
+    ["first-book-of-adam-and-eve", "The First Book of Adam and Eve", []],
     ["conflict-adam-eve", "Conflict of Adam and Eve with Satan", []],
     ["cave-of-treasures", "Cave of Treasures", []],
     ["apocalypse-of-abraham", "Apocalypse of Abraham", []],

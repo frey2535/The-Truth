@@ -1,15 +1,11 @@
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
 
 function json(status, body) {
-  return {
-    statusCode: status,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  };
+  return Response.json(body, { status });
 }
 
-function apiKey() {
-  return (process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY || "").trim();
+function apiKey(env) {
+  return String(env.OPENAI_API_KEY || env.VITE_OPENAI_API_KEY || "").trim();
 }
 
 function openaiErrorMessage(status, text) {
@@ -35,21 +31,18 @@ function openaiErrorMessage(status, text) {
   return `AI request failed (${status}): ${raw.slice(0, 200)}`;
 }
 
-export async function handler(event) {
-  const method = event.httpMethod || "GET";
-  if (method === "OPTIONS") {
-    return { statusCode: 204, body: "" };
-  }
-  if (method === "GET") {
-    return json(200, { configured: Boolean(apiKey()) });
-  }
-  if (method !== "POST") {
-    return json(405, { error: "Method not allowed" });
-  }
+export async function onRequestOptions() {
+  return new Response(null, { status: 204 });
+}
 
+export async function onRequestGet({ env }) {
+  return json(200, { configured: Boolean(apiKey(env)) });
+}
+
+export async function onRequestPost({ request, env }) {
   let payload;
   try {
-    payload = JSON.parse(event.body || "{}");
+    payload = await request.json();
   } catch {
     return json(400, { error: "Invalid JSON body" });
   }
@@ -57,11 +50,11 @@ export async function handler(event) {
     return json(400, { error: "messages are required" });
   }
 
-  const key = apiKey();
+  const key = apiKey(env);
   if (!key) {
     return json(503, {
       error:
-        "AI is not configured. Add OPENAI_API_KEY in .env.local for local use, or in Cloudflare Pages secrets for the public site.",
+        "AI is not configured. Add OPENAI_API_KEY in Cloudflare Pages secrets, or in .env.local on this computer.",
     });
   }
 
@@ -73,7 +66,7 @@ export async function handler(event) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || process.env.VITE_OPENAI_MODEL || "gpt-4o-mini",
+        model: env.OPENAI_MODEL || env.VITE_OPENAI_MODEL || "gpt-4o-mini",
         messages: payload.messages,
         temperature: payload.temperature ?? 0.2,
         ...(payload.response_format ? { response_format: payload.response_format } : {}),
@@ -83,11 +76,10 @@ export async function handler(event) {
     if (!res.ok) {
       return json(res.status, { error: openaiErrorMessage(res.status, text) });
     }
-    return {
-      statusCode: 200,
+    return new Response(text, {
+      status: 200,
       headers: { "Content-Type": "application/json" },
-      body: text,
-    };
+    });
   } catch (error) {
     return json(500, { error: error.message || "AI request failed" });
   }

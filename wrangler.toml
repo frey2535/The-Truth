@@ -1,0 +1,5 @@
+name = "thetruth"
+pages_build_output_dir = "dist"
+
+[vars]
+# Live URL: https://thetruth.currentflowconsulting.org

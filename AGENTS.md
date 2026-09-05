@@ -18,6 +18,7 @@ Start with `README.md` for local setup and environment variables.
 
 - Use `npm run dev` for local development. Do not add Base44 CLI or SDK dependencies.
 - The Truth’s Cursor browser URL is `http://truth.localhost:5174`. Do not open `localhost:5173` (Buildr) or reuse another app’s browser tab.
+- Published site: `https://thetruth.currentflowconsulting.org` (Cloudflare Pages project `thetruth`). Do not publish this app to Netlify. Deploy with `npx wrangler pages deploy`.
 - Research, Investigate, Assistant, and Word Study search only texts and published records stored in the app (King James, Apocrypha, DSS, Enoch, fathers, Josephus, and `src/data/inAppArchive.js`). Do not send study questions to the internet or invent missing archives.
 - Page components should keep talking to the `base44` facade rather than importing `local*` APIs directly, except Layout/auth helpers.
 - Run `npm run build` (and `npm run lint` when touching UI) before finishing code changes.

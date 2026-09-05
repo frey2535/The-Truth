@@ -175,7 +175,7 @@ function dssWork(item, section) {
 
 function manuscriptItem(item, section, labels) {
   const stored = item.file
-    ? { kind: "plain", file: item.file }
+    ? { kind: "plain", file: item.file, start: item.start || null, next: item.next || null }
     : item.content
       ? { kind: "inline", slug: item.slug }
       : item.slug
@@ -239,7 +239,7 @@ const AUTO = [
 ];
 
 export const CATALOG_WORKS = mergeWorks(AUTO).map((work) => {
-  if (!CATALOG_TEXT_MAP[work.id] || work.stored) return work;
+  if (!CATALOG_TEXT_MAP[work.id]) return work;
   return {
     ...work,
     stored: { kind: "catalog", id: work.id },
@@ -254,7 +254,14 @@ export function getCatalogWork(id) {
 }
 
 export function isStoredWork(work) {
-  return Boolean(work?.stored);
+  const stored = work?.stored;
+  if (!stored) return false;
+  if (stored.kind === "inline" || stored.kind === "url" || stored.kind === "web") return false;
+  if (CATALOG_TEXT_MAP[work.id] || stored.kind === "catalog") return true;
+  if (stored.kind === "canon" || stored.kind === "apocrypha" || stored.kind === "dss") return true;
+  if (stored.kind === "md" && stored.slug) return true;
+  if (stored.kind === "plain" && stored.file) return true;
+  return false;
 }
 
 export function storedCatalogWorks() {
@@ -278,6 +285,12 @@ export function searchCatalog(query) {
 export function libraryReadHref(work) {
   const s = work?.stored;
   if (!s) return null;
+  if (CATALOG_TEXT_MAP[work.id] || s.kind === "catalog") {
+    return `/library?work=${encodeURIComponent(work.id)}`;
+  }
+  if (s.kind === "plain") {
+    return `/library?work=${encodeURIComponent(work.id)}`;
+  }
   if (s.kind === "canon") {
     const q = new URLSearchParams({ corpus: "bible", book: s.book, chapter: "1" });
     return `/library?${q}`;
@@ -287,15 +300,9 @@ export function libraryReadHref(work) {
     return `/library?${q}`;
   }
   if (s.kind === "dss") return `/library?corpus=dss&work=${encodeURIComponent(s.id)}`;
-  if (s.kind === "md" || s.kind === "inline") {
-    const group = work.sections.includes(6) ? "enoch" : work.sections.includes(10) ? "fathers" : work.sections.includes(52) ? "josephus" : work.sections.includes(47) ? "codices" : "other";
-    return `/library?corpus=${group}`;
-  }
-  if (s.kind === "plain") {
-    if (String(s.file || "").includes("josephus")) return "/library?corpus=josephus";
-    return "/library?corpus=fathers";
+  if (s.kind === "md") {
+    return `/library?work=${encodeURIComponent(work.id)}`;
   }
   if (s.kind === "web" || s.kind === "url") return "/library?corpus=apocrypha";
-  if (s.kind === "catalog") return `/library?work=${encodeURIComponent(work.id)}`;
   return null;
 }

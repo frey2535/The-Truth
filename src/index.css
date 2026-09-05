@@ -106,11 +106,21 @@
   isolation: isolate;
   background: #0c0806;
   min-height: 100dvh;
+  --truth-header-end: calc(env(safe-area-inset-top, 0px) + 3.5rem);
+}
+
+@media (min-width: 640px) {
+  .truth-app {
+    --truth-header-end: calc(env(safe-area-inset-top, 0px) + 4rem);
+  }
 }
 
 .truth-heaven {
   position: fixed;
-  inset: 0;
+  top: var(--truth-header-end);
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
@@ -162,6 +172,10 @@
   }
 }
 
+.truth-app--auth {
+  --truth-header-end: 0px;
+}
+
 .truth-app--auth .truth-heaven-paint {
   background-position: center 20%;
 }
@@ -183,7 +197,10 @@
 
 .truth-papyrus {
   position: fixed;
-  inset: 0;
+  top: var(--truth-header-end);
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;

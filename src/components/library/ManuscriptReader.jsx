@@ -8,19 +8,11 @@ import { LEON_LEVY_URL } from "./dssWorks";
 import { scrollReadingToTop } from "@/lib/scrollReading";
 import { textToNumberedVerses } from "@/lib/readingVerses";
 import { fetchStoredText, looksLikeHtmlDocument } from "@/lib/fetchStoredText";
+import { extractCatalogSection } from "@/lib/catalogExtract";
 import ReadingVerseList from "./ReadingVerseList";
 
 function itemKey(item) {
   return item.id || item.slug || item.title;
-}
-
-function overviewMarkdown(item) {
-  const lines = [`## ${item.title}`, "", item.desc || ""];
-  if (item.catalog) lines.push("", `**Qumran catalog:** ${item.catalog}`);
-  if (item.sourceUrl) {
-    lines.push("", `[Leon Levy Dead Sea Scrolls Digital Library](${item.sourceUrl})`);
-  }
-  return lines.join("\n");
 }
 
 function isLeonLevyGroup(group, item) {
@@ -285,7 +277,7 @@ function MarkdownReader({ item, group, groupTitle, onBack }) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const inline = item.content || DSS_LOCAL_TEXT[item.id];
+    const inline = DSS_LOCAL_TEXT[item.id];
     if (inline) {
       setText(inline);
       setError("");
@@ -298,7 +290,8 @@ function MarkdownReader({ item, group, groupTitle, onBack }) {
         ? `/dss/${item.local}.md`
         : item.url || (item.slug ? manuscriptUrl(item.slug) : null);
     if (!fetchUrl) {
-      setText(overviewMarkdown(item));
+      setText("");
+      setError("The wording of this work is not stored in this app. Nothing was invented to fill the gap.");
       setLoading(false);
       return;
     }
@@ -307,12 +300,19 @@ function MarkdownReader({ item, group, groupTitle, onBack }) {
     fetchStoredText(fetchUrl)
       .then((fetched) => {
         if (!fetched.ok) throw new Error("Could not load this text.");
-        setText(fetched.text);
+        const extracted = extractCatalogSection(fetched.text, item.start || null, item.next || null);
+        if (!extracted.found || !extracted.text) throw new Error("Could not load this text.");
+        setText(extracted.text);
       })
       .catch(() => {
-        const fallback = DSS_LOCAL_TEXT[item.id] || overviewMarkdown(item);
-        setText(fallback);
-        setError("");
+        const fallback = DSS_LOCAL_TEXT[item.id];
+        if (fallback) {
+          setText(fallback);
+          setError("");
+          return;
+        }
+        setText("");
+        setError("The wording of this work is not stored in this app. Nothing was invented to fill the gap.");
       })
       .finally(() => setLoading(false));
   }, [item]);

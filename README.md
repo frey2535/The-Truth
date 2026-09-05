@@ -30,7 +30,19 @@ This is a Progressive Web App. People open it once in the phone’s browser, the
 3. **iPhone:** Safari → Share → Add to Home Screen.
 4. **Android:** Chrome menu → Install app / Add to Home screen.
 
-iPhone install works best in Safari. For people not on your Wi‑Fi, use the public HTTPS site.
+iPhone install works best in Safari. For people not on your Wi‑Fi, use the public HTTPS site: **https://thetruth.currentflowconsulting.org**.
+
+## Publish
+
+Live app: [https://thetruth.currentflowconsulting.org](https://thetruth.currentflowconsulting.org)
+
+This is a Cloudflare Pages site (`thetruth`), same pattern as NECALCUL8R. It is not hosted on Netlify.
+
+```bash
+npm run publish
+```
+
+That builds `dist` and deploys it to Cloudflare Pages. Custom domain: `thetruth.currentflowconsulting.org`.
 
 ## Free local study
 

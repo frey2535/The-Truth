@@ -65,7 +65,7 @@ const DEUTERO_PSEUDEPIGRAPHA = [
   work("psalms-154-155", "Psalms 154–155", "Syriac psalms also preserved in 11QPsᵃ, outside the later 150-psalm canon.", { catalog: "11Q5" }),
   work("1-enoch", "1 Enoch", "About 25 Aramaic copies — one of the most copied non-biblical books at Qumran (Book of Watchers, Dreams, Epistle, Astronomical Book). Greek fragments from Cave 7.", { catalog: "4Q201–212, 7QEn gr", slug: "1-enoch" }),
   work("book-of-giants", "Book of Giants", "An Enochic narrative on the giants (Nephilim), known from Qumran Aramaic copies and later Manichaean tradition.", { catalog: "1Q23–24, 2Q26, 4Q203, 4Q530–533, 6Q8" }),
-  work("jubilees", "Jubilees", "About 21 copies. A retelling of Genesis–Exodus by jubilee chronology; likely treated as scripture by the Yahad.", { catalog: "1Q17–18, 2Q19–20, 3Q5, 4Q216–224, 11Q12", url: "/corpus/manuscripts/jubilees.md" }),
+  work("jubilees", "Jubilees", "About 21 copies. A retelling of Genesis–Exodus by jubilee chronology; likely treated as scripture by the Yahad.", { catalog: "1Q17–18, 2Q19–20, 3Q5, 4Q216–224, 11Q12", slug: "jubilees" }),
   work("genesis-apocryphon", "Genesis Apocryphon", "Aramaic rewritten Genesis from Cave 1 (one of the original seven scrolls): Lamech, Enoch, Noah, and Abram.", { catalog: "1Q20 (1QapGen)" }),
   work("aramaic-levi", "Aramaic Levi Document", "A priestly testament of Levi; a source behind the later Testament of Levi.", { catalog: "1Q21, 4Q213–214" }),
   work("testament-qahat", "Testament of Qahat", "Aramaic priestly work in the Amram–Qahat–Levi family of texts.", { catalog: "4Q542" }),
@@ -258,10 +258,7 @@ const READS = {
   "psalms-154-155": { slug: "five-psalms-of-david", textNote: CHARLES_NOTE },
   "1-enoch": { slug: "1-enoch", textNote: CHARLES_NOTE },
   "book-of-giants": { textNote: DSS_NOTE },
-  jubilees: {
-    url: "https://raw.githubusercontent.com/zackseyun/peoples-open-bible/main/JUBILEES.md",
-    textNote: CHARLES_NOTE,
-  },
+  jubilees: { slug: "jubilees", textNote: CHARLES_NOTE },
   "genesis-apocryphon": { local: "genesis-apocryphon", textNote: DSS_NOTE },
   "aramaic-levi": { slug: "testament-of-levi", textNote: CHARLES_NOTE },
   "testament-qahat": { slug: "testament-of-kohath", textNote: CHARLES_NOTE },
@@ -284,9 +281,9 @@ const READS = {
   }),
   "temple-scroll": { local: "temple-scroll", textNote: DSS_NOTE },
   "pseudo-jubilees": {
-    url: "https://raw.githubusercontent.com/zackseyun/peoples-open-bible/main/JUBILEES.md",
+    slug: "jubilees",
     textNote:
-      "Pseudo-Jubilees retells Genesis in the style of Jubilees. English below is the public-domain Book of Jubilees. Photographs of 4Q225–227: Leon Levy Digital Library.",
+      "Pseudo-Jubilees retells Genesis in the style of Jubilees. English below is the public-domain Book of Jubilees (Charles 1917). Photographs of 4Q225–227: Leon Levy Digital Library.",
   },
   "apocryphon-joseph": { slug: "testament-of-joseph", textNote: CHARLES_NOTE },
   "apocryphon-david": { textNote: DSS_NOTE },

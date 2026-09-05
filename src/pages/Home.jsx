@@ -7,7 +7,6 @@ import {
   Search,
   Loader2,
   ScrollText,
-  ShieldCheck,
   Sparkles,
   BookOpenText,
   Microscope,
@@ -20,7 +19,7 @@ import {
 import PlanCard from "@/components/study/PlanCard";
 
 const ACTIONS = [
-  { to: "/library", label: "Read", desc: "Stored Christian and comparative texts — open a work and read the wording in this app", icon: BookOpenText },
+  { to: "/library", label: "Read", desc: "Open the wording stored in this published app — the same library for every reader", icon: BookOpenText },
   { to: "/search", label: "Search a text", desc: "Search inside the Bible, Apocrypha, scrolls, or records only", icon: Search },
   { to: "/map", label: "Biblical map", desc: "Places named in the texts on today's globe — journeys and kingdom outlines for study", icon: Sparkles },
   { to: "/calendar", label: "Calendar", desc: "See any day on the Hebrew, Temple-era, Julian, and civil calendars", icon: CalendarDays },
@@ -69,19 +68,9 @@ export default function Home() {
   return (
     <div>
       <section className="text-center pt-10 pb-12">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#120c08]/55 border border-[#e8c97a]/35 text-[#f3e9c8] text-xs font-medium mb-6 backdrop-blur-md">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#e8c97a]" /> Bound by an absolute truth mandate
-        </div>
-        <h1 className="font-display text-5xl sm:text-7xl text-[#f3e9c8] leading-tight mb-3 drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]">
+        <h1 className="font-display text-5xl sm:text-7xl text-[#f3e9c8] leading-tight mb-8 drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]">
           The Truth
         </h1>
-        <p className="font-display text-2xl text-[#e8c97a] mb-4 drop-shadow-[0_1px_12px_rgba(0,0,0,0.45)]">
-          Read the Texts. Examine the Evidence. Learn the Truth.
-        </p>
-        <p className="text-[#f3e9c8]/90 max-w-2xl mx-auto text-base leading-relaxed mb-8 drop-shadow-[0_1px_10px_rgba(0,0,0,0.5)]">
-          Read the Christian texts and published records stored in this app. Search them for free.
-          No subscription, and no internet search for answers.
-        </p>
         <form onSubmit={handleResearch} className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
           <Input
             value={topic}

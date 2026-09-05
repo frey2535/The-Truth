@@ -1,20 +1,25 @@
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 
-export function googleClientId() {
-  return (
-    process.env.GOOGLE_CLIENT_ID ||
-    process.env.VITE_GOOGLE_CLIENT_ID ||
-    ""
-  ).trim();
+function envValue(env, ...keys) {
+  const source = env || (typeof process !== "undefined" ? process.env : {});
+  for (const key of keys) {
+    const value = String(source?.[key] || "").trim();
+    if (value) return value;
+  }
+  return "";
 }
 
-export function googleClientSecret() {
-  return (process.env.GOOGLE_CLIENT_SECRET || "").trim();
+export function googleClientId(env) {
+  return envValue(env, "GOOGLE_CLIENT_ID", "VITE_GOOGLE_CLIENT_ID");
 }
 
-export async function exchangeGoogleCode({ code, redirectUri, codeVerifier }) {
-  const clientId = googleClientId();
-  const clientSecret = googleClientSecret();
+export function googleClientSecret(env) {
+  return envValue(env, "GOOGLE_CLIENT_SECRET");
+}
+
+export async function exchangeGoogleCode({ code, redirectUri, codeVerifier, env }) {
+  const clientId = googleClientId(env);
+  const clientSecret = googleClientSecret(env);
   if (!clientId) {
     const error = new Error(
       "Google sign-in is not configured. Add VITE_GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env.local."

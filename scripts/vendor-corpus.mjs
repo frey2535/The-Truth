@@ -39,10 +39,6 @@ const MANUSCRIPTS = [
 
 const EXTRA = [
   {
-    file: "manuscripts/jubilees.md",
-    url: "https://raw.githubusercontent.com/zackseyun/peoples-open-bible/main/JUBILEES.md",
-  },
-  {
     file: "fathers/ante-nicene-vol1.txt",
     url: "https://ccel.org/ccel/s/schaff/anf01/cache/anf01.txt",
   },

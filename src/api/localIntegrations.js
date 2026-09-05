@@ -33,7 +33,7 @@ function extractMessageText(payload) {
 function describeAiFailure(status, text) {
   const raw = String(text || "");
   if (status === 401 && /login redirect|edge-access/i.test(raw)) {
-    return "The public site is still locked on Netlify. Open Project configuration → General → Visitor access → Project visibility and choose Public.";
+    return "The public site is locked. Check Cloudflare Pages project visibility.";
   }
   try {
     const parsed = JSON.parse(raw);
@@ -51,7 +51,7 @@ function describeAiFailure(status, text) {
     return "The AI service route was not found. Hard-refresh the page, then try again.";
   }
   if (status === 503 || /not configured/i.test(raw)) {
-    return "AI is not configured. Add OPENAI_API_KEY in Netlify environment variables (public site) or .env.local (this computer).";
+    return "AI is not configured. Add OPENAI_API_KEY in Cloudflare Pages secrets (public site) or .env.local (this computer).";
   }
   return `AI request failed (${status}): ${raw.slice(0, 200)}`;
 }
@@ -61,7 +61,7 @@ async function sleep(ms) {
 }
 
 async function postOpenAI(payload) {
-  const paths = ["/api/openai", "/.netlify/functions/openai-chat"];
+  const paths = ["/api/openai"];
   let last = null;
   for (let attempt = 0; attempt < 3; attempt++) {
     last = null;

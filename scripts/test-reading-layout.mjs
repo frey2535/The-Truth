@@ -58,4 +58,33 @@ assert.equal(looksLikeHtmlDocument("THE FIRST EPISTLE OF CLEMENT\n\nThe Church o
 assert.equal(extractCatalogSection("<!doctype html><html><body>app</body></html>", "THE TEACHING OF THE TWELVE APOSTLES", "THE APOSTOLICAL CONSTITUTIONS").found, false);
 assert.match(extractCatalogSection("intro\nTHE TEACHING OF THE TWELVE APOSTLES\n1. Two ways.\nTHE APOSTOLICAL CONSTITUTIONS\nmore", "THE TEACHING OF THE TWELVE APOSTLES", "THE APOSTOLICAL CONSTITUTIONS").text, /Two ways/);
 
+const nicodemusVolume = [
+  "9. The Gospel of Nicodemus.",
+  "IX.-XIV.  The Gospel of Nicodemus. [1551] --The six documents inserted by Tischendorf.",
+  "The Gospel of Nicodemus.",
+  "",
+  "Part I.--The Acts of Pilate.",
+  "Prologue.--I Ananias, of the proprætor's body-guard, being learned in the law.",
+  "THE LETTER OF PONTIUS PILATE",
+  "later letter",
+].join("\n");
+const nicodemus = extractCatalogSection(nicodemusVolume, "THE GOSPEL OF NICODEMUS", "THE LETTER OF PONTIUS PILATE");
+assert.match(nicodemus.text, /I Ananias/);
+assert.doesNotMatch(nicodemus.text, /Tischendorf/);
+assert.doesNotMatch(nicodemus.text, /later letter/);
+
+const didacheVolume = [
+  "THE TEACHING OF THE TWELVE APOSTLES.",
+  "Introductory Notice To The Teaching of the Twelve Apostles.",
+  "The Bryennios manuscript notes.",
+  "The Teaching of the Twelve Apostles.",
+  "The Lord's Teaching Through the Twelve Apostles to the Nations.",
+  "Chapter I.--The Two Ways.",
+  "1. There are two ways, one of life and one of death.",
+  "THE APOSTOLICAL CONSTITUTIONS",
+].join("\n");
+const didacheExtract = extractCatalogSection(didacheVolume, "THE TEACHING OF THE TWELVE APOSTLES", "THE APOSTOLICAL CONSTITUTIONS");
+assert.match(didacheExtract.text, /two ways/);
+assert.doesNotMatch(didacheExtract.text, /Bryennios/);
+
 console.log("reading layout tests passed");

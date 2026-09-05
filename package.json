@@ -11,8 +11,9 @@
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
     "share": "vite build && vite preview --host --port 4174 --strictPort",
+    "publish": "npm run build && npx wrangler pages deploy dist --project-name=thetruth",
     "vendor-corpus": "node scripts/vendor-corpus.mjs",
-    "test:calendars": "node scripts/test-calendars.mjs",
+    "test:catalog": "node scripts/audit-stored-texts.mjs",
     "test:reading": "node scripts/test-reading-layout.mjs",
     "vendor-catalog": "node scripts/vendor-catalog-texts.mjs"
   },

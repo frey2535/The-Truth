@@ -22,7 +22,7 @@ const FILES = [
   { rel: "public/corpus/fathers/ante-nicene-vol8.txt", url: ccel("anf08") },
   { rel: "public/corpus/fathers/ante-nicene-vol9.txt", url: ccel("anf09") },
   { rel: "public/corpus/fathers/josephus-apion.txt", url: "https://www.gutenberg.org/files/2849/2849.txt" },
-  { rel: "public/corpus/catalog/pistis-sophia.txt", url: "https://www.gutenberg.org/files/12889/12889-0.txt" },
+  { rel: "public/corpus/catalog/pistis-sophia.txt", url: "https://www.gutenberg.org/ebooks/76266.txt.utf-8" },
   { rel: "public/corpus/catalog/forgotten-books-of-eden.txt", url: "https://www.gutenberg.org/ebooks/398.txt.utf-8" },
   { rel: "public/corpus/catalog/imitation-of-christ.txt", url: "https://www.gutenberg.org/files/1653/1653-0.txt" },
   { rel: "public/corpus/catalog/tacitus-annals.txt", url: "https://www.gutenberg.org/ebooks/7841.txt.utf-8" },

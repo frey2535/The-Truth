@@ -1,5 +1,5 @@
 /** The published copy that home-screen apps should install from. */
-export const PUBLISHED_APP_URL = "https://searching-for-truth-173.netlify.app";
+export const PUBLISHED_APP_URL = "https://thetruth.currentflowconsulting.org";
 
 export function isPublishedOrigin(origin = window.location.origin) {
   try {
