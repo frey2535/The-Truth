@@ -1,4 +1,4 @@
-const CACHE = "the-truth-shell-v5";
+const CACHE = "the-truth-shell-v6";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
@@ -7,7 +7,13 @@ self.addEventListener("install", (event) => {
       .open(CACHE)
       .then((cache) =>
         cache
-          .addAll(["/manifest.json", "/icon-192.png", "/icon-512.png", "/apple-touch-icon.png"])
+          .addAll([
+            "/manifest.json",
+            "/icon-32.png",
+            "/icon-192.png",
+            "/icon-512.png",
+            "/apple-touch-icon.png",
+          ])
           .catch(() => undefined)
       )
   );

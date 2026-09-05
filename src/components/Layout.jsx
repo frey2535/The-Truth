@@ -10,7 +10,6 @@ import { isStandaloneDisplay } from "@/lib/pwa";
 import {
   BookOpenText,
   Sparkles,
-  ScrollText,
   Landmark,
   Search,
   Moon,
@@ -61,17 +60,21 @@ export default function Layout() {
       {usePapyrus ? <PapyrusBackdrop /> : <HeavenBackdrop />}
       <AppUpdateBanner />
       <header
-        className={`sticky top-0 z-40 border-b backdrop-blur-xl pt-[env(safe-area-inset-top)] ${
+        className={`sticky top-0 z-40 border-b pt-[env(safe-area-inset-top)] ${
           usePapyrus
-            ? "border-[#c9b27c]/50 bg-[#efe0b8]/90"
-            : "border-[#e8c97a]/25 bg-[#120c08]/55"
+            ? "border-[#c9b27c]/50 bg-[#efe0b8]"
+            : "border-[#e8c97a]/25 bg-[#120c08]"
         }`}
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5 group min-w-0">
-            <span className="w-9 h-9 shrink-0 rounded-full bg-[#f3e9c8] text-[#2b2620] grid place-items-center shadow-[0_0_24px_rgba(243,221,150,0.45)]">
-              <ScrollText className="w-5 h-5" />
-            </span>
+            <img
+              src="/icon-192.png?v=6"
+              alt=""
+              width="36"
+              height="36"
+              className="w-9 h-9 shrink-0 rounded-full object-cover shadow-[0_0_24px_rgba(243,221,150,0.45)]"
+            />
             <span className="flex flex-col leading-none min-w-0">
               <span className={`font-display text-2xl tracking-wide ${usePapyrus ? "text-[#2b2620]" : "text-[#f3e9c8]"}`}>The Truth</span>
               <span className={`hidden sm:block text-[10px] tracking-[0.25em] uppercase ${usePapyrus ? "text-[#7a2e2e]" : "text-[#e8c97a]"}`}>Read · Investigate · Learn</span>
