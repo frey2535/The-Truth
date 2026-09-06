@@ -30,6 +30,10 @@ holidays/ — Metropolitan Museum of Art Open Access photographs of catalogued o
   winged-sun.jpg — Met 26.7.1201, object 551581
   zodiac-wheel.jpg — Met 2004.440.1, object 231027
 
+holidays/ — additional unique plates (one file per Holidays item; Commons or Internet Archive, as captioned on the card):
+  traditions, remaining symbols, and names use published coins, mosaics, paintings, stele, manuscripts, and title pages.
+  Captions on the Holidays cards name the actual object. No file is reused across items.
+
 artifacts/ — photographs of the named object, site, or manuscript (not reconstructions):
   ketef-hinnom.jpg — Bachrach44, Israel Museum silver amulets, CC BY-SA 3.0
   siloam-tunnel.jpg — Davidbena, Hezekiah’s Tunnel interior, CC BY-SA 4.0
