@@ -7,9 +7,6 @@
 const NOTICE =
   "This app stores the dated public record beside the verse. It does not declare that the prophecy is fulfilled.";
 
-const RED_WATER_NOTE =
-  "Dated public facts about red-running water. Exodus 7 and Revelation 16 name blood as a judgment. This app does not treat iron, dye, sediment, plants, or a tracer as that plague.";
-
 function redWater(fields) {
   return {
     fulfillment_type: "end_time_setup",
@@ -17,7 +14,7 @@ function redWater(fields) {
     evidence_status: "disputed_identification",
     scripture_reference: "Exodus 7:20–21; Revelation 16:4",
     prophecy_reference: "Exodus 7:20–21; Revelation 16:4",
-    verification_note: RED_WATER_NOTE,
+    verification_note: NOTICE,
     ...fields,
   };
 }
@@ -59,9 +56,9 @@ This is a Cabinet-approved British letter. It is not a biblical decree. Readers 
     modern_date: "1922-07-24",
     location: "Geneva / London",
     date: "1922-07-24",
-    local_image: "/maps/holy-land-1695.jpg",
+    local_image: "/evidence/prophecy/mandate.jpg",
     image_caption:
-      "Historic map of the Holy Land stored in this app. The 1922 Mandate is the League paper that later named this land; the scan of the League title page is not stored.",
+      "Published map of the Mandate for Palestine and Trans-Jordan, 1923. Catalogued plate of the League land named in the 1922 paper.",
     source_url: "https://avalon.law.yale.edu/20th_century/palmanda.asp",
     verification_note: NOTICE,
     full_text: `The Mandate (League of Nations, 24 July 1922) put the Balfour policy into an international instrument. Article 2 (published English):
@@ -156,9 +153,9 @@ This is a U.S. presidential act. This app quotes the government wording. It does
     modern_date: "1950-07-05",
     location: "Jerusalem (Knesset)",
     date: "1950-07-05",
-    local_image: "/evidence/prophecy/israel-independence.jpg",
+    local_image: "/evidence/prophecy/law-of-return.jpg",
     image_caption:
-      "The 14 May 1948 proclamation. The Law of Return (1950) is the statute of this state for those who still come.",
+      "Yemenite olim at registration after arrival. Catalogued PikiWiki photograph of the gathering the 1950 Law of Return later named in statute.",
     source_url: "https://www.knesset.gov.il/laws/special/eng/return.htm",
     verification_note: NOTICE,
     full_text: `King James, Ezekiel 36:24: “For I will take you from among the heathen, and gather you out of all countries, and will bring you into your own land.”
@@ -228,9 +225,9 @@ Luke 21:24 is a first-century word of Jesus about Jerusalem trodden down “unti
     modern_date: "1984–1991",
     location: "Ethiopia / Sudan / Israel",
     date: "1991-05-24",
-    local_image: "/evidence/prophecy/israel-independence.jpg",
+    local_image: "/evidence/prophecy/ethiopian-aliyah.jpg",
     image_caption:
-      "The 1948 proclamation of the state that later received Beta Israel in Operations Moses and Solomon. A photograph of the airlift itself is not stored.",
+      "Beta Israel arriving in Israel. Government Press Office photograph of the Ethiopian gathering named in Operations Moses and Solomon.",
     source_url: "https://www.gov.il/",
     verification_note: NOTICE,
     full_text: `King James, Isaiah 11:11: “And it shall come to pass in that day, that the Lord shall set his hand again the second time to recover the remnant of his people, which shall be left, from Assyria, and from Egypt, and from Pathros, and from Cush, and from Elam, and from Shinar, and from Hamath, and from the islands of the sea.”
@@ -251,9 +248,9 @@ Cush in the prophets is the Nile-south region later called Ethiopia. The airlift
     modern_date: "1989–2001",
     location: "Former Soviet Union / Israel",
     date: "1990",
-    local_image: "/evidence/prophecy/israel-independence.jpg",
+    local_image: "/evidence/prophecy/soviet-aliyah.jpg",
     image_caption:
-      "The 1948 state whose Law of Return received the post-Soviet wave. A 1990s airport photograph of that wave is not stored.",
+      "New immigrants from the Soviet Union at Lod airport. Catalogued photograph of the post-Soviet aliyah wave.",
     source_url: "https://www.cbs.gov.il/",
     verification_note: NOTICE,
     full_text: `King James, Jeremiah 16:14–15: “Therefore, behold, the days come, saith the LORD, that it shall no more be said, The LORD liveth, that brought up the children of Israel out of the land of Egypt; But, The LORD liveth, that brought up the children of Israel from the land of the north, and from all the lands whither he had driven them: and I will bring them again into their land that I gave unto their fathers.”
@@ -274,9 +271,9 @@ Jeremiah’s “land of the north” in the sixth century named the Mesopotamian
     modern_date: "1950–present",
     location: "Israel",
     date: "1950-07-05",
-    local_image: "/evidence/prophecy/israel-independence.jpg",
+    local_image: "/evidence/prophecy/ongoing-aliyah.jpg",
     image_caption:
-      "The 1948 proclamation. The Law of Return of this state is still the public gate of aliyah.",
+      "Ben Gurion Airport arrivals hall, the public gate of continuing aliyah under the Law of Return.",
     source_url: "https://www.cbs.gov.il/",
     verification_note:
       "The statute and the continuing immigration series are public. The gathering texts are not closed by a last flight. This app does not declare fulfillment finished.",
@@ -322,10 +319,10 @@ What is established is that the nations have not been able to set the city down.
     modern_date: "1948–present",
     location: "Land of Israel",
     date: "1948-05-14",
-    local_image: "/evidence/prophecy/earth-night.jpg",
+    local_image: "/evidence/prophecy/waste-land.jpg",
     image_caption:
-      "NASA “Black Marble” night earth, public domain. The lamps of the eastern Mediterranean sit in this published picture; a separate Negev-field photograph is not stored.",
-    source_url: "https://images.nasa.gov/",
+      "Yatir Forest on the edge of the Negev: planted woodland against arid hills. Catalogued ground photograph of the cultivated waste.",
+    source_url: "https://www.kkl-jnf.org/",
     verification_note:
       "Afforestation, irrigated agriculture, and rebuilt towns are measured. Ezekiel 36:33 ties the rebuilt wastes to a day of cleansing. This app does not declare that day.",
     full_text: `King James, Ezekiel 36:35: “And they shall say, This land that was desolate is become like the garden of Eden; and the waste and desolate and ruined cities are become fenced, and are inhabited.”
@@ -338,7 +335,7 @@ Isaiah 43:19: “I will even make a way in the wilderness, and rivers in the des
 
 Amos 9:14: “they shall build the waste cities, and inhabit them; and they shall plant vineyards, and drink the wine thereof.”
 
-Dated public facts: JNF-KKL and state forestry planted hundreds of millions of trees on mapped lands. Drip irrigation (a published Israeli agricultural method), pipelines, and desalination have put water and export produce in portions of the Negev. Cities that were ruin or swamp in the nineteenth-century surveys are inhabited. NASA orbital photographs show the contrast of irrigated circles against arid ground.
+Dated public facts: JNF-KKL and state forestry planted hundreds of millions of trees on mapped lands, including the Yatir Forest on the Negev edge. Drip irrigation (a published Israeli agricultural method), pipelines, and desalination have put water and export produce in portions of the Negev. Cities that were ruin or swamp in the nineteenth-century surveys are inhabited.
 
 Irrigation and desalination are ordinary engineering. Isaiah 35 also names the lame leaping and the tongue of the dumb singing. Those clauses are not a pipeline. This card stores the water and the rebuilt towns beside the verses. It does not close the prophecy.`
   },
@@ -352,9 +349,9 @@ Irrigation and desalination are ordinary engineering. Isaiah 35 also names the l
     modern_date: "19th century–present",
     location: "Worldwide",
     date: "1804",
-    local_image: "/evidence/prophecy/earth-night.jpg",
+    local_image: "/evidence/prophecy/gospel-nations.jpg",
     image_caption:
-      "NASA night earth. The lamps mark the inhabited world into which the gospel is still being published.",
+      "Title page of the 1611 King James Bible. Catalogued plate of the English Scripture still published among the nations.",
     source_url: "https://www.biblegateway.com/",
     verification_note:
       "Bible translation and global media are established. Matthew 24:14 ends “and then shall the end come.” This app does not announce that end.",
@@ -376,15 +373,15 @@ Dated public facts: Bible societies from the nineteenth century onward printed a
     modern_date: "20th–21st century",
     location: "Worldwide",
     date: "1903",
-    local_image: "/evidence/prophecy/earth-night.jpg",
+    local_image: "/evidence/prophecy/knowledge-increased.jpg",
     image_caption:
-      "NASA “Black Marble” night side of the earth — a published picture of electric light and the roads between cities.",
-    source_url: "https://earthobservatory.nasa.gov/",
+      "The New York Public Library Rose Main Reading Room — stored knowledge in one hall. Catalogued interior photograph. Not a picture of Daniel’s sealed book.",
+    source_url: "",
     verification_note:
       "Travel and recorded knowledge have increased by every public measure. Whether Daniel 12:4 names that increase, or the unsealing of the book itself, is debated. This app does not close the verse.",
     full_text: `King James, Daniel 12:4: “But thou, O Daniel, shut up the words, and seal the book, even to the time of the end: many shall run to and fro, and knowledge shall be increased.”
 
-Dated public facts: powered flight, global shipping, and scheduled air travel made “to and fro” a civilian commonplace. Print, then radio, then the public internet made recorded knowledge searchable in seconds. NASA’s night-earth photographs show the lamps of that traffic.
+Dated public facts: powered flight, global shipping, and scheduled air travel made “to and fro” a civilian commonplace. Print, then radio, then the public internet made recorded knowledge searchable in seconds.
 
 Some readers apply the clause to travel and science. Others read it as people searching the newly opened book. Both readings can be stated. Neither is a laboratory proof that the sealed book is now fully open. The measurements of travel and stored knowledge are established. The identification with Daniel’s “time of the end” is contextual.`,
   },
@@ -400,7 +397,7 @@ Some readers apply the clause to travel and science. Others read it as people se
     date: "1914",
     local_image: "/evidence/prophecy/wars-nations.jpg",
     image_caption:
-      "The United Nations Headquarters, where wars and rumours of wars are the standing agenda. Catalogued photograph of the named buildings.",
+      "Australian gunners on a duckboard through Chateau Wood, Ypres, 29 October 1917 (Frank Hurley). Public-domain war photograph. Jesus said the end is not yet.",
     verification_note:
       "Wars, famine reports, and earthquakes are published facts in every century. Jesus said “the end is not yet.” This card does not treat any single war as that end.",
     full_text: `King James, Matthew 24:6–8: “And ye shall hear of wars and rumours of wars: see that ye be not troubled: for all these things must come to pass, but the end is not yet. For nation shall rise against nation, and kingdom against kingdom: and there shall be famines, and pestilences, and earthquakes, in divers places. All these are the beginning of sorrows.”
@@ -421,9 +418,9 @@ Jesus named these as the beginning of sorrows, and forbade being troubled into a
     modern_date: "1947–present",
     location: "United Nations / the land",
     date: "1947-11-29",
-    local_image: "/evidence/prophecy/un-181.jpg",
+    local_image: "/evidence/prophecy/nations-parting.jpg",
     image_caption:
-      "The same UN assembly that recommended partition remains the house of later partition plans. Photograph of the published assembly.",
+      "The United Nations General Assembly hall, where later partition plans for the land have been debated. Catalogued photograph of that house.",
     source_url: "https://www.un.org/unispal/",
     verification_note:
       "Partition plans are established state papers. Joel 3:2 is a latter-day pleading in the valley of Jehoshaphat. This app does not say that valley court has sat.",
@@ -453,18 +450,13 @@ Joel names a gathering of all nations for judgment over scattering and parting. 
         image_caption:
           "Einot Tzukim (Ein Feshkha) on the north-west Dead Sea shore: reeds and fresh water beside the salt basin. Catalogued reserve photograph.",
       },
-      {
-        local_image: "/evidence/dead-sea.jpg",
-        image_caption:
-          "NASA photograph of the Dead Sea itself. The basin is still salt. The springs and reserve sit on its edge.",
-      },
     ],
     source_url: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0038319",
     verification_note:
       "Freshwater springs and microbes in the Dead Sea are published. Ezekiel 47 describes the sea healed and fishers from Engedi to Eneglaim. That has not occurred.",
     full_text: `King James, Ezekiel 47:8–10: “These waters issue out toward the east country, and go down into the desert, and go into the sea: which being brought forth into the sea, the waters shall be healed. … the fishers shall stand upon it from Engedi even unto Eneglaim; they shall be a place to spread forth nets; their fish shall be according to their kinds, as the fish of the great sea, exceeding many.”
 
-Dated public facts: Ionescu and colleagues published underwater freshwater springs in the Dead Sea in PLOS ONE (5 June 2012), with photographs of the shafts and of biofilms on cobble. Ein Feshkha / Einot Tzukim is a mapped freshwater reserve on the north-west shore, with reeds and pools. The NASA photograph stored with this card is the salt sea itself.
+Dated public facts: Ionescu and colleagues published underwater freshwater springs in the Dead Sea in PLOS ONE (5 June 2012), with photographs of the shafts and of biofilms on cobble. Ein Feshkha / Einot Tzukim is a mapped freshwater reserve on the north-west shore, with reeds and pools.
 
 What is not established: that the sea has become fresh, or that commercial nets now stand from Engedi to Eneglaim. Microbes at a spring, and reeds at a reserve, are not Ezekiel’s multitude of fish. This card stores the discovery beside the vision. It does not close the chapter.`,
   },
@@ -478,9 +470,9 @@ What is not established: that the sea has become fresh, or that commercial nets 
     modern_date: "first century–present",
     location: "Worldwide",
     date: "c. AD 112",
-    local_image: "/evidence/holidays/latin-cross.jpg",
+    local_image: "/evidence/prophecy/persecution.jpg",
     image_caption:
-      "Catalogued Latin cross (Metropolitan Museum). The verse is hatred for His name, not this object as a relic.",
+      "The Colosseum, Rome — a named place of public killing in the empire that first put Christians to death for the name. Catalogued site photograph.",
     verification_note:
       "Persecution of Christians is a published fact from Pliny to the present. Matthew 24:9 does not let a reader date the end from any one country’s report.",
     full_text: `King James, Matthew 24:9: “Then shall they deliver you up to be afflicted, and shall kill you: and ye shall be hated of all nations for my name’s sake.”
@@ -501,9 +493,9 @@ This is the standing condition Jesus named, not a new clock. Persecution has not
     modern_date: "ongoing",
     location: "Worldwide",
     date: "present",
-    local_image: "/evidence/prophecy/earth-night.jpg",
+    local_image: "/evidence/prophecy/falling-away.jpg",
     image_caption:
-      "NASA night earth. The lamps mark the inhabited world in which departure from the faith is counted, not a census of that departure.",
+      "Nave of St Oswald’s, Filey: pews and a quiet house. Catalogued church interior. Not a census of “the” falling away.",
     verification_note:
       "Paul said a falling away comes first. Census religion and empty profession are public. This app does not fix the day of the man of sin from a poll.",
     full_text: `King James, 2 Thessalonians 2:3: “Let no man deceive you by any means: for that day shall not come, except there come a falling away first, and that man of sin be revealed, the son of perdition.”
@@ -526,9 +518,9 @@ What is stored is the wording and the visible cooling in once-Christian nations.
     modern_date: "first century–present",
     location: "Worldwide",
     date: "present",
-    local_image: "/evidence/prophecy/wars-nations.jpg",
+    local_image: "/evidence/prophecy/false-christs.jpg",
     image_caption:
-      "The UN chamber, a house of nations. The verse is many claiming “I am Christ,” not this hall.",
+      "Luca Signorelli, Sermon and Deeds of the Antichrist (Orvieto, San Brizio). Catalogued fresco of the deception Jesus named. Not a living claimant.",
     verification_note:
       "Claimants who take the name of Christ, and prophets who deceive, are a published recurring fact. Matthew 24 also warns of a more concentrated deception still ahead.",
     full_text: `King James, Matthew 24:5: “For many shall come in my name, saying, I am Christ; and shall deceive many.”
@@ -551,9 +543,9 @@ Jesus said this must come to pass and that a sharper deception is still possible
     modern_date: "ongoing",
     location: "Worldwide",
     date: "present",
-    local_image: "/evidence/prophecy/earth-night.jpg",
+    local_image: "/evidence/prophecy/scoffers.jpg",
     image_caption:
-      "NASA night earth. The verse is a spoken scoff, not a photograph of a scoffer.",
+      "Pieter Claesz, Still Life with a Skull and a Writing Quill (1628). Catalogued vanitas of time passing while the fathers sleep. Not a date for the coming.",
     verification_note:
       "The scoff Peter named is public. The passage gives no date. This app does not treat mockery itself as a calendar.",
     full_text: `King James, 2 Peter 3:3–4: “Knowing this first, that there shall come in the last days scoffers, walking after their own lusts, And saying, Where is the promise of his coming? for since the fathers fell asleep, all things continue as they were from the beginning of the creation.”
@@ -572,9 +564,9 @@ Peter’s next lines answer with the flood and with a coming fire, and with the 
     modern_date: "ongoing",
     location: "Worldwide",
     date: "present",
-    local_image: "/evidence/prophecy/earth-night.jpg",
+    local_image: "/evidence/prophecy/lovers-of-selves.jpg",
     image_caption:
-      "NASA night earth. The lamps of a self-advertising age; not a proof that the last days are finished.",
+      "Caravaggio, Narcissus — a man in love with his own image. Catalogued painting. Not a statistic of 2 Timothy 3.",
     verification_note:
       "Paul’s list is a moral description, not a statistic. Headlines about pride and money cannot close the chapter.",
     full_text: `King James, 2 Timothy 3:1–2, 5: “This know also, that in the last days perilous times shall come. For men shall be lovers of their own selves, covetous, boasters, proud, blasphemers, disobedient to parents, unthankful, unholy, … Having a form of godliness, but denying the power thereof: from such turn away.”
@@ -593,9 +585,9 @@ This card stores the wording as a watch on the present. It does not turn a fashi
     modern_date: "ongoing",
     location: "Worldwide",
     date: "present",
-    local_image: "/evidence/artifacts/mount-sodom.jpg",
+    local_image: "/evidence/prophecy/days-of-noah.jpg",
     image_caption:
-      "Mount Sodom salt, the mapped basin of Genesis 19. The photograph is the place. It is not a caption on this century.",
+      "John Martin, The Destruction of Sodom and Gomorrah (1852). Catalogued painting of the sudden day Jesus named. Not a caption on this century.",
     verification_note:
       "Jesus compared the coming to ordinary eating, drinking, marrying, buying, and building until the day broke. Mapping every vice of a city onto “Sodom” is a later reading and is marked disputed.",
     full_text: `King James, Matthew 24:37–38: “But as the days of Noe were, so shall also the coming of the Son of man be. For as in the days that were before the flood they were eating and drinking, marrying and giving in marriage, until the day that Noe entered into the ark.”
@@ -643,10 +635,10 @@ This is setup, not the abomination. Paul speaks of a man sitting in the temple o
     modern_date: "late 20th century–present",
     location: "Worldwide",
     date: "1969",
-    local_image: "/evidence/prophecy/earth-night.jpg",
+    local_image: "/evidence/prophecy/whole-earth-see.jpg",
     image_caption:
-      "NASA night earth. The lamps mark the network that can carry a single image to many peoples at once.",
-    source_url: "https://earthobservatory.nasa.gov/",
+      "Raisting earth station dishes — machines that can send one scene to many nations at once. Catalogued ground photograph. Not the two witnesses of Revelation 11.",
+    source_url: "",
     verification_note:
       "Global live image is a measured capability. Revelation 11 names a specific three-and-a-half-day sight of two witnesses. This app does not say those witnesses have appeared.",
     full_text: `King James, Revelation 11:9: “And they of the people and kindreds and tongues and nations shall see their dead bodies three days and an half, and shall not suffer their dead bodies to be put in graves.”
@@ -667,8 +659,9 @@ Setup is not fulfillment. Revelation 11 is a dated scene of two witnesses. Light
     modern_date: "present",
     location: "Worldwide",
     date: "2000",
-    local_image: "",
-    image_caption: "",
+    local_image: "/evidence/prophecy/buy-sell.jpg",
+    image_caption:
+      "A published payment terminal that can accept or refuse a card. Capability only — not the mark of the beast.",
     verification_note:
       "Digital payments and identity systems exist. They are not the mark of the beast. This app will not name a card, chip, vaccine, or currency as that mark.",
     full_text: `King James, Revelation 13:16–17: “And he causeth all, both small and great, rich and poor, free and bond, to receive a mark in their right hand, or in their foreheads: And that no man might buy or sell, save he that had the mark, or the name of the beast, or the number of his name.”
@@ -691,99 +684,68 @@ The setup is only this: a world in which “no man might buy or sell” can be a
     date: "1990",
     local_image: "/evidence/prophecy/euphrates.jpg",
     image_caption:
-      "NASA photograph of the Euphrates in its mapped course. Reservoirs and reduced reaches are a published basin fact.",
-    source_url: "https://earthobservatory.nasa.gov/",
+      "Aerial photograph of a drying Euphrates reach in Syria: exposed bed and remaining channels.",
+    source_url: "https://phys.org/news/2021-08-euphrates-threatens-disaster-syria.html",
     verification_note:
       "Dams and drought have reduced reaches of the Euphrates. Revelation 16:12 is the sixth vial, poured by an angel. This app does not say that vial has been poured.",
     full_text: `King James, Revelation 16:12: “And the sixth angel poured out his vial upon the great river Euphrates; and the water thereof was dried up, that the way of the kings of the east might be prepared.”
 
-Dated public facts: Turkey’s Atatürk Dam (among others) and downstream drought years have lowered stretches of the Euphrates. NASA and basin-state papers publish the reservoirs and the dry reaches.
+Dated public facts: Turkey’s Atatürk Dam and other basin works have long held the headwaters. In 2021 published reporting from northeast Syria described the river contracted to a sliver, Tishrin reservoir down by metres, and engineers warning that turbines were near dead level. UN and basin-state papers record the low flow into Syria and the dry reaches downstream.
 
-A dam is not an angel’s vial. The text is a judgment that prepares a way for the kings of the east. The reduced river is a present measurement that makes the wording easier to picture. It is not stored as the sixth vial already poured.`,
+The text names an angel’s vial that prepares a way for the kings of the east. The reduced river is stored as the present measurement. This app does not say that vial has been poured.`,
+  },
+  {
+    title: "Rivers and lagoons in the Moroccan Sahara",
+    fulfillment_type: "prophecy_fulfillment",
+    watch_stage: "in_process",
+    evidence_status: "established_contextual",
+    scripture_reference: "Isaiah 43:19–20; Isaiah 35:6–7",
+    prophecy_reference: "Isaiah 43:19–20; Isaiah 35:6–7",
+    modern_date: "2024-09",
+    location: "Merzouga / Moroccan Sahara",
+    date: "2024-09",
+    local_image: "/evidence/prophecy/sahara-lagoons.jpg",
+    image_caption:
+      "Floodwaters and palms at the dune line in the Moroccan Sahara after the September 2024 rains.",
+    source_url:
+      "https://apnews.com/article/sahara-flooding-oasis-rain-morocco-2b6c28d2487a0ef370aff60775d0245d",
+    verification_note:
+      "The September 2024 rains and the lagoons they left are a published weather record. Isaiah 43 names rivers in the desert as the Lord’s new thing. This app does not declare that verse fulfilled.",
+    full_text: `King James, Isaiah 43:19: “I will even make a way in the wilderness, and rivers in the desert.”
+
+Isaiah 43:19–20: “Behold, I will do a new thing; now it shall spring forth; shall ye not know it? I will even make a way in the wilderness, and rivers in the desert. The beast of the field shall honour me, the dragons and the owls: because I give waters in the wilderness, and rivers in the desert, to give drink to my people, my chosen.”
+
+Isaiah 35:6–7: “for in the wilderness shall waters break out, and streams in the desert. And the parched ground shall become a pool, and the thirsty land springs of water.”
+
+Dated public facts: in September 2024 a rare deluge fell on southeastern Morocco. Morocco’s meteorology service told the Associated Press that some desert stations took more rain in two days than they usually see in a year; Houssine Youabeb said it had been thirty to fifty years since so much rain had fallen in so short a space. Water collected between the dunes at Merzouga. Lake Iriqui, dry for about fifty years after the Mansour Eddahbi Dam, filled again. Palms stood in the flood at the dune line.
+
+The photograph stored here is that published scene. The verses name waters the Lord gives in the wilderness. This card stores the dated rain and the lagoons beside those words. It does not close the prophecy.`,
   },
   redWater({
-    title: "Rivers that run red — not the plague of blood",
-    modern_date: "mapped present waters",
-    location: "Named rivers stored on the cards below",
-    date: "2002",
-    local_image: "/evidence/prophecy/rio-tinto.jpg",
-    image_caption:
-      "NASA Ames photograph of the Rio Tinto in Spain. The red is acid mine drainage and iron, not blood.",
-    extra_images: [
-      {
-        local_image: "/evidence/prophecy/blood-falls.jpg",
-        image_caption:
-          "Blood Falls at Taylor Glacier, Antarctica (NSF / Peter Rejcek). Iron-rich brine oxidizes red in air. Public-domain government photograph.",
-      },
-    ],
-    source_url: "https://science.nasa.gov/earth/earth-observatory/spains-stained-river-147459/",
-    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood. And the fish that was in the river died.”
-
-Revelation 16:4: “And the third angel poured out his vial upon the rivers and fountains of waters; and they became blood.”
-
-Dated public facts stored on the next cards, each with a photograph of the red water itself: Rio Tinto (iron), Blood Falls (iron brine), Daldykan / Norilsk (industrial), and Caño Cristales (a plant). Rivers whose only freely stored picture is ordinary water are not kept here.
-
-What this is not: Moses’ plague on the Nile, or the third vial. The photographs are mineral, diesel, or vegetation. This shelf stores the published look of red water. It does not declare the plague.`,
-  }),
-  redWater({
-    title: "Rio Tinto — iron, not blood",
-    modern_date: "mapped present waters",
-    location: "Andalusia, Spain",
-    date: "2002",
-    local_image: "/evidence/prophecy/rio-tinto.jpg",
-    image_caption:
-      "NASA Ames photograph of the Rio Tinto. The red is acid mine drainage and iron, not blood.",
-    source_url: "https://science.nasa.gov/earth/earth-observatory/spains-stained-river-147459/",
-    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood.”
-
-Dated public facts: the Rio Tinto in southwestern Spain runs red and orange for tens of kilometres. NASA and basin papers publish the iron, the acidity, and the microbes that oxidize pyrite. Mining in the Iberian Pyrite Belt has long exposed that rock.
-
-This is rust in acid water. It is not the Nile turned to blood, and it is not the third vial.`,
-  }),
-  redWater({
-    title: "Blood Falls — iron brine on Taylor Glacier",
+    title: "Blood Falls",
     modern_date: "mapped present waters",
     location: "Taylor Glacier, Antarctica",
     date: "2006-11-26",
     local_image: "/evidence/prophecy/blood-falls.jpg",
     image_caption:
-      "Blood Falls at Taylor Glacier (NSF / Peter Rejcek). Iron-rich brine oxidizes red in air. Public-domain government photograph.",
+      "Blood Falls at Taylor Glacier, Antarctica (NSF / Peter Rejcek). Public-domain government photograph.",
     source_url: "https://photolibrary.usap.gov/",
     full_text: `King James, Revelation 16:4: “And the third angel poured out his vial upon the rivers and fountains of waters; and they became blood.”
 
-Dated public facts: a subglacial brine leaks from Taylor Glacier into Lake Bonney. The iron reddens when it meets air. The National Science Foundation published this photograph.
-
-This is chemistry at a glacier snout. It is not a vial poured by an angel.`,
+Dated public facts: a subglacial brine leaks from Taylor Glacier into Lake Bonney. The iron reddens when it meets air. The National Science Foundation published this photograph.`,
   }),
   redWater({
-    title: "Daldykan and Norilsk — industrial red water in Siberia",
-    modern_date: "2014–2020",
-    location: "Norilsk, Krasnoyarsk Krai, Russia",
-    date: "2016-09",
-    local_image: "/evidence/prophecy/norilsk-red.jpg",
-    image_caption:
-      "Copernicus Sentinel-2 / ESA, 31 May 2020: diesel from a Norilsk power plant staining Arctic waterways red. Catalogued satellite record of industrial red water at the same nickel city. Press pictures of the 2016 Daldykan bank are not stored.",
-    source_url: "https://www.npr.org/sections/thetwo-way/2016/09/08/493139519/a-siberian-river-has-mysteriously-turned-blood-red",
-    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood.”
-
-Dated public facts: the Daldykan near Norilsk, above the Arctic Circle, ran crimson in 2014 and again in September 2016. Published reporting named iron runoff and leaks from Norilsk Nickel works. On 29 May 2020 a diesel tank at a Norilsk power plant failed; ESA’s Sentinel-2 photographed the Ambarnaya and nearby channels stained red.
-
-The 2016 bank photographs belong to the press and are not stored here. The satellite plate is the catalogued industrial record at that city. Pipeline rust and diesel are not the plague on the Nile.`,
-  }),
-  redWater({
-    title: "Caño Cristales — a red plant, not blood",
+    title: "Caño Cristales",
     modern_date: "wet season, each year",
     location: "Serranía de la Macarena, Meta, Colombia",
     date: "2010",
     local_image: "/evidence/prophecy/cano-cristales.jpg",
     image_caption:
-      "Caño Cristales, the river of five colors. The red is Macarenia clavigera on the bed in the wet season. Catalogued site photograph.",
+      "Caño Cristales (Los Ocho): the wet-season riverbed running red. Catalogued site photograph.",
     source_url: "https://commons.wikimedia.org/wiki/Category:Ca%C3%B1o_Cristales",
     full_text: `King James, Revelation 16:4: “And the third angel poured out his vial upon the rivers and fountains of waters; and they became blood.”
 
-Dated public facts: Caño Cristales in Colombia turns a brilliant red in the wet months because an endemic aquatic plant, Macarenia clavigera, covers the bed. The same reach also shows green, yellow, blue, and black. This is a mapped botanical season, not a dump and not a vial.
-
-A plant is not blood. The photograph is the named river in that season.`,
+Dated public facts: Caño Cristales in Colombia turns a brilliant red in the wet months because an endemic aquatic plant, Macarenia clavigera, covers the bed. The same reach also shows green, yellow, blue, and black.`,
   }),
   {
     title: "Abraham Accords and published “peace and safety” papers",
@@ -795,9 +757,9 @@ A plant is not blood. The photograph is the named river in that season.`,
     modern_date: "2020-09-15",
     location: "Washington, D.C.",
     date: "2020-09-15",
-    local_image: "/evidence/prophecy/un-headquarters.jpg",
+    local_image: "/evidence/prophecy/abraham-accords.jpg",
     image_caption:
-      "United Nations Headquarters. The Abraham Accords were signed at the White House; that ceremony photograph is not stored here. The paper is quoted below.",
+      "White House South Lawn, 15 September 2020: the Abraham Accords signing. Official U.S. government photograph of the paper named below.",
     source_url: "https://www.whitehouse.gov/",
     verification_note:
       "The Accords are a dated state paper. Applying them to Daniel’s covenant or to Paul’s “peace and safety” is a disputed reading. This app does not make that identification.",
@@ -805,7 +767,7 @@ A plant is not blood. The photograph is the named river in that season.`,
 
 Daniel 9:27: “And he shall confirm the covenant with many for one week.”
 
-Published English of the Abraham Accords Declaration (White House, 15 September 2020), opening sense: the United Arab Emirates, Bahrain, and Israel, witnessed by the United States, announced normalization of relations and a desire to advance peace in the Middle East. Later papers added Sudan and Morocco. The ceremony photograph is a U.S. government work.
+Published English of the Abraham Accords Declaration (White House, 15 September 2020), opening sense: the United Arab Emirates, Bahrain, and Israel, witnessed by the United States, announced normalization of relations and a desire to advance peace in the Middle East. Later papers added Sudan and Morocco. The ceremony photograph stored here is a U.S. government work.
 
 What is established is the dated diplomacy. What is disputed is calling this Daniel’s covenant with many, or the last “peace and safety” before destruction. Paul is warning watchful believers, not captioning a lawn signing. Ezekiel 38:11 speaks of a land “at rest” before a northern invasion — another text readers sometimes force onto a treaty. This card stores the paper. It does not start a seven-year clock.`,
   },
@@ -819,9 +781,9 @@ What is established is the dated diplomacy. What is disputed is calling this Dan
     modern_date: "present",
     location: "Iran / the north / the land",
     date: "1979",
-    local_image: "/maps/holy-land-1695.jpg",
+    local_image: "/evidence/prophecy/persia-ezekiel.jpg",
     image_caption:
-      "Historic map of the land and its neighbours stored in this app. Geography only — not a battle map of Gog.",
+      "The Gate of All Nations at Persepolis, in the land Ezekiel 38:5 names as Persia. Catalogued site photograph. Not a flag for Magog.",
     verification_note:
       "Iran is the heir of Persia, which Ezekiel 38:5 names. Magog, Meshech, Tubal, Gomer, and Togarmah are historic names whose modern flags are debated. This app does not identify Gog with a living government.",
     full_text: `King James, Ezekiel 38:8: “After many days thou shalt be visited: in the latter years thou shalt come into the land that is brought back from the sword, and is gathered out of many people, against the mountains of Israel, which have been always waste: but it is brought forth out of the nations, and they shall dwell safely all of them.”
@@ -842,9 +804,9 @@ What this app will not do: name Magog as Moscow, or declare that Ezekiel’s war
     modern_date: "2018-05-14",
     location: "Jerusalem",
     date: "2018-05-14",
-    local_image: "/evidence/prophecy/western-wall.jpg",
+    local_image: "/evidence/prophecy/us-embassy-jerusalem.jpg",
     image_caption:
-      "Jerusalem: the Western Wall. The 2018 U.S. embassy opening is a dated act about this city; a photograph of the embassy building is not stored.",
+      "Dedication of the U.S. embassy in Jerusalem, May 2018. Official photograph of that dated act.",
     source_url: "https://il.usembassy.gov/",
     verification_note: NOTICE,
     full_text: `King James, Zechariah 8:3: “Thus saith the LORD; I am returned unto Zion, and will dwell in the midst of Jerusalem: and Jerusalem shall be called a city of truth.”
@@ -905,11 +867,6 @@ What this is not: a verse that says “when five heifers land, the week begins.�
         image_caption:
           "The same Temple Institute menorah when it stood in the Cardo. A second catalogued view of the prepared vessel.",
       },
-      {
-        local_image: "/evidence/prophecy/temple-mount.jpg",
-        image_caption:
-          "The Temple Mount from the Mount of Olives. Workshops and vessels exist. This house does not.",
-      },
     ],
     source_url: "https://templeinstitute.org/",
     verification_note:
@@ -934,9 +891,9 @@ Preparations are not a functioning temple. Daniel’s abomination, Paul’s man 
     modern_date: "1948–present",
     location: "—",
     date: "1948-05-14",
-    local_image: "/evidence/prophecy/israel-independence.jpg",
+    local_image: "/evidence/prophecy/fig-tree.jpg",
     image_caption:
-      "The same 14 May 1948 proclamation many readers treat as the fig tree putting forth leaves. Photograph of the dated act, not of a parable.",
+      "A fig tree with fruit. The parable names the tree; the 1948 identification is stored as a dispute, not as this photograph.",
     verification_note:
       "Jesus gave a parable about nearness, not a published calendar. Identifying the fig tree as the 1948 state is a common reading and is not stored as established fact.",
     full_text: `King James, Matthew 24:32–34: “Now learn a parable of the fig tree; When his branch is yet tender, and putteth forth leaves, ye know that summer is nigh: So likewise ye, when ye shall see all these things, know that it is near, even at the doors. Verily I say unto you, This generation shall not pass, till all these things be fulfilled.”

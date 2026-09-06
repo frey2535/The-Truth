@@ -12,37 +12,16 @@ const UA = "TheTruthApp/1.0 (self-hosted archive; prophecy-watch photographs)";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const DIRECT = [
-  {
-    dest: "public/evidence/prophecy/israel-from-space.jpg",
-    url: "https://eol.jsc.nasa.gov/DatabaseImages/ESC/large/ISS040/ISS040-E-74022.JPG",
-  },
-  {
-    dest: "public/evidence/prophecy/ezekiel-nations.jpg",
-    url: "https://eol.jsc.nasa.gov/DatabaseImages/ESC/large/ISS053/ISS053-E-50422.JPG",
-  },
-  {
-    dest: "public/evidence/prophecy/euphrates.jpg",
-    url: "https://eoimages.gsfc.nasa.gov/images/imagerecords/36000/36972/euphrates_tmo_2009009_lrg.jpg",
-  },
-];
+const DIRECT = [];
 
 const COMMONS = [
   {
     dest: "public/evidence/prophecy/cano-cristales.jpg",
     files: [
-      "Caño Cristales 01.jpg",
-      "Caño Cristales, Colombia.jpg",
       "Los Ocho en Caño Cristales.jpg",
+      "Caño Cristales, Colombia.jpg",
+      "Caño Cristales 01.jpg",
       "Cascadas Manto de La Virgen - Caño Cristales - La Macarena - Meta - Colombia.jpg",
-    ],
-  },
-  {
-    dest: "public/evidence/prophecy/norilsk-red.jpg",
-    files: [
-      "Norilsk oil spill may 31 2020 sentinel-2 esa.jpg",
-      "Leaked diesel fuel in the River Ambarnaya, near Norilsk, Siberia, Krasnoyarsk Krai, Russia, on May 31st and June 1st, 2020. (49982094662).jpg",
-      "Diesel oil spill in Arctic Circle.jpg",
     ],
   },
   {
@@ -60,14 +39,6 @@ const COMMONS = [
     files: [
       "The Phillip Medhurst Picture Torah 556. The sacrifice of the red heifer. Numbers cap 19 v 2. Heuman.jpg",
       "The Phillip Medhurst Picture Torah 557. Purification by the red heifer. Numbers cap 19 vv 1-10. Caspar Luyken.jpg",
-    ],
-  },
-  {
-    dest: "public/evidence/prophecy/rio-tinto.jpg",
-    files: [
-      "Rio tinto river CarolStoker NASA Ames Research Center.jpg",
-      "Rio Tinto (river).jpg",
-      "Rio Tinto - Red river - Spain.jpg",
     ],
   },
   {
@@ -124,10 +95,6 @@ const COMMONS = [
     ],
   },
   {
-    dest: "public/evidence/prophecy/euphrates.jpg",
-    files: ["Euphrates river - panoramio.jpg", "Bridge over the Euphrates (16860250421).jpg"],
-  },
-  {
     dest: "public/evidence/prophecy/truman-israel.jpg",
     files: [
       "Harry S Truman, bw half-length photo portrait, facing front, 1945.jpg",
@@ -137,9 +104,8 @@ const COMMONS = [
   {
     dest: "public/evidence/prophecy/gospel-nations.jpg",
     files: [
-      "King-James-Version-Bible.jpg",
-      "1611 King James Bible.jpg",
-      "Holy-Bible.jpg",
+      "King-James-Version-Bible-first-edition-title-page-1611.png",
+      "King James Bible (1611) page A2v.png",
     ],
   },
   {
@@ -153,61 +119,160 @@ const COMMONS = [
   {
     dest: "public/evidence/prophecy/ongoing-aliyah.jpg",
     files: [
-      "Ben Gurion International Airport (1).jpg",
-      "TLV Airport.jpg",
-      "Ben Gurion Airport terminal 3.jpg",
+      "16-03-30-Ben Gurion International Airport-RalfR-DSCF7550.jpg",
+      "16-03-30-Ben Gurion International Airport-RalfR-DSCF7547.jpg",
     ],
   },
   {
     dest: "public/evidence/prophecy/abraham-accords.jpg",
     files: [
-      "Abraham Accords 2020.jpg",
-      "Abraham Accords signing.jpg",
-      "Abraham Accords White House ceremony.jpg",
+      "President Trump and The First Lady Participate in an Abraham Accords Signing Ceremony.jpg",
+      "President Trump and The First Lady Participate in an Abraham Accords Signing Ceremony (50345635098).jpg",
     ],
   },
   {
     dest: "public/evidence/prophecy/us-embassy-jerusalem.jpg",
     files: [
-      "US Embassy in Jerusalem.jpg",
-      "American Embassy Jerusalem.jpg",
-      "Embassy of the United States, Jerusalem.jpg",
+      "US Embassy Jerusalem Dedication Ceremony, May 2018 (78).jpg",
+      "US embassy in Jerusalem 2018-05-19 (41485240815).jpg",
     ],
   },
   {
     dest: "public/evidence/prophecy/mandate.jpg",
     files: [
-      "Map of Mandatory Palestine.jpg",
-      "Mandatory Palestine map.jpg",
-      "Palestine 1920 map.jpg",
+      "Mandate for Palestine - AD 1923.png",
+      "Map of the British Mandate of Palestine in 1947.png",
     ],
   },
   {
     dest: "public/evidence/prophecy/law-of-return.jpg",
     files: [
-      "Jewish refugees ship Israel.jpg",
-      "Immigrants arriving in Israel.jpg",
-      "Ma'abarot 1950.jpg",
+      "PikiWiki Israel 4738 olim (Immigrants) from Yemen.jpg",
+      "PikiWiki Israel 6460 Immigration to Israel.jpg",
     ],
   },
   {
     dest: "public/evidence/prophecy/ethiopian-aliyah.jpg",
     files: [
-      "Beta Israel women.jpg",
-      "Ethiopian Jews Israel.jpg",
-      "Operation Solomon aircraft.jpg",
+      "Flickr - Government Press Office (GPO) - Ethiopian immigrants coming off a Boeing jet.jpg",
+      "Operation Solomon IDF Archives I.jpg",
     ],
   },
   {
     dest: "public/evidence/prophecy/soviet-aliyah.jpg",
     files: [
-      "Olim from Soviet Union.jpg",
-      "FSU immigrants Israel.jpg",
+      "New immigrants from the Soviet Union arrived at Lod airport today (FL61582361).jpg",
+      "Another group of new immigrants from the Soviet Union arrived today (FL61732706).jpg",
     ],
   },
   {
     dest: "public/evidence/prophecy/buy-sell.jpg",
-    files: ["Payment terminal in a shop.jpg", "Card payment terminal.jpg"],
+    files: [
+      "Credit card terminal.jpg",
+      "Payment terminal at self-checkout.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/waste-land.jpg",
+    files: [
+      "Yatir Forest, Israel no.1.jpg",
+      "125840 negev agriculture and fields PikiWiki Israel.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/fig-tree.jpg",
+    files: [
+      "Ficus carica 001.jpg",
+      "Common fig Ficus carica.jpg",
+      "Fig tree.jpg",
+      "Ficus carica.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/nations-parting.jpg",
+    files: [
+      "United Nations General Assembly hall.jpg",
+      "UN General Assembly.jpg",
+      "United Nations General Assembly.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/wars-nations.jpg",
+    files: [
+      "Chateau Wood Ypres 1917.jpg",
+      "Chateau Wood near Ypres (2866720075).jpg",
+      "Chateauwood.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/knowledge-increased.jpg",
+    files: [
+      "The Rose Main Reading Room NYC Public Library.jpg",
+      "Reading room, Library of Congress, Washington, D.C., 1901.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/falling-away.jpg",
+    files: [
+      "Filey, St Oswald's church interior (33880566411).jpg",
+      "St Andrew's church - the nave - geograph.org.uk - 1637048.jpg",
+      "Killinghall Church 851.JPG",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/false-christs.jpg",
+    files: [
+      "Luca Signorelli - Sermon and Deeds of the Antichrist - WGA21202.jpg",
+      "Fra angelico luca signorelli orvieto.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/scoffers.jpg",
+    files: [
+      "Pieter Claesz, Still Life with a Skull and a Writing Quill.jpg",
+      "Pieter Claesz - Vanitas Still Life - 943 - Mauritshuis.jpg",
+      "Pieter Claesz - Vanitas, circa 1630.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/lovers-of-selves.jpg",
+    files: [
+      "Narcissus-Caravaggio (1594-96).jpg",
+      "Caravaggio - Narcissus.jpg",
+      "Narcissus by Caravaggio.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/whole-earth-see.jpg",
+    files: [
+      "Erdfunkstelle Raisting 05.jpg",
+      "Erdfunkstelle Raisting 5.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/persia-ezekiel.jpg",
+    files: [
+      "Gate of All Nations, Persepolis.jpg",
+      "Gate of All Nations Persepolis.jpg",
+      "Apadana of Persepolis.jpg",
+      "Persepolis Gate of Nations.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/persecution.jpg",
+    files: [
+      "The Christian Martyrs' Last Prayer - Jean-Léon Gérôme.jpg",
+      "Jean-Léon Gérôme - The Christian Martyrs' Last Prayer.jpg",
+      "Colosseum in Rome, Italy - April 2007.jpg",
+      "Colosseum 2013.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/days-of-noah.jpg",
+    files: [
+      "John Martin - Sodom and Gomorrah.jpg",
+      "John Martin (1789-1854) - The Destruction of Sodom and Gomorrah - TWCMS , C6975 - Laing Art Gallery.jpg",
+    ],
   },
 ];
 
@@ -300,7 +365,7 @@ const LEGACY = [
   },
   {
     dest: "public/evidence/prophecy/wars-nations.jpg",
-    files: ["UN Security Council chamber.jpg", "United Nations Security Council.jpg"],
+    files: ["Chateau Wood, Ypres, 29 October 1917.jpg", "The Taking of Vimy Ridge, Easter Monday 1917.jpg"],
   },
   {
     dest: "public/evidence/prophecy/temple-mount.jpg",
