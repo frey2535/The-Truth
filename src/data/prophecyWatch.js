@@ -529,7 +529,7 @@ Matthew 24:11: “And many false prophets shall rise, and shall deceive many.”
 
 Matthew 24:24: “For there shall arise false Christs, and false prophets, and shall shew great signs and wonders; insomuch that, if it were possible, they shall deceive the very elect.”
 
-Dated public facts: from Simon Magus in Acts 8 to modern messianic claimants and miracle-sellers, the name has been taken. The app’s Holidays and names shelves already identify some of those trades.
+Dated public facts: from Simon Magus in Acts 8 to modern messianic claimants and miracle-sellers, the name has been taken. The app’s pagan traditions and names shelves already identify some of those trades.
 
 Jesus said this must come to pass and that a sharper deception is still possible. This card stores the recurring sign. It does not name a living man as the last false christ.`,
   },

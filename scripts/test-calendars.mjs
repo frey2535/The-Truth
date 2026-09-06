@@ -20,6 +20,7 @@ import { templeMonthStartsAround, gregorianToTemple } from "../src/lib/calendars
 import { jerusalemSunTimes } from "../src/lib/calendars/jerusalemSun.js";
 import { qumranYearDays, qumranWeekday, QUMRAN_MONTH_LENGTHS } from "../src/lib/calendars/qumran.js";
 import { appointedTimesForHebrew } from "../src/lib/calendars/appointedTimes.js";
+import { gregorianEaster, gregorianEasterSeason } from "../src/lib/calendars/westernEaster.js";
 
 assert.equal(isGregorianLeap(1900), false);
 assert.equal(isGregorianLeap(2000), true);
@@ -81,6 +82,13 @@ assert.ok(appointedTimesForHebrew(1, 14).some((t) => t.id === "passover"));
 assert.equal(qumranYearDays(), 364);
 assert.equal(QUMRAN_MONTH_LENGTHS.length, 12);
 assert.equal(qumranWeekday(1, 1), 3);
+
+assert.deepEqual(gregorianEaster(2024), { year: 2024, month: 3, day: 31 });
+assert.deepEqual(gregorianEaster(2025), { year: 2025, month: 4, day: 20 });
+assert.deepEqual(gregorianEaster(2026), { year: 2026, month: 4, day: 5 });
+assert.deepEqual(gregorianEasterSeason(2024).ashWednesday, { year: 2024, month: 2, day: 14 });
+assert.deepEqual(gregorianEasterSeason(2024).mardiGras, { year: 2024, month: 2, day: 13 });
+assert.deepEqual(gregorianEasterSeason(2026).ashWednesday, { year: 2026, month: 2, day: 18 });
 
 const sun = jerusalemSunTimes(2026, 8, 30);
 assert.ok(sun.sunrise > 5 && sun.sunrise < 7, `sunrise ${sun.sunrise}`);

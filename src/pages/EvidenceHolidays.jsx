@@ -71,9 +71,9 @@ export default function EvidenceHolidays() {
   return (
     <div>
       <header className="text-center mb-8">
-        <h1 className="font-display text-4xl text-[#2b2620] mb-2">Holidays, symbols, and names</h1>
+        <h1 className="font-display text-4xl text-[#2b2620] mb-2">Pagan traditions, symbols, and names</h1>
         <p className="text-[#5b5142] max-w-2xl mx-auto">
-          Every tradition, sign, and name stored in Holidays, listed by category. Photographs are catalogued
+          Every tradition, sign, and name stored under Pagan traditions, listed by category. Photographs are catalogued
           museum objects only. Where no matching object is stored, that fact is shown. Seals and invented
           portraits are not drawn.
         </p>

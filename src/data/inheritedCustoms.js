@@ -1,5 +1,8 @@
 /** Inherited customs many people still keep. Scripture first; then attested history; then disputed later claims. */
 
+export const CUSTOMS_NAV_LABEL = "Pagan traditions";
+export const CUSTOMS_SECTION_TITLE = "Pagan traditions and symbols";
+
 export const CUSTOM_SECTIONS = [
   {
     id: "times",
