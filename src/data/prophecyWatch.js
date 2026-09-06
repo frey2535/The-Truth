@@ -721,9 +721,9 @@ A dam is not an angel’s vial. The text is a judgment that prepares a way for t
 
 Revelation 16:4: “And the third angel poured out his vial upon the rivers and fountains of waters; and they became blood.”
 
-Dated public facts stored on the next cards: Rio Tinto (iron), Blood Falls (iron brine), Daldykan / Norilsk (industrial), Sarandí–Riachuelo (dye reports), Yangtze at Chongqing (2012 silt or discharge), Zhejiang and Jian dye dumps, the Gardon tracer, Caño Cristales (a plant), the Animas after Gold King, the Little Colorado, the Bermejo, and the Red River at Hanoi.
+Dated public facts stored on the next cards, each with a photograph of the red water itself: Rio Tinto (iron), Blood Falls (iron brine), Daldykan / Norilsk (industrial), and Caño Cristales (a plant). Rivers whose only freely stored picture is ordinary water are not kept here.
 
-What this is not: Moses’ plague on the Nile, or the third vial. The photographs are mineral, sediment, dye, diesel, or vegetation. This shelf stores the published look of red water. It does not declare the plague.`,
+What this is not: Moses’ plague on the Nile, or the third vial. The photographs are mineral, diesel, or vegetation. This shelf stores the published look of red water. It does not declare the plague.`,
   }),
   redWater({
     title: "Rio Tinto — iron, not blood",
@@ -771,73 +771,6 @@ Dated public facts: the Daldykan near Norilsk, above the Arctic Circle, ran crim
 The 2016 bank photographs belong to the press and are not stored here. The satellite plate is the catalogued industrial record at that city. Pipeline rust and diesel are not the plague on the Nile.`,
   }),
   redWater({
-    title: "Sarandí and the Riachuelo — dye reports at Buenos Aires",
-    modern_date: "2025-02",
-    location: "Avellaneda / La Boca, Argentina",
-    date: "2025-02",
-    local_image: "/evidence/prophecy/riachuelo.jpg",
-    image_caption:
-      "The Matanza–Riachuelo at La Boca, the industrial waterway that receives the Sarandí. Catalogued city photograph. Press pictures of the February 2025 blood-red canal are not stored.",
-    source_url: "https://www.livescience.com/planet-earth/rivers-oceans/canal-turns-into-stream-of-blood-in-argentina-as-locals-fear-toxic-leak",
-    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood.”
-
-Dated public facts: in February 2025 the Sarandí canal near Buenos Aires ran a bright red and carried a foul odor. Published reports named industrial aniline dyes or tannery waste. The Sarandí feeds the Matanza–Riachuelo, long mapped as a polluted urban river.
-
-The news pictures of that week are not freely catalogued. The photograph stored here is the named basin at La Boca. Dye in a canal is not the third vial.`,
-  }),
-  redWater({
-    title: "Yangtze at Chongqing — tomato-red water, September 2012",
-    modern_date: "2012-09",
-    location: "Chongqing, China",
-    date: "2012-09-06",
-    local_image: "/evidence/prophecy/yangtze-chongqing.jpg",
-    image_caption:
-      "The Yangtze at Chongqing, the reach that ran the color of tomato juice in September 2012. Catalogued river photograph. Press pictures of the red day are not stored.",
-    source_url: "https://www.nbcnews.com/id/wbna48947731",
-    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood.”
-
-Dated public facts: on 6 September 2012 a stretch of the Yangtze at Chongqing turned the color of tomato juice. Chongqing’s environmental office published high silt after floods in Sichuan and said hazardous substances were not found. Other published voices named industrial discharge. Nature and the AGU landslide notes stored both readings.
-
-The Reuters pictures of the red day are not stored. This card keeps the named reach and the dated dispute. Silt or dye in the Yangtze is not Moses’ plague.`,
-  }),
-  redWater({
-    title: "Jian River and Zhejiang dye dumps — 2011 and 2014",
-    modern_date: "2011–2014",
-    location: "Luoyang / Xinmeizhou, Zhejiang, China",
-    date: "2014-07",
-    local_image: "/evidence/prophecy/jian-river.jpg",
-    image_caption:
-      "The Jian near Hangu Pass, the river named when Luoyang ran crimson from firework-wrapper dye in December 2011. Catalogued photograph of the named water. The 2014 Xinmeizhou press pictures are not stored.",
-    source_url: "https://abcnews.go.com/International/river-china-mysteriously-turns-bloody-red-overnight/story?id=24715670",
-    extra_images: [
-      {
-        local_image: "/evidence/prophecy/yangtze-chongqing.jpg",
-        image_caption:
-          "An industrial Chinese river reach of the same published class. The overnight Zhejiang dump of July 2014 is a news record; that village photograph is not stored.",
-      },
-    ],
-    full_text: `King James, Revelation 16:4: “they became blood.”
-
-Dated public facts: in December 2011 the Jian at Luoyang ran crimson. Investigators published an illegal red dye used for firework wrappers. In July 2014 a waterway at Xinmeizhou in Zhejiang turned crimson within an hour, with a strange smell; published reports named illegal dumping from dyestuff or clothing works.
-
-Two dated dye records. Not a judgment vial. The 2014 village pictures belong to the press and are not invented here.`,
-  }),
-  redWater({
-    title: "Gardon River — tracer dye, June 2017",
-    modern_date: "2017-06",
-    location: "Gard, France",
-    date: "2017-06",
-    local_image: "/evidence/prophecy/gardon.jpg",
-    image_caption:
-      "The Gardon near the Pont du Gard. Catalogued photograph of the named river. The 2017 sulforhodamine release was a planned tracer; those news pictures are not stored.",
-    source_url: "https://www.cntraveler.com/story/this-french-river-just-turned-blood-red",
-    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood.”
-
-Dated public facts: in June 2017 scientists poured the water-soluble fluorescent dye sulforhodamine into the Gardon to map karst caves. The river ran blood-red by design. Published travel and science notes recorded the test.
-
-This was a tracer, announced and temporary. It is not a plague, and it is not stored as one.`,
-  }),
-  redWater({
     title: "Caño Cristales — a red plant, not blood",
     modern_date: "wet season, each year",
     location: "Serranía de la Macarena, Meta, Colombia",
@@ -851,66 +784,6 @@ This was a tracer, announced and temporary. It is not a plague, and it is not st
 Dated public facts: Caño Cristales in Colombia turns a brilliant red in the wet months because an endemic aquatic plant, Macarenia clavigera, covers the bed. The same reach also shows green, yellow, blue, and black. This is a mapped botanical season, not a dump and not a vial.
 
 A plant is not blood. The photograph is the named river in that season.`,
-  }),
-  redWater({
-    title: "Animas River after the Gold King Mine — 5 August 2015",
-    modern_date: "2015-08-05",
-    location: "Silverton / Animas River, Colorado",
-    date: "2015-08-05",
-    local_image: "/evidence/prophecy/animas-gold-king.jpg",
-    image_caption:
-      "The Animas running yellow-orange on 6 August 2015 after the Gold King Mine blowout. Catalogued spill photograph.",
-    source_url: "https://www.epa.gov/goldkingmine",
-    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood.”
-
-Dated public facts: on 5 August 2015 a breach at the Gold King Mine released millions of gallons of acid mine water into Cement Creek and the Animas. The river ran yellow-orange from iron. EPA and USGS published the plume.
-
-This is a dated mine-waste flood in Colorado. It is not stored as the plague of Egypt.`,
-  }),
-  redWater({
-    title: "Little Colorado — red silt, not a vial",
-    modern_date: "mapped present waters",
-    location: "Arizona, United States",
-    date: "2010",
-    local_image: "/evidence/prophecy/little-colorado.jpg",
-    image_caption:
-      "The Little Colorado running muddy red with suspended silt. Catalogued river photograph.",
-    source_url: "https://www.nps.gov/grca/",
-    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood.”
-
-Dated public facts: the Little Colorado is named for the red silt it carries from the Painted Desert into the Colorado in Grand Canyon. After rain the water is opaque and red-brown. That load is mapped geology.
-
-Desert clay in suspension is not blood by judgment.`,
-  }),
-  redWater({
-    title: "Río Bermejo — a river named for its red load",
-    modern_date: "mapped present waters",
-    location: "Chaco / Formosa, Argentina",
-    date: "2010",
-    local_image: "/evidence/prophecy/bermejo.jpg",
-    image_caption:
-      "The Río Bermejo, whose Spanish name means “reddish.” Catalogued photograph of the sediment-laden channel.",
-    source_url: "https://commons.wikimedia.org/wiki/Category:Bermejo_River",
-    full_text: `King James, Revelation 16:4: “they became blood.”
-
-Dated public facts: the Bermejo of northern Argentina and Bolivia carries a heavy red-brown sediment load. The name is the color. Basin papers publish the erosion and the silt.
-
-A river named for mud is not the third vial.`,
-  }),
-  redWater({
-    title: "Red River at Hanoi — the Hong Ha sediment",
-    modern_date: "mapped present waters",
-    location: "Hanoi, Vietnam",
-    date: "2010",
-    local_image: "/evidence/prophecy/hong-red-river.jpg",
-    image_caption:
-      "The Red River (Sông Hồng / Hong Ha) at Hanoi. The name is the silt. Catalogued city-river photograph.",
-    source_url: "https://commons.wikimedia.org/wiki/Category:Red_River_in_Hanoi",
-    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood.”
-
-Dated public facts: Vietnam’s Red River is named for the red-brown silt it carries from Yunnan to the Gulf of Tonkin. The water at Hanoi is routinely that color in the flood season.
-
-A hydronym is not a plague. The photograph is the named river in its city.`,
   }),
   {
     title: "Abraham Accords and published “peace and safety” papers",

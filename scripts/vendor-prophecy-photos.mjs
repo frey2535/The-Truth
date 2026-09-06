@@ -46,69 +46,6 @@ const COMMONS = [
     ],
   },
   {
-    dest: "public/evidence/prophecy/yangtze-chongqing.jpg",
-    files: [
-      "Yangtze River Cruise Chongqing 20181122.jpg",
-      "Dafosi Yangtze River Bridge in Chongqing city.jpg",
-      "Industry on the river at Chongqing in 1988.jpg",
-    ],
-  },
-  {
-    dest: "public/evidence/prophecy/gardon.jpg",
-    files: [
-      "Gardon near Pont du Gard 05.jpg",
-      "View of Gardon from Pont du Gard 02.jpg",
-      "Gardon at Colias.JPG",
-    ],
-  },
-  {
-    dest: "public/evidence/prophecy/riachuelo.jpg",
-    files: [
-      "Buenos Aires - Riachuelo, La Boca.jpg",
-      "Buenos Aires Riachuelo 3.jpg",
-      "Buenos Aires Riachuelo 2.jpg",
-    ],
-  },
-  {
-    dest: "public/evidence/prophecy/jian-river.jpg",
-    files: [
-      "20260503 Jian River near Hangu Pass.jpg",
-      "Industry on the river at Chongqing in 1988.jpg",
-    ],
-  },
-  {
-    dest: "public/evidence/prophecy/animas-gold-king.jpg",
-    files: [
-      "Animas River spill 2015-08-06.JPG",
-      "Gold King Mine - August 14, 2015 (20442774009).jpg",
-      "Gold King Mine - November 2015 (23011362543).jpg",
-    ],
-  },
-  {
-    dest: "public/evidence/prophecy/little-colorado.jpg",
-    files: [
-      "Muddy Little Colorado River (50533480408).jpg",
-      "USA little colorado pano AZ.jpg",
-      "Little Colorado River confluence with Big Canyon.jpg",
-    ],
-  },
-  {
-    dest: "public/evidence/prophecy/bermejo.jpg",
-    files: [
-      "Bermejo river seen to the North of the bridge Mansilla-Eva Perón.JPG",
-      "Rio Bermejo - panoramio.jpg",
-      "Rio bermejo(pcia. roca -chaco)-.jpg",
-    ],
-  },
-  {
-    dest: "public/evidence/prophecy/hong-red-river.jpg",
-    files: [
-      "Vietnam, Hanoi, Red River.jpg",
-      "Vietnam, Hanoi, Panoramic view of Red River.jpg",
-      "Along the Red River in Hanoi 24.jpg",
-    ],
-  },
-  {
     dest: "public/evidence/prophecy/red-heifers.jpg",
     files: [
       "Red Poll heifers.JPG",
