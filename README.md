@@ -44,6 +44,8 @@ npm run publish
 
 That builds `dist` and deploys it to Cloudflare Pages. Custom domain: `thetruth.currentflowconsulting.org`.
 
+A push to `main` also runs **Deploy to Cloudflare Pages** in GitHub Actions (`.github/workflows/deploy-cloudflare.yml`). That job needs repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+
 ## Free local study
 
 Research, Investigate, Word Study, and the Assistant search only what is stored in this app:
