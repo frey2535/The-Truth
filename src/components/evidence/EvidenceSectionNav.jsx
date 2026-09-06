@@ -6,7 +6,6 @@ export const EVIDENCE_SECTIONS = [
   { to: "/evidence/holidays", label: "Holidays" },
   { to: "/science", label: "Science" },
   { to: "/government", label: "State papers" },
-  { to: "/modern", label: "Dated records" },
 ];
 
 export function isEvidencePath(pathname) {

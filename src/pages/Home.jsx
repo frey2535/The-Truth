@@ -26,6 +26,7 @@ const ACTIONS = [
   { to: "/notebook", label: "Notebook", desc: "Your plans, notes, highlights, and favorites", icon: GraduationCap },
   { to: "/word-study", label: "Word study", desc: "Strong's definition and etymology, plus the verses", icon: Microscope },
   { to: "/customs", label: "Holidays and symbols", desc: "Christmas, Easter, Halloween, worn signs, and names Scripture gives the adversary", icon: Moon },
+  { to: "/prophecy", label: "Prophecy", desc: "Dated records, in-process signs, and end-time setup stored beside the verses", icon: Sparkles },
   { to: "/evidence", label: "Evidence", desc: "Empirical finds only — inscriptions, excavations, and measured science", icon: ScrollText },
   { to: "/investigate", label: "Investigate", desc: "Quote every stored text and record for a claim", icon: Search },
   { to: "/assistant", label: "Ask", desc: "Answers quote only what is stored in this app", icon: Sparkles },

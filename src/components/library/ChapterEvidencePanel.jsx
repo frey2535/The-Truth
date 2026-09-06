@@ -136,7 +136,7 @@ export default function ChapterEvidencePanel({
               )}
 
               <Section icon={Landmark} title="Archaeological Evidence" items={evidence} kind="evidence" />
-              <Section icon={Globe} title="Dated public records" items={modern} kind="modern" />
+              <Section icon={Globe} title="Prophecy watch" items={modern} kind="modern" />
               <Section icon={FlaskConical} title="Scientific measurements" items={scientific} kind="scientific" />
               <Section icon={Building2} title="State and imperial records" items={government} kind="government" />
             </div>

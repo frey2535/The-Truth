@@ -1,17 +1,25 @@
 import React from "react";
 import { ExternalLink, MapPin, Calendar, BookMarked } from "lucide-react";
 import EvidenceVisual from "./EvidenceVisual";
+import EvidenceStatusBadge from "./EvidenceStatusBadge";
 
 const typeStyles = {
-  prophecy_fulfillment: { label: "Prophecy Fulfillment", cls: "bg-[#6a4a7a]/10 text-[#6a4a7a] border-[#6a4a7a]/25" },
-  historical_event: { label: "Historical Event", cls: "bg-[#7a2e2e]/10 text-[#7a2e2e] border-[#7a2e2e]/25" },
-  archaeological_modern: { label: "Modern Archaeology", cls: "bg-[#b08d3c]/15 text-[#8a6a1f] border-[#b08d3c]/30" },
+  prophecy_fulfillment: { label: "In process", cls: "bg-[#6a4a7a]/10 text-[#6a4a7a] border-[#6a4a7a]/25" },
+  historical_event: { label: "Dated event", cls: "bg-[#7a2e2e]/10 text-[#7a2e2e] border-[#7a2e2e]/25" },
+  archaeological_modern: { label: "Modern archaeology", cls: "bg-[#b08d3c]/15 text-[#8a6a1f] border-[#b08d3c]/30" },
   scientific: { label: "Scientific", cls: "bg-[#3a5a7a]/10 text-[#3a5a7a] border-[#3a5a7a]/25" },
+  end_time_setup: { label: "End-time setup", cls: "bg-[#8a6a1f]/10 text-[#8a6a1f] border-[#b08d3c]/30" },
   other: { label: "Other", cls: "bg-[#8a7f6f]/10 text-[#5b5142] border-[#8a7f6f]/25" },
 };
 
+const stageStyles = {
+  dated_event: typeStyles.historical_event,
+  in_process: typeStyles.prophecy_fulfillment,
+  setup: typeStyles.end_time_setup,
+};
+
 export default function ModernFulfillmentCard({ item }) {
-  const t = typeStyles[item.fulfillment_type] || typeStyles.other;
+  const t = stageStyles[item.watch_stage] || typeStyles[item.fulfillment_type] || typeStyles.other;
   return (
     <article className="rounded-2xl border border-[#e8ddc7] bg-white/70 p-5 shadow-sm flex flex-col">
       <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -19,6 +27,7 @@ export default function ModernFulfillmentCard({ item }) {
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${t.cls}`}>
           {t.label}
         </span>
+        {item.evidence_status ? <EvidenceStatusBadge status={item.evidence_status} /> : null}
       </div>
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#8a7f6f] mb-3">
         {item.prophecy_reference && (

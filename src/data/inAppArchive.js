@@ -4,6 +4,8 @@
  * Tradition, doctrine, and uncatalogued popular claims are not stored as evidence.
  */
 
+import { PROPHECY_GOVERNMENT, PROPHECY_WATCH } from "./prophecyWatch";
+
 export const ARCHIVE_NOTICE =
   "This archive holds empirical evidence only: excavated objects, published inscriptions, laboratory measurements, and dated public records. Photographs are of the named object, site, or manuscript when a catalogued picture is stored. Reported claims are labeled as reported and are not stored as established fact.";
 
@@ -19,6 +21,7 @@ function item(kind, n, fields) {
     scientific_field: fields.scientific_field || "",
     document_type: fields.document_type || "",
     fulfillment_type: fields.fulfillment_type || "",
+    watch_stage: fields.watch_stage || "",
     scripture_reference: fields.scripture_reference || "",
     prophecy_reference: fields.prophecy_reference || fields.scripture_reference || "",
     era: fields.era || "",
@@ -178,8 +181,8 @@ Ezra 1 records a decree of Cyrus for the return to Jerusalem and the rebuilding 
     image_authenticity: "verified",
     local_image: "/evidence/artifacts/ketef-hinnom.jpg",
     image_caption:
-      "Photograph of a Ketef Hinnom silver amulet. University of Michigan Land of Israel/Palestine Image Database. Israel Museum holding.",
-    source_url: "https://image-database.nes.lsa.umich.edu/items/show/96",
+      "Photograph of the two Ketef Hinnom silver amulets in the Israel Museum, the holding museum. Photo: Bachrach44 (CC BY-SA 3.0). These are the unrolled silver plaques, not a later drawing.",
+    source_url: "https://commons.wikimedia.org/wiki/File:Ketef_hinom_scrolls.JPG",
     order: -600,
     full_text: `Published English of the priestly blessing on the two silver amulets (Ketef Hinnom I and II), the oldest known copies of a biblical text:
 
@@ -267,6 +270,8 @@ The relief shows a figure prostrate before the Assyrian king. 2 Kings 9–10 nam
     era: "16 March 597 BC (year 7 of Nebuchadnezzar)",
     location: "Babylon",
     holding: "British Museum, tablet BM 21946 (Jerusalem Chronicle).",
+    evidence_status: "established",
+    image_type: "actual_inscription",
     order: -597,
     full_text: `Published English of the chronicle entry for Nebuchadnezzar’s seventh year:
 
@@ -281,6 +286,13 @@ The relief shows a figure prostrate before the Assyrian king. 2 Kings 9–10 nam
     era: "c. 592 BC",
     location: "Babylon",
     holding: "Vorderasiatisches Museum, Berlin. Published by Ernst Weidner, 1939.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/jehoiachin-rations.jpg",
+    image_caption:
+      "Photograph of a Jehoiachin ration tablet in the Vorderasiatisches Museum, Berlin, naming Ya’u-kīnu king of Yahudu. Photo: Scallaham (CC BY-SA 4.0).",
+    source_url: "https://commons.wikimedia.org/wiki/File:Jehoiachin_Ration_Tablet.JPG",
     order: -592,
     full_text: `Published English of the Babylonian ration lists:
 
@@ -297,6 +309,13 @@ The relief shows a figure prostrate before the Assyrian king. 2 Kings 9–10 nam
     era: "c. 589–586 BC",
     location: "Tell ed-Duweir (Lachish)",
     holding: "Israel Museum and British Museum. Ostraca found 1935.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/lachish-letter.jpg",
+    image_caption:
+      "Library of Congress Matson photograph of Lachish Letter III, a published ostracon from Tell ed-Duweir. Public-domain U.S. government photograph.",
+    source_url: "https://commons.wikimedia.org/wiki/File:Lachish_letter_No._3_LOC_matpc.00257.jpg",
     order: -588,
     full_text: `Published English of Lachish Letter IV (selected lines):
 
@@ -415,7 +434,11 @@ Acts 6:9 names a synagogue of the Libertines, Cyrenians, Alexandrians, and of Ci
     holding: "Israel Antiquities Authority excavations (Eli Shukron, Ronny Reich).",
     evidence_status: "established",
     image_type: "actual_excavation",
-    source_url: "https://www.iaa.org.il/",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/pool-siloam.jpg",
+    image_caption:
+      "Photograph of the excavated Second Temple Pool of Siloam / pilgrimage approach in the City of David. This is the excavated site, not a reconstruction of the Gospel scene.",
+    source_url: "https://commons.wikimedia.org/wiki/File:The_Second_Temple_Pool_of_Siloam.jpg",
     order: 30,
     full_text: `Published excavation note: in 2004 a stepped stone pool fed by Hezekiah’s tunnel was uncovered south of the earlier Byzantine pool long shown to visitors. The excavators identified it as the Second Temple period Pool of Siloam.
 
@@ -504,6 +527,13 @@ A winged sun and ankh-like symbols appear on the seal. 2 Kings 18:1 names Hezeki
     era: "published as 1st century BC – 1st century AD; marble of unknown find-spot, acquired 1878",
     location: "Unknown (named “Nazareth” from the collection, not a proven excavation)",
     holding: "Bibliothèque nationale de France, Paris.",
+    evidence_status: "established_contextual",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/nazareth-inscription.jpg",
+    image_caption:
+      "Photograph of the marble imperial edict on tombs known as the Nazareth inscription. The find-spot is not recorded; the stone is the object named in this record.",
+    source_url: "https://commons.wikimedia.org/wiki/File:Nazareth_Inscription.jpg",
     order: 40,
     full_text: `Published English of the Greek imperial edict:
 
@@ -517,9 +547,11 @@ The stone’s find-spot is not recorded. It is an imperial warning against tomb 
     scripture_reference: "Genesis 19:24–26",
     era: "Mapped salt body of the Dead Sea rift",
     location: "Jebel Usdum, south-west of the Dead Sea",
-    holding: "Published geology of the Mount Sodom salt diapir. NASA public-domain photograph of the Dead Sea stored in this app.",
-    local_image: "/evidence/dead-sea.jpg",
-    image_caption: "NASA JPL PIA01916 (public domain): the Dead Sea. Empirical image of the basin that holds the salt mountain.",
+    holding: "Published geology of the Mount Sodom salt diapir.",
+    local_image: "/evidence/artifacts/mount-sodom.jpg",
+    image_caption:
+      "Photograph of the interior of the Mount Sodom (Jebel Usdum) salt diapir. Photo: Wilson44691 (CC BY-SA 3.0). This is the mapped salt mountain, not a tourist identification of a particular pillar.",
+    source_url: "https://commons.wikimedia.org/wiki/File:Sodom_Salt_Cave_031712.JPG",
     order: -1900,
     verification_note: "Empirical holding: a mapped salt diapir and NASA imagery of the sea. A tourist name for a pillar is not stored as evidence.",
     full_text: `Published geology: Jebel Usdum (Mount Sodom) is a salt diapir on the south-west shore of the Dead Sea. Salt, gypsum, and marl of the basin are mapped.
@@ -535,8 +567,6 @@ Genesis 19:26 names a pillar of salt. That verse is Scripture. It is not a labor
     era: "Early Bronze III destruction; excavated 1960s–1980s",
     location: "Southeastern Dead Sea plain (Jordan)",
     holding: "Walter E. Rast and R. Thomas Schaub, Expedition to the Dead Sea Plain. Published field reports.",
-    local_image: "/evidence/dead-sea.jpg",
-    image_caption: "NASA public-domain view of the Dead Sea basin in which these excavated towns sit.",
     order: -2500,
     verification_note: "Empirical holding: published ash, burned brick, and cemetery. No inscription from the sites names Sodom.",
     full_text: `Published excavation: Bab edh-Dhra and Numeira show Early Bronze occupation and destruction by fire — ash, burned brick, and a large cemetery at Bab edh-Dhra.
@@ -550,6 +580,13 @@ The excavators published the burning. They did not recover a labeled city name m
     era: "18th Dynasty (c. 14th century BC); tomb opened 1922",
     location: "Valley of the Kings, Egypt",
     holding: "Egyptian Museum, Cairo. Chariots from the tomb of Tutankhamun, published excavation of Howard Carter.",
+    image_type: "actual_artifact",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/tutankhamun-chariot.jpg",
+    image_caption:
+      "December 1923 excavation photograph of a chariot from Tutankhamun’s tomb (KV62) being conserved at the site. Published find photograph, not a later reconstruction.",
+    source_url:
+      "https://commons.wikimedia.org/wiki/File:Arthur_Mace,_with_a_chariot_from_Tutankhamun%27s_tomb,_during_its_excavation.png",
     order: -1323,
     verification_note: "Empirical holding: New Kingdom chariots in a royal tomb catalog. Not wrecks from a sea crossing.",
     full_text: `Published objects: several complete and fragmentary chariots were found in tomb KV62 and are held in Cairo. They are 18th Dynasty Egyptian war and state vehicles — wood, leather, and gold — from a dated royal burial.
@@ -570,6 +607,33 @@ Exodus 14 names Egyptian chariots. These museum chariots establish the vehicle o
     full_text: `The Sinai Peninsula lies between the Gulf of Suez and the Gulf of Aqaba. NASA crew photography (stored here) records those three bodies of land and water as they are.
 
 A second NASA ISS frame of the two gulfs is also stored in this app (/evidence/gulf-of-aqaba.jpg).`,
+  }),
+  ev({
+    title: "The rock in Horeb (traditional Rephidim / Wadi Feiran)",
+    evidence_type: "geological_record",
+    scripture_reference: "Exodus 17:1–7; Deuteronomy 8:15; Psalm 78:15–16; Psalm 105:41",
+    era: "Exodus camp at Rephidim; later traditional identification of the wadi",
+    location: "Wadi Feiran, south-west Sinai (traditional Rephidim)",
+    holding: "Later travelers and the Arabic name Hesy el Khattatin mark a stone in this wadi. The text does not give a surveyed pin.",
+    evidence_status: "disputed_identification",
+    image_type: "actual_site",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/horeb-rock.jpg",
+    image_caption:
+      "Photograph of Wadi Feiran, the later traditional Rephidim in south-west Sinai. Photo: Hatem Moushir (CC BY-SA 4.0). This is the wadi. It is not a laboratory identification of the particular stone Moses struck.",
+    source_url: "https://commons.wikimedia.org/wiki/File:Wadi_Feran_,_photo_by_Hatem_Moushir_01.jpg",
+    order: -1446,
+    verification_note:
+      "Empirical holding: a photographed wadi later identified as Rephidim. Exodus 17 names the rock in Horeb. That identification of one standing stone is traditional and disputed. Numbers 20 at Kadesh is a later, separate camp.",
+    full_text: `Exodus 17:1: “And all the congregation of the children of Israel journeyed from the wilderness of Sin, after their journeys, according to the commandment of the LORD, and pitched in Rephidim: and there was no water for the people to drink.”
+
+Exodus 17:6: “Behold, I will stand before thee there upon the rock in Horeb; and thou shalt smite the rock, and there shall come water out of it, that the people may drink. And Moses did so in the sight of the elders of Israel.”
+
+Later Christian and Arabic tradition placed Rephidim in Wadi Feiran, west of Jebel Musa. Travelers there named a particular stone Hesy el Khattatin, “the rock supposed to have been struck by Moses.” The photograph stored here is that wadi. It is not a labeled excavation of the Exodus event.
+
+Psalm 78:15–16: “He clave the rocks in the wilderness, and gave them drink as out of the great depths. He brought streams also out of the rock, and caused waters to run down like rivers.”
+
+Numbers 20 records water from the rock at Kadesh. That is a later camp. It is not this wadi.`,
   }),
   ev({
     title: "Deir Alla plaster text (Balaam son of Beor)",
@@ -594,6 +658,13 @@ The inscription is not the Numbers narrative. It names Balaam son of Beor as a s
     era: "early 7th century BC",
     location: "Tel Miqne (Ekron)",
     holding: "Israel Museum. Found 1996 in the temple complex.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/ekron.jpg",
+    image_caption:
+      "Photograph of the Ekron royal dedicatory inscription in the Israel Museum, naming Achish son of Padi, ruler of Ekron.",
+    source_url: "https://commons.wikimedia.org/wiki/File:Ekron_inscription.jpg",
     order: -675,
     full_text: `Published English of the Ekron dedication:
 
@@ -610,6 +681,14 @@ The stone names Ekron and a ruler Achish (Ikausu), a name also used of a Philist
     era: "mid-6th century BC (Nabonidus, last king of Babylon)",
     location: "Ur / Babylonian sites",
     holding: "British Museum and other collections. Cylinders of Nabonidus; Verse Account of Nabonidus.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/nabonidus.jpg",
+    image_caption:
+      "Photograph of a Nabonidus cylinder from Ur in the British Museum. The inscription names the king and his son Belshazzar.",
+    source_url:
+      "https://commons.wikimedia.org/wiki/File:Cylinder_of_Nabonidus_from_the_temple_of_God_Sin_at_UR,_Mesopotamia._..JPG",
     order: -553,
     full_text: `Published situation of the tablets: Nabonidus is the last native king of Babylon in the cuneiform king lists. His son Bel-sharra-usur (Belshazzar) is named in the Verse Account and in administrative texts as the king’s son who remained in Babylon while Nabonidus was in Tema.
 
@@ -624,6 +703,13 @@ Daniel calls Belshazzar king at the fall of the city. The cuneiform record calls
     era: "c. 925 BC (campaign of Shoshenq I)",
     location: "Karnak, Thebes, Egypt",
     holding: "Relief still on the Bubastite Portal, Karnak. Published drawings of the name-rings.",
+    evidence_status: "established",
+    image_type: "actual_inscription",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/shoshenq-karnak.jpg",
+    image_caption:
+      "Photograph of the Bubastite Portal at Karnak, the standing relief of Shoshenq I’s Levantine campaign. This is the portal itself, not a modern drawing of the name-rings.",
+    source_url: "https://commons.wikimedia.org/wiki/File:Karnak_Tempel_Bubastis-Portal_01.JPG",
     order: -925,
     full_text: `Published English of 1 Kings 14:25–26: “And it came to pass in the fifth year of king Rehoboam, that Shishak king of Egypt came up against Jerusalem: And he took away the treasures of the house of the LORD, and the treasures of the king’s house; he even took away all: and he took away all the shields of gold which Solomon had made.”
 
@@ -683,8 +769,8 @@ The reliefs depict Lachish. They do not depict the later failure to take Jerusal
     image_authenticity: "verified",
     local_image: "/evidence/artifacts/siloam-tunnel.jpg",
     image_caption:
-      "Photograph of the actual Siloam / Hezekiah’s Tunnel water channel. University of Michigan Land of Israel/Palestine Image Database, item 95.",
-    source_url: "https://image-database.nes.lsa.umich.edu/items/show/95",
+      "Photograph inside Hezekiah’s Tunnel: the rock-cut water channel still carrying the Gihon spring. Photo: Davidbena (CC BY-SA 4.0). This is the conduit, not a masonry arch at another pool.",
+    source_url: "https://commons.wikimedia.org/wiki/File:Hezekiah%27s_Tunnel_III.jpg",
     order: -701,
     full_text: `The rock-cut tunnel still carries water from the Gihon Spring toward the Siloam pool system. 2 Chronicles 32:30: “This same Hezekiah also stopped the upper watercourse of Gihon, and brought it straight down to the west side of the city of David.”
 
@@ -769,7 +855,11 @@ There is no inscription or find that ties this hull to Jesus or to a named disci
     holding: "Published excavations of the Magdala synagogue and stone.",
     evidence_status: "established",
     image_type: "actual_excavation",
-    source_url: "https://www.iaa.org.il/",
+    image_authenticity: "verified",
+    local_image: "/evidence/artifacts/magdala.jpg",
+    image_caption:
+      "Photograph of the Magdala stone from the first-century synagogue at Magdala / Migdal. This is the excavated stone, not a later replica used as if it were the find.",
+    source_url: "https://commons.wikimedia.org/wiki/File:Magdala_Stone.jpg",
     order: 30,
     full_text: `A first-century synagogue was excavated at Magdala, with a decorated stone and benches. It is a Galilean assembly building from the lifetime of Jesus.
 
@@ -1024,6 +1114,7 @@ Arthur James Balfour
 
 This is a British government letter. This app does not decide prophecy.`,
   }),
+  ...PROPHECY_GOVERNMENT.map(gov),
   gov({
     title: "Truman recognition of the State of Israel (14 May 1948)",
     document_type: "published_document",
@@ -1110,32 +1201,7 @@ This is a physical manuscript in a published library catalog. Papal bulls and co
   }),
 ];
 
-export const MODERN = [
-  mod({
-    title: "Proclamation of the State of Israel (14 May 1948)",
-    fulfillment_type: "historical_event",
-    scripture_reference: "Ezekiel 37; Isaiah 66:8",
-    prophecy_reference: "Ezekiel 37; Isaiah 66:8",
-    modern_date: "1948-05-14",
-    location: "Tel Aviv",
-    date: "1948-05-14",
-    full_text: `Published English of the opening of the Declaration of the Establishment of the State of Israel (14 May 1948):
-
-“The Land of Israel was the birthplace of the Jewish people. Here their spiritual, religious and political identity was shaped. Here they first attained to statehood, created cultural values of national and universal significance and gave to the world the eternal Book of Books. … Accordingly we, members of the People’s Council, representatives of the Jewish Community of Eretz-Israel and of the Zionist Movement, … hereby declare the establishment of a Jewish state in Eretz-Israel, to be known as the State of Israel.”
-
-The United States recognition of the same day is stored under Government documents. This app quotes the published declaration. It does not add a prophetic verdict.`,
-  }),
-  mod({
-    title: "Balfour Declaration stored as a dated state paper",
-    fulfillment_type: "historical_event",
-    scripture_reference: "Ezekiel 36:24; Isaiah 11:11–12",
-    prophecy_reference: "Ezekiel 36:24; Isaiah 11:11–12",
-    modern_date: "1917-11-02",
-    location: "London",
-    date: "1917-11-02",
-    full_text: `The full letter of 2 November 1917 is stored under Government documents in this app (Balfour to Lord Rothschild). It is a British Cabinet-approved declaration concerning a national home for the Jewish people in Palestine, with a clause protecting the civil and religious rights of existing non-Jewish communities.`,
-  }),
-];
+export const MODERN = PROPHECY_WATCH.map(mod);
 
 export const ALL_ARCHIVE = [...ARCHAEOLOGY, ...SCIENCE, ...GOVERNMENT, ...VATICAN, ...MODERN];
 
@@ -1158,7 +1224,7 @@ export function searchArchive(query, kind) {
   if (!q) return pool;
   const words = q.split(" ").filter((w) => w.length > 2);
   return pool.filter((item) => {
-    const hay = `${item.title} ${item.full_text} ${item.scripture_reference} ${item.holding} ${item.agency} ${item.evidence_status}`.toLowerCase();
+    const hay = `${item.title} ${item.full_text} ${item.scripture_reference} ${item.prophecy_reference} ${item.watch_stage} ${item.holding} ${item.agency} ${item.evidence_status}`.toLowerCase();
     if (hay.includes(q)) return true;
     return words.every((w) => hay.includes(w));
   });

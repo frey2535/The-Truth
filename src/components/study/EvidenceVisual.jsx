@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import EvidencePlate from "./EvidencePlate";
 
 function overlayLine(item) {
@@ -12,7 +12,8 @@ function overlayLine(item) {
 
 export default function EvidenceVisual({ item }) {
   const src = item.local_image || item.image_url;
-  if (!src) return <EvidencePlate item={item} />;
+  const [broken, setBroken] = useState(false);
+  if (!src || broken) return <EvidencePlate item={item} />;
   const line = overlayLine(item);
   return (
     <figure className="mb-4 overflow-hidden rounded-2xl border border-[#d8c9a8] bg-[#2b2620]">
@@ -21,6 +22,7 @@ export default function EvidenceVisual({ item }) {
           src={src}
           alt={item.image_caption || item.title}
           className="w-full max-h-72 object-cover"
+          onError={() => setBroken(true)}
         />
         {line && (
           <p className="absolute bottom-0 inset-x-0 m-0 px-3 py-2 text-[11px] leading-snug text-[#f3e9c8] bg-[#2b2620]/80">
