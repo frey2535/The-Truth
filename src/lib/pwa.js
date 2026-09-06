@@ -82,16 +82,6 @@ export function registerServiceWorker() {
     const reg = await navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" });
     const poke = () => {
       reg.update().catch(() => undefined);
-      checkPublishedBuild().then((result) => {
-        if (!result.stale) return;
-        try {
-          if (sessionStorage.getItem("truth_reloaded_for_build") === result.remote) return;
-          sessionStorage.setItem("truth_reloaded_for_build", result.remote);
-        } catch {
-          /* ignore */
-        }
-        applyAppUpdate();
-      });
     };
     poke();
     document.addEventListener("visibilitychange", () => {

@@ -2,9 +2,104 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Not stored</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#2b2620" />
+    <title>The Truth</title>
+    <style>
+      :root { color-scheme: light; }
+      html, body { margin: 0; min-height: 100%; }
+      body {
+        font-family: Georgia, "Times New Roman", serif;
+        background: #f4ead2;
+        color: #2b2620;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      main {
+        max-width: 28rem;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.72);
+        border: 1px solid #e8ddc7;
+        border-radius: 1.25rem;
+        padding: 1.75rem 1.5rem;
+        box-shadow: 0 8px 30px rgba(43, 38, 32, 0.08);
+      }
+      h1 { font-size: 2rem; font-weight: 600; margin: 0 0 0.75rem; }
+      p { font-size: 1rem; line-height: 1.5; color: #5b5142; margin: 0 0 1rem; }
+      .actions { display: flex; flex-direction: column; gap: 0.6rem; }
+      a, button {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        text-align: center;
+        text-decoration: none;
+        font: 600 0.95rem/1.2 system-ui, sans-serif;
+        border-radius: 999px;
+        padding: 0.8rem 1rem;
+        border: 1px solid #2b2620;
+        cursor: pointer;
+      }
+      a.primary, button.primary {
+        background: #2b2620;
+        color: #f3e9c8;
+      }
+      a.secondary, button.secondary {
+        background: #fff;
+        color: #2b2620;
+      }
+    </style>
+    <script>
+      (function () {
+        var path = location.pathname || "/";
+        var search = location.search || "";
+        var hash = location.hash || "";
+        if (path === "/404.html" || path === "/404") return;
+        if (/(?:^|[?&])stuck=1(?:&|$)/.test(search)) return;
+        if (path.indexOf("/corpus/") === 0 || path.indexOf("/dss/") === 0) {
+          location.replace("/library");
+          return;
+        }
+        location.replace("/?resume=" + encodeURIComponent(path + search + hash));
+      })();
+    </script>
   </head>
   <body>
-    <p>This file is not stored in the app.</p>
+    <main>
+      <h1>The Truth</h1>
+      <p>
+        This file is not stored in the app. You can open The Truth again from here —
+        you do not need a browser refresh button.
+      </p>
+      <div class="actions">
+        <a class="primary" href="/">Open The Truth</a>
+        <a class="secondary" href="/prophecy">Open Prophecy</a>
+        <button class="secondary" type="button" id="reload-app">Reload the app</button>
+      </div>
+    </main>
+    <script>
+      document.getElementById("reload-app").addEventListener("click", function () {
+        var done = function () {
+          location.replace("/");
+        };
+        var tasks = [];
+        if ("serviceWorker" in navigator) {
+          tasks.push(
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+              return Promise.all(regs.map(function (reg) { return reg.unregister(); }));
+            })
+          );
+        }
+        if (window.caches) {
+          tasks.push(
+            caches.keys().then(function (keys) {
+              return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+            })
+          );
+        }
+        Promise.all(tasks).then(done).catch(done);
+      });
+    </script>
   </body>
 </html>

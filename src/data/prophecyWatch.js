@@ -428,17 +428,30 @@ Joel names a gathering of all nations for judgment over scattering and parting. 
     modern_date: "21st century",
     location: "Dead Sea",
     date: "2011",
-    local_image: "/evidence/dead-sea.jpg",
+    local_image: "/evidence/prophecy/dead-sea-springs.jpg",
+    image_fit: "contain",
     image_caption:
-      "NASA photograph of the Dead Sea, the basin of the mapped springs. The sea itself is still salt.",
-    source_url: "https://earthobservatory.nasa.gov/",
+      "Published PLOS ONE photographs (2012) of underwater freshwater springs in the Dead Sea, including cobble with visible biofilms. This is microbial life at a spring, not Ezekiel’s healed sea of fish.",
+    extra_images: [
+      {
+        local_image: "/evidence/prophecy/ein-feshkha.jpg",
+        image_caption:
+          "Einot Tzukim (Ein Feshkha) on the north-west Dead Sea shore: reeds and fresh water beside the salt basin. Catalogued reserve photograph.",
+      },
+      {
+        local_image: "/evidence/dead-sea.jpg",
+        image_caption:
+          "NASA photograph of the Dead Sea itself. The basin is still salt. The springs and reserve sit on its edge.",
+      },
+    ],
+    source_url: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0038319",
     verification_note:
       "Freshwater springs and microbes in the Dead Sea are published. Ezekiel 47 describes the sea healed and fishers from Engedi to Eneglaim. That has not occurred.",
     full_text: `King James, Ezekiel 47:8–10: “These waters issue out toward the east country, and go down into the desert, and go into the sea: which being brought forth into the sea, the waters shall be healed. … the fishers shall stand upon it from Engedi even unto Eneglaim; they shall be a place to spread forth nets; their fish shall be according to their kinds, as the fish of the great sea, exceeding many.”
 
-Dated public facts: researchers have published dense microbial communities around underwater freshwater springs in the Dead Sea. The NASA photograph stored here is the salt sea itself.
+Dated public facts: Ionescu and colleagues published underwater freshwater springs in the Dead Sea in PLOS ONE (5 June 2012), with photographs of the shafts and of biofilms on cobble. Ein Feshkha / Einot Tzukim is a mapped freshwater reserve on the north-west shore, with reeds and pools. The NASA photograph stored with this card is the salt sea itself.
 
-What is not established: that the sea has become fresh, or that commercial nets now stand from Engedi to Eneglaim. Microbes at a spring are not Ezekiel’s multitude of fish. This card stores the discovery beside the vision. It does not close the chapter.`,
+What is not established: that the sea has become fresh, or that commercial nets now stand from Engedi to Eneglaim. Microbes at a spring, and reeds at a reserve, are not Ezekiel’s multitude of fish. This card stores the discovery beside the vision. It does not close the chapter.`,
   },
   {
     title: "Persecution for His name — still the standing condition",
@@ -674,6 +687,37 @@ Dated public facts: Turkey’s Atatürk Dam (among others) and downstream drough
 A dam is not an angel’s vial. The text is a judgment that prepares a way for the kings of the east. The reduced river is a present measurement that makes the wording easier to picture. It is not stored as the sixth vial already poured.`,
   },
   {
+    title: "Rivers that run red — iron and mineral, not the plague of blood",
+    fulfillment_type: "end_time_setup",
+    watch_stage: "setup",
+    evidence_status: "disputed_identification",
+    scripture_reference: "Exodus 7:20–21; Revelation 16:4",
+    prophecy_reference: "Exodus 7:20–21; Revelation 16:4",
+    modern_date: "mapped present waters",
+    location: "Rio Tinto, Spain / Taylor Glacier, Antarctica",
+    date: "2002",
+    local_image: "/evidence/prophecy/rio-tinto.jpg",
+    image_caption:
+      "NASA Ames photograph of the Rio Tinto in Spain. The red is acid mine drainage and iron, not blood.",
+    extra_images: [
+      {
+        local_image: "/evidence/prophecy/blood-falls.jpg",
+        image_caption:
+          "Blood Falls at Taylor Glacier, Antarctica (NSF / Peter Rejcek). Iron-rich brine oxidizes red in air. Public-domain government photograph.",
+      },
+    ],
+    source_url: "https://science.nasa.gov/earth/earth-observatory/spains-stained-river-147459/",
+    verification_note:
+      "Red-running waters are photographed and chemically explained. Exodus 7 and Revelation 16 name blood as a judgment. This app does not treat iron, algae, or dye as that plague.",
+    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood. And the fish that was in the river died.”
+
+Revelation 16:4: “And the third angel poured out his vial upon the rivers and fountains of waters; and they became blood.”
+
+Dated public facts: the Rio Tinto in Spain runs red for tens of kilometres from iron and acid drainage; NASA has photographed it. Blood Falls in Antarctica is iron-rich brine that reddens when it meets air. Press reports of other rivers turning red from algae, sediment, or industrial dye are published from time to time; those news pictures are not stored here.
+
+What this is not: Moses’ plague on the Nile, or the third vial. The photographs are mineral. Fish die in some of those acidic reaches, but the text is blood by judgment, not rust. This card stores the look of red water so a reader can see why the reports circulate. It does not declare the plague.`,
+  },
+  {
     title: "Abraham Accords and published “peace and safety” papers",
     fulfillment_type: "end_time_setup",
     watch_stage: "setup",
@@ -753,9 +797,16 @@ An embassy is not the LORD dwelling in Zion. It is a dated act that raised the c
     modern_date: "2022-09",
     location: "Israel",
     date: "2022-09",
-    local_image: "/evidence/prophecy/temple-mount.jpg",
+    local_image: "/evidence/prophecy/red-heifers.jpg",
     image_caption:
-      "The Temple Mount, the place later rites would concern. A photograph of the 2022 heifers is not stored; the arrival itself is a published news and Temple Institute record.",
+      "Catalogued red heifers (Red Poll). These are the kind of unblemished red cattle Numbers 19 names. They are not a photograph of the five Texas animals flown in 2022; those press pictures are not freely stored.",
+    extra_images: [
+      {
+        local_image: "/evidence/prophecy/red-heifer-ordinance.jpg",
+        image_caption:
+          "Phillip Medhurst Picture Torah: the sacrifice of the red heifer (Numbers 19:2). Historical engraving of the ordinance, not a modern news picture.",
+      },
+    ],
     source_url: "https://templeinstitute.org/",
     verification_note:
       "Five red heifers arriving from the United States in September 2022 is a published fact. Numbers 19 is a Torah ordinance for purification ashes, not an explicit last-days clock. Connecting them to a rebuilt temple is a later reading.",
@@ -765,31 +816,45 @@ Numbers 19:9: the ashes are kept “for a water of separation: it is a purificat
 
 Dated public facts: in September 2022 five red heifers were flown from Texas to Israel and received in public ceremonies reported by the Temple Institute and the press. Numbers 19 is a commandment for purification, used when there is a priesthood and a sanctuary to approach.
 
-What this is not: a verse that says “when five heifers land, the week begins.” Some readers treat a qualified heifer as a necessary step before renewed temple worship. Others note that the ordinance is older than any modern end-times chart. This card stores the arrival. It does not declare a heifer approved, or a temple begun.`,
+What this is not: a verse that says “when five heifers land, the week begins.” Some readers treat a qualified heifer as a necessary step before renewed temple worship. Others note that the ordinance is older than any modern end-times chart. The photographs stored here are catalogued red heifers and the historical engraving of the ordinance. They are not a claim that a heifer has been approved, or that a temple has begun.`,
   },
   {
     title: "Temple vessels and garments prepared — no house stands",
     fulfillment_type: "end_time_setup",
     watch_stage: "setup",
     evidence_status: "established",
-    scripture_reference: "Daniel 9:27; Matthew 24:15; 2 Thessalonians 2:4; Revelation 11:1–2",
-    prophecy_reference: "Daniel 9:27; Matthew 24:15; 2 Thessalonians 2:4; Revelation 11:1–2",
+    scripture_reference: "2 Thessalonians 2:4; Revelation 11:1–2; Daniel 9:27; Matthew 24:15",
+    prophecy_reference: "2 Thessalonians 2:4; Revelation 11:1–2; Daniel 9:27; Matthew 24:15",
     modern_date: "1980s–present",
     location: "Jerusalem",
     date: "1987",
-    local_image: "/evidence/prophecy/temple-mount.jpg",
+    local_image: "/evidence/prophecy/temple-menorah.jpg",
     image_caption:
-      "The Temple Mount from the Mount of Olives. Workshops and drawings exist. This house does not.",
+      "The Temple Institute’s golden menorah in the Jewish Quarter of Jerusalem, made for a future house. Catalogued public photograph of the article itself.",
+    extra_images: [
+      {
+        local_image: "/evidence/prophecy/temple-menorah-cardo.jpg",
+        image_caption:
+          "The same Temple Institute menorah when it stood in the Cardo. A second catalogued view of the prepared vessel.",
+      },
+      {
+        local_image: "/evidence/prophecy/temple-mount.jpg",
+        image_caption:
+          "The Temple Mount from the Mount of Olives. Workshops and vessels exist. This house does not.",
+      },
+    ],
     source_url: "https://templeinstitute.org/",
     verification_note:
-      "Published workshops have made vessels, garments, and architectural drawings. No Third Temple has been built, and no daily sacrifice is offered on the mount.",
+      "Published workshops have made vessels, garments, and architectural drawings. The golden menorah is photographed in the Jewish Quarter. No Third Temple has been built, and no daily sacrifice is offered on the mount.",
     full_text: `King James, 2 Thessalonians 2:4: “so that he as God sitteth in the temple of God, shewing himself that he is God.”
 
 Revelation 11:1: John is told to measure the temple of God and the altar.
 
-Dated public facts: the Temple Institute (founded 1987) and related workshops publish priestly garments, utensils, and plans for a house on the mount. Those objects exist in museums and workrooms. The platform still holds the Dome of the Rock and al-Aqsa.
+Exodus 25:31: “And thou shalt make a candlestick of pure gold.”
 
-Preparations are not a functioning temple. Daniel’s abomination, Paul’s man sitting in the temple, and John’s measuring reed all assume a holy place in use. This card stores the workshop beside those verses. It does not announce that the house has been raised.`,
+Dated public facts: the Temple Institute (founded 1987) and related workshops publish priestly garments, utensils, and plans for a house on the mount. The golden menorah stored in these photographs is their public article in the Jewish Quarter. Other vessels — incense altar, table of showbread, priestly garments — are shown at their museum. Indoor museum pictures of those remaining articles are not freely catalogued, so they are not invented here.
+
+Preparations are not a functioning temple. Daniel’s abomination, Paul’s man sitting in the temple, and John’s measuring reed all assume a holy place in use. This card stores the prepared menorah beside those verses. It does not announce that the house has been raised.`,
   },
   {
     title: "The fig-tree reading of 1948 — stored as a dispute",
