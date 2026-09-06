@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Sunset } from "lucide-react";
 import {
   WEEKDAYS,
@@ -34,6 +35,7 @@ import {
   qumranWeekday,
 } from "@/lib/calendars";
 import { EVIDENCE_LABELS } from "@/data/biblicalCalendarCopy";
+import { civilHolidaysOn, MONTH_NAMES, overlayJumps, overlaysForCivilDate, WEEKDAY_NAMES } from "@/data/calendarReplacements";
 
 const GREGORIAN_MONTHS = [
   "January", "February", "March", "April", "May", "June",
@@ -41,7 +43,7 @@ const GREGORIAN_MONTHS = [
 ];
 
 const VIEWS = [
-  { id: "gregorian", label: "Civil", hint: "Gregorian — the date most people use now" },
+  { id: "gregorian", label: "Civil", hint: "Gregorian — the later wall calendar: gods, Caesars, and midnight" },
   { id: "hebrew", label: "Hebrew", hint: "Fixed Jewish calendar used today" },
   { id: "temple", label: "Temple-era", hint: "Reconstruction of the first-century festival calendar" },
   { id: "julian", label: "Julian", hint: "Roman civil calendar in the time of Jesus" },
@@ -128,6 +130,30 @@ function Badge({ id }) {
   );
 }
 
+const KIND_LABEL = {
+  pagan: "text-[#a34a12]",
+  christian: "text-[#3d4a8a]",
+};
+
+function holidaysForParts(parts, moveable) {
+  return parts ? civilHolidaysOn(parts, { moveable }) : [];
+}
+
+function cellTone({ active, sabbath, pagan, christian }) {
+  if (active) return "border-[#7a2e2e] bg-[#f3e9c8]";
+  if (pagan && christian) return "border-[#a34a12] bg-[#efe6f0]";
+  if (pagan) return "border-[#e0b080] bg-[#f8ead4]";
+  if (christian) return "border-[#b8b4d8] bg-[#e8e6f5]";
+  if (sabbath) return "border-[#e8ddc7] bg-[#efe6cf]";
+  return "border-[#eee6d4] bg-white/80";
+}
+
+function jumpChipClass(kind) {
+  if (kind === "pagan") return "shrink-0 rounded-full border border-[#e0b080] bg-[#f8ead4] px-3 py-1.5 text-xs text-[#5a3010] hover:bg-[#f3d9b8]";
+  if (kind === "christian") return "shrink-0 rounded-full border border-[#b8b4d8] bg-[#e8e6f5] px-3 py-1.5 text-xs text-[#2c3258] hover:bg-[#ddd9f0]";
+  return "shrink-0 rounded-full border border-[#e8ddc7] bg-white px-3 py-1.5 text-xs text-[#2b2620] hover:bg-[#f3e9c8]";
+}
+
 function GlanceCard({ active, title, value, note, onClick }) {
   return (
     <button
@@ -160,9 +186,12 @@ export default function CalendarExplorer() {
   const julian = jdToJulian(selectedJd);
   const sun = jerusalemSunTimes(selected.year, selected.month, selected.day);
   const appointed = appointedForHebrewDate(hebrew.year, hebrew.month, hebrew.day, true);
-  const weekday = WEEKDAYS[weekdayFromJd(selectedJd)];
+  const weekdayIndex = weekdayFromJd(selectedJd);
+  const weekday = WEEKDAYS[weekdayIndex];
   const sabbath = isSabbathJd(selectedJd);
+  const overlays = overlaysForCivilDate(selected, weekdayIndex);
   const feasts = useMemo(() => upcomingFeasts(selected), [selected]);
+  const civilJumps = useMemo(() => overlayJumps(selected), [selected]);
   const viewMeta = VIEWS.find((v) => v.id === view);
 
   const grid = useMemo(() => {
@@ -170,7 +199,7 @@ export default function CalendarExplorer() {
       const len = gregorianMonthLength(cursor.year, cursor.month);
       const first = weekdayFromJd(gregorianToJd(cursor.year, cursor.month, 1));
       return {
-        title: `${GREGORIAN_MONTHS[cursor.month - 1]} ${cursor.year}`,
+        title: `${GREGORIAN_MONTHS[cursor.month - 1]} ${cursor.year} — ${MONTH_NAMES[cursor.month - 1].namedFor}`,
         cells: padGrid(first, len).map((day) => {
           if (!day) return null;
           const jd = gregorianToJd(cursor.year, cursor.month, day);
@@ -182,6 +211,7 @@ export default function CalendarExplorer() {
             hebrew: h,
             sabbath: isSabbathJd(jd),
             appointed: appointedForHebrewDate(h.year, h.month, h.day, true),
+            civil: holidaysForParts({ year: cursor.year, month: cursor.month, day }, true),
           };
         }),
       };
@@ -203,6 +233,7 @@ export default function CalendarExplorer() {
             hebrew: { year: cursor.year, month: cursor.month, day },
             sabbath: isSabbathJd(jd),
             appointed: appointedForHebrewDate(cursor.year, cursor.month, day, true),
+            civil: holidaysForParts(g, true),
           };
         }),
       };
@@ -211,7 +242,7 @@ export default function CalendarExplorer() {
       const len = julianMonthLength(cursor.year, cursor.month);
       const first = weekdayFromJd(julianToJd(cursor.year, cursor.month, 1));
       return {
-        title: `${GREGORIAN_MONTHS[cursor.month - 1]} ${cursor.year} Julian`,
+        title: `${GREGORIAN_MONTHS[cursor.month - 1]} ${cursor.year} Julian — ${MONTH_NAMES[cursor.month - 1].namedFor}`,
         cells: padGrid(first, len).map((day) => {
           if (!day) return null;
           const jd = julianToJd(cursor.year, cursor.month, day);
@@ -224,6 +255,7 @@ export default function CalendarExplorer() {
             hebrew: h,
             sabbath: isSabbathJd(jd),
             appointed: appointedForHebrewDate(h.year, h.month, h.day, true),
+            civil: holidaysForParts({ year: cursor.year, month: cursor.month, day }, false),
           };
         }),
       };
@@ -244,6 +276,7 @@ export default function CalendarExplorer() {
             hebrew,
             sabbath: wd === 6,
             appointed: qumranFestivalsOn(cursor.month, day).map((f) => ({ name: f.name })),
+            civil: [],
             schematic: true,
           };
         }),
@@ -267,6 +300,7 @@ export default function CalendarExplorer() {
           hebrew: h,
           sabbath: isSabbathJd(cell.jd),
           appointed: appointedForHebrewDate(h.year, h.month, h.day, true),
+          civil: holidaysForParts(cell.gregorian, true),
         };
       }),
     };
@@ -358,8 +392,13 @@ export default function CalendarExplorer() {
             {weekday}, {formatGregorian(selected)}
           </h2>
           <p className="text-sm text-[#5b5142] mt-1">
-            {sabbath ? "Sabbath day" : weekday}
+            {sabbath ? "Sabbath day" : overlays.weekday.numbered}
             {appointed.length ? ` · ${appointed.map((a) => a.name).join(", ")}` : ""}
+          </p>
+          <p className="text-xs text-[#7a2e2e] mt-1">
+            Civil name: {overlays.weekday.civil} for {overlays.weekday.namedFor}
+            {" · "}
+            {overlays.month.civil} for {overlays.month.namedFor}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -416,9 +455,65 @@ export default function CalendarExplorer() {
         <span>
           Jerusalem sunset {formatClock(sun.sunset)}
           {sun.sunrise ? ` · sunrise ${formatClock(sun.sunrise)}` : ""}.
-          A biblical day is counted from sunset to the next sunset.
+          A biblical day is counted from sunset to the next sunset. The civil date flips at midnight.
         </span>
       </p>
+
+      <div className="rounded-xl border border-[#e8ddc7] bg-[#faf6ef] p-3 mb-4">
+        <p className="text-[10px] uppercase tracking-[0.18em] text-[#b08d3c] mb-2">What the civil name covers</p>
+        <div className="grid sm:grid-cols-2 gap-3 text-sm">
+          <div>
+            <p className="text-[11px] uppercase tracking-wide text-[#8a7f6f]">Appointed</p>
+            <p className="text-[#2b2620] leading-snug">
+              {overlays.weekday.numbered}
+              {temple.day ? ` · Month ${temple.month}, day ${temple.day}` : ""}
+              {appointed.length ? ` · ${appointed.map((a) => a.name).join(", ")}` : ""}
+            </p>
+          </div>
+          <div>
+            <p className="text-[11px] uppercase tracking-wide text-[#8a7f6f]">Civil overlay</p>
+            <p className="text-[#2b2620] leading-snug">
+              {overlays.weekday.latin} — named for {overlays.weekday.namedFor}. {overlays.month.note}
+            </p>
+          </div>
+        </div>
+        {overlays.events.length > 0 && (
+          <ul className="mt-3 space-y-2 border-t border-[#e8ddc7] pt-3">
+            {overlays.events.map((event) => (
+              <li key={event.id} className="text-sm">
+                <p className={`font-display ${KIND_LABEL[event.kind] || "text-[#7a2e2e]"}`}>
+                  {event.kind === "pagan" ? "Pagan · " : event.kind === "christian" ? "Christian · " : ""}
+                  {event.title}
+                </p>
+                <p className="text-[#5b5142] leading-snug">{event.appointed}</p>
+                <p className="text-[#5b5142] leading-snug">Later overlay: {event.later}.</p>
+                <Link className="text-xs text-[#7a2e2e] underline" to={event.href}>
+                  Open this tradition
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+        {appointed.length === 0 && overlays.events.length === 0 && (
+          <p className="mt-3 border-t border-[#e8ddc7] pt-3 text-xs text-[#5b5142] leading-relaxed">
+            No later feast is parked on this civil date. The weekday and month names are still the names of
+            the nations’ gods and Caesars.{" "}
+            <Link className="text-[#7a2e2e] underline" to={overlays.weekday.href}>
+              See the weekday names
+            </Link>
+            {" · "}
+            <Link className="text-[#7a2e2e] underline" to="/customs/months">
+              See the month names
+            </Link>
+            .
+          </p>
+        )}
+        {appointed.length > 0 && overlays.events.every((e) => e.id !== "sabbath-day") && (
+          <p className="mt-3 border-t border-[#e8ddc7] pt-3 text-xs text-[#5b5142] leading-relaxed">
+            Leviticus 23 marks this day. The civil wall calendar does not.
+          </p>
+        )}
+      </div>
 
       <div className="mb-3">
         <p className="text-[11px] uppercase tracking-wide text-[#8a7f6f] mb-2">Jump to an appointed time</p>
@@ -434,6 +529,40 @@ export default function CalendarExplorer() {
               <span className="text-[#8a7f6f]">
                 {" · "}
                 {feast.gregorian.month}/{feast.gregorian.day}
+              </span>
+            </button>
+          ))}
+        </div>
+        <p className="text-[11px] uppercase tracking-wide text-[#8a7f6f] mb-2 mt-3">Jump to a pagan feast</p>
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          {civilJumps.filter((jump) => jump.kind === "pagan").map((jump) => (
+            <button
+              key={jump.id}
+              type="button"
+              onClick={() => jumpToGregorian(jump.gregorian)}
+              className={jumpChipClass("pagan")}
+            >
+              {jump.name}
+              <span className="opacity-70">
+                {" · "}
+                {jump.gregorian.month}/{jump.gregorian.day}
+              </span>
+            </button>
+          ))}
+        </div>
+        <p className="text-[11px] uppercase tracking-wide text-[#8a7f6f] mb-2 mt-3">Jump to a later Christian feast</p>
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          {civilJumps.filter((jump) => jump.kind === "christian").map((jump) => (
+            <button
+              key={jump.id}
+              type="button"
+              onClick={() => jumpToGregorian(jump.gregorian)}
+              className={jumpChipClass("christian")}
+            >
+              {jump.name}
+              <span className="opacity-70">
+                {" · "}
+                {jump.gregorian.month}/{jump.gregorian.day}
               </span>
             </button>
           ))}
@@ -516,9 +645,16 @@ export default function CalendarExplorer() {
         onTouchEnd={onSwipeEnd}
       >
         <div className="grid grid-cols-7 gap-1">
-          {WEEKDAYS.map((w, i) => (
-            <div key={w} className={`text-[11px] text-center py-1 ${i === 6 ? "text-[#7a2e2e]" : "text-[#8a7f6f]"}`}>
-              {i === 6 ? "Sabbath" : w.slice(0, 2)}
+          {WEEKDAY_NAMES.map((w, i) => (
+            <div
+              key={w.civil}
+              title={`${w.civil} — ${w.latin}, named for ${w.namedFor}`}
+              className={`text-center py-1 leading-tight ${i === 6 ? "text-[#7a2e2e]" : i === 0 ? "text-[#9a6b2f]" : "text-[#8a7f6f]"}`}
+            >
+              <span className="block text-[11px]">{i === 6 ? "Sabbath" : w.short}</span>
+              <span className="hidden sm:block text-[9px] opacity-80">
+                {i === 6 ? "7th day" : w.namedFor.replace(/\s*\/.*/, "").replace(/^the /, "")}
+              </span>
             </div>
           ))}
           {grid.cells.map((cell, i) => {
@@ -528,6 +664,8 @@ export default function CalendarExplorer() {
               cell.gregorian.month === selected.month &&
               cell.gregorian.day === selected.day;
             const feast = cell.appointed[0];
+            const pagan = (cell.civil || []).filter((h) => h.kind === "pagan");
+            const christian = (cell.civil || []).filter((h) => h.kind === "christian");
             return (
               <button
                 key={`${cell.jd}-${i}`}
@@ -536,11 +674,7 @@ export default function CalendarExplorer() {
                   if (!cell.schematic) jumpToGregorian(cell.gregorian);
                 }}
                 className={`min-h-[3.5rem] sm:min-h-[4.5rem] rounded-lg border p-1 sm:p-1.5 text-left ${
-                  active
-                    ? "border-[#7a2e2e] bg-[#f3e9c8]"
-                    : cell.sabbath
-                      ? "border-[#e8ddc7] bg-[#efe6cf]"
-                      : "border-[#eee6d4] bg-white/80"
+                  cellTone({ active, sabbath: cell.sabbath, pagan: pagan.length, christian: christian.length })
                 }`}
               >
                 <span className="block text-sm font-medium text-[#2b2620]">{cell.day}</span>
@@ -557,10 +691,35 @@ export default function CalendarExplorer() {
                     {feast.name}
                   </span>
                 )}
+                {pagan.map((h) => (
+                  <span key={h.id} className="block text-[10px] leading-tight text-[#a34a12] line-clamp-2">
+                    {h.short}
+                  </span>
+                ))}
+                {christian.map((h) => (
+                  <span key={h.id} className="block text-[10px] leading-tight text-[#3d4a8a] line-clamp-2">
+                    {h.short}
+                  </span>
+                ))}
               </button>
             );
           })}
         </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[#5b5142]">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-sm bg-[#efe6cf] border border-[#7a2e2e]" />
+          Appointed / Sabbath
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-sm bg-[#e8e6f5] border border-[#3d4a8a]" />
+          Christian feast
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-sm bg-[#f8ead4] border border-[#a34a12]" />
+          Pagan feast
+        </span>
       </div>
 
       <div className="mt-4 flex flex-wrap gap-1.5">

@@ -5,6 +5,7 @@ import { publicUrl } from "@/lib/publicUrl";
 import { GUEST_EMAIL } from "@/api/localAuth";
 import HeavenBackdrop from "@/components/HeavenBackdrop";
 import PapyrusBackdrop from "@/components/PapyrusBackdrop";
+import { CUSTOMS_NAV_LABEL } from "@/data/inheritedCustoms";
 import AppUpdateBanner from "@/components/AppUpdateBanner";
 import { isEvidencePath } from "@/components/evidence/EvidenceSectionNav";
 import { isStandaloneDisplay } from "@/lib/pwa";
@@ -26,7 +27,7 @@ const PRIMARY = [
   { to: "/search", label: "Search", icon: Search },
   { to: "/map", label: "Map", icon: MapIcon },
   { to: "/calendar", label: "Calendar", icon: CalendarDays },
-  { to: "/customs", label: "Holidays", icon: Moon },
+  { to: "/customs", label: CUSTOMS_NAV_LABEL, icon: Moon },
   { to: "/prophecy", label: "Prophecy", icon: Globe },
   { to: "/evidence", label: "Evidence", icon: Landmark, matchEvidence: true },
   { to: "/notebook", label: "Notebook", icon: BookMarked },

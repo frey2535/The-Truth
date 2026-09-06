@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 export const EVIDENCE_SECTIONS = [
   { to: "/evidence", label: "Archaeology" },
-  { to: "/evidence/holidays", label: "Holidays" },
+  { to: "/evidence/holidays", label: "Pagan traditions" },
   { to: "/science", label: "Science" },
   { to: "/government", label: "State papers" },
 ];

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import CalendarExplorer from "@/components/calendar/CalendarExplorer";
+import ReplacedTimes from "@/components/calendar/ReplacedTimes";
 import { libraryHref } from "@/lib/libraryLinks";
 import { QUMRAN_FESTIVALS, QUMRAN_NOTE, QUMRAN_QUARTERS } from "@/lib/calendars";
 import {
@@ -19,6 +20,7 @@ import {
 
 const PAGE_TABS = [
   { id: "calendar", label: "Use the calendar" },
+  { id: "replaced", label: "Times replaced" },
   { id: "about", label: "About each calendar" },
   { id: "scripture", label: "Scripture & months" },
   { id: "claims", label: "Test a claim" },
@@ -27,7 +29,8 @@ const PAGE_TABS = [
 const HASH_TO_TAB = {
   explorer: "calendar",
   jesus: "about",
-  changed: "about",
+  changed: "replaced",
+  times: "replaced",
   appointed: "scripture",
   claims: "claims",
 };
@@ -76,12 +79,13 @@ export default function Calendar() {
     <div>
       <header className="mb-5">
         <p className="text-[10px] tracking-[0.25em] uppercase text-[#b08d3c] mb-2">
-          Biblical time · Observation · History
+          Biblical time · What was changed
         </p>
         <h1 className="font-display text-4xl text-[#2b2620] mb-2">Calendar</h1>
         <p className="text-[#5b5142] max-w-3xl leading-relaxed">
-          Pick a day to see it on the civil calendar, the Hebrew calendar used today, a Temple-era
-          reconstruction, and the Julian calendar Rome used in the time of Jesus.
+          The wall calendar names days for planetary gods, months for Roman gods and Caesars, and starts
+          the year at Janus’s door. Scripture set Month 1 in Aviv and blessed the seventh day. Pick any
+          date to see the appointed time beside the later name.
         </p>
       </header>
 
@@ -106,13 +110,15 @@ export default function Calendar() {
         <div id="explorer">
           <CalendarExplorer />
           <blockquote className="mb-4 border-l-2 border-[#b08d3c] pl-4 text-sm text-[#3a3328] max-w-3xl">
-            <strong>Truth standard:</strong> No surviving evidence shows that one person secretly replaced
-            a single, perfectly preserved “biblical calendar.” Several documented calendar reforms occurred
-            in different communities for different reasons. Where the evidence is incomplete, this page
-            identifies reconstruction as reconstruction.
+            <strong>Truth standard:</strong> The names on the civil calendar and the transfer of weekly rest
+            to Sunday are documented. No surviving evidence shows that one person secretly replaced a single,
+            perfectly preserved “biblical calendar.” Temple-era dates here are reconstructions. Daniel 7:25
+            is stored beside those facts, not treated as a dated fulfillment.
           </blockquote>
         </div>
       )}
+
+      {tab === "replaced" && <ReplacedTimes />}
 
       {tab === "about" && (
         <section className="mb-10">
@@ -166,7 +172,7 @@ export default function Calendar() {
                 <p className="text-sm text-[#5b5142]">{entry.body}</p>
                 {entry.href && (
                   <Link className="inline-block mt-2 text-sm text-[#7a2e2e] underline" to={entry.href}>
-                    Open Holidays
+                    Open pagan traditions
                   </Link>
                 )}
               </article>
@@ -420,8 +426,8 @@ export default function Calendar() {
 
       <p className="text-sm text-[#5b5142] border-t border-[#e8ddc7] pt-4 max-w-3xl">
         Dates communicate more than numbers. They preserve observation, authority, worship, agriculture,
-        empire, and community. The purpose of this calendar is not to force certainty where evidence is
-        missing, but to let Scripture, history, and astronomy each say exactly what they can establish.
+        empire, and community. The civil names most people inherited are not the appointed times. This
+        page lets Scripture, the later overlays, and astronomy each say exactly what they can establish.
       </p>
     </div>
   );

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { ArrowLeft, Moon } from "lucide-react";
-import { CUSTOMS, CUSTOM_SECTIONS } from "@/data/inheritedCustoms";
+import { CUSTOMS, CUSTOM_SECTIONS, CUSTOMS_SECTION_TITLE } from "@/data/inheritedCustoms";
 import { CUSTOM_INTENT } from "@/data/customIntent";
 import { OCCULT_SYMBOLS, SYMBOL_SECTIONS } from "@/data/occultSymbols";
 import { ADVERSARY_NAMES, NAME_SECTIONS } from "@/data/adversaryNames";
@@ -10,8 +10,6 @@ import { getDossier } from "@/data/originsEvidence";
 import SymbolPhoto from "./SymbolPhoto";
 import HolidayEvidenceCard from "@/components/evidence/HolidayEvidenceCard";
 import { evidencePhotoIdForCustom, evidencePhotoIdForName, photoIdForHolidayItem } from "@/data/holidayEvidencePhotos";
-
-export const CUSTOMS_SECTION_TITLE = "Holidays and symbols";
 
 const mdComponents = {
   h1: ({ node, ...p }) => <h1 className="font-display text-2xl text-[#2b2620] mt-6 mb-3" {...p} />,

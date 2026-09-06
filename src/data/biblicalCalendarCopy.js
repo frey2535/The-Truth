@@ -87,7 +87,7 @@ export const COMPARISON_ENTRIES = [
     id: "computus",
     label: "Early Christian computus",
     evidence: "later_tradition",
-    body: "Church methods for dating Easter after the first century, including the Council of Nicaea’s Easter rule. They reformed Christian festival dating, not the Sabbath and not the biblical month numbers. See Holidays for the Easter dossier.",
+    body: "Church methods for dating Easter after the first century, including the Council of Nicaea’s Easter rule. They reformed Christian festival dating, not the Sabbath and not the biblical month numbers. See Pagan traditions for the Easter dossier.",
     href: "/customs",
   },
 ];
@@ -139,18 +139,25 @@ export const SCRIPTURE_POINTS = [
   { ref: "Genesis 1:14", text: "The heavenly lights mark days, years, seasons, and appointed times." },
   { ref: "Psalm 104:19", text: "The moon marks appointed times." },
   { ref: "Exodus 12:2; 13:4; Deuteronomy 16:1", text: "Aviv/Abib is the first month." },
+  { ref: "Exodus 20:8–11", text: "The Sabbath is the seventh day of a continuous week." },
+  { ref: "Exodus 23:13", text: "The names of other gods are not to be heard from Israel’s mouth." },
   { ref: "Leviticus 23:5", text: "Passover is on Month 1, day 14." },
   { ref: "Leviticus 23:23–44", text: "Trumpets, Atonement, and Tabernacles occur in Month 7." },
   { ref: "Leviticus 23:32", text: "A sacred date can run from evening to evening." },
-  { ref: "Exodus 20:8–11", text: "The Sabbath follows a continuous seven-day cycle." },
+  { ref: "Daniel 7:25", text: "A later power is said to think to change times and laws. This page stores the verse; it does not date a fulfillment." },
+  { ref: "Galatians 4:10–11", text: "Observing days, months, times, and years that were not given is treated as a return to bondage." },
 ];
 
 export const TIMELINE = [
   { period: "Biblical periods", development: "Lunar and seasonal Israelite timekeeping", who: "Israelite society and religious authorities", why: "Agriculture and appointed worship" },
   { period: "Exile and post-exilic periods", development: "Babylonian month names enter Jewish use", who: "Cultural and imperial contact", why: "Shared administrative vocabulary" },
   { period: "Second Temple period", development: "Mainstream Jewish lunisolar calendar alongside minority alternatives", who: "Temple authorities and separate communities", why: "Worship, agriculture, and communal identity" },
-  { period: "45 BCE", development: "Julian calendar begins", who: "Julius Caesar and Roman administration", why: "Regularize Rome’s civil calendar" },
+  { period: "45 BCE", development: "Julian calendar begins; year opens at the Kalends of January", who: "Julius Caesar and Roman administration", why: "Regularize Rome’s civil calendar — not Israel’s festivals" },
   { period: "First century CE", development: "Jewish festival calendar and Roman Julian calendar coexist", who: "Temple authorities and Roman government", why: "Religious and civil purposes" },
+  { period: "AD 321", development: "Civil rest on the venerable day of the Sun", who: "Constantine", why: "Imperial Sun-day rest (Codex Justinianus 3.12.2)" },
+  { period: "AD 325", development: "Easter dating rule", who: "Council of Nicaea", why: "Coordinate church Pascha; the seventh day was not rewritten" },
+  { period: "Mid-4th century", development: "Canon against resting on the Sabbath", who: "Council of Laodicea, canon 29", why: "Church law honouring a later “Lord’s Day”" },
+  { period: "AD 336–354", development: "25 December listed as Natalis Invicti and as a nativity date", who: "Chronograph of 354, Rome", why: "Roman civil-religious calendar, not a Gospel date" },
   { period: "AD 70", development: "Temple destroyed", who: "Roman conquest", why: "Major disruption to Temple-centered administration" },
   { period: "c. AD 200", development: "Mishnah records crescent-witness procedures", who: "Rabbinic compilers", why: "Preservation and legal standardization" },
   { period: "Late antiquity–early Middle Ages", development: "Jewish calendar becomes increasingly calculated", who: "Multiple Jewish authorities and communities", why: "Predictability and unity across distance" },
@@ -192,7 +199,22 @@ export const CLAIMS = [
   {
     claim: "Nicaea changed the Sabbath",
     verdict: "Unsupported as stated",
-    body: "Nicaea (AD 325) is documented as regulating the dating of Easter relative to the Jewish calendar. It did not rewrite Exodus 20:8–11 or move the seventh-day Sabbath. Church Easter computus is later Christian practice; see Holidays.",
+    body: "Nicaea (AD 325) is documented as regulating the dating of Easter relative to the Jewish calendar. It did not rewrite Exodus 20:8–11 or move the seventh-day Sabbath. The documented Sunday shift is Constantine’s 321 Sun-day edict and later canons such as Laodicea 29. See Pagan traditions.",
+  },
+  {
+    claim: "January 1 is the biblical new year",
+    verdict: "False",
+    body: "Exodus 12:2 sets the beginning of months in Aviv, in the spring. 1 January is the Kalends of Janus on the Roman civil calendar.",
+  },
+  {
+    claim: "Weekday names are just neutral English",
+    verdict: "False as history",
+    body: "Sunday through Saturday are the planetary week and the northern gods (Sun, Moon, Tiw, Woden, Thor, Frigg, Saturn). Scripture numbers the days and names the seventh the Sabbath.",
+  },
+  {
+    claim: "Daniel 7:25 is fulfilled by the Gregorian reform of 1582",
+    verdict: "Unsupported as a dated fulfillment",
+    body: "Gregory XIII corrected Julian drift. He did not rename the week or rewrite Leviticus 23. The verse is stored here beside documented changes of rest-day and festival dating. This app does not treat 1582 as the fulfillment.",
   },
   {
     claim: "The biblical month begins at astronomical conjunction",
@@ -216,6 +238,8 @@ export const SOURCES = [
   { label: "IAA / ibiblio Dead Sea Scrolls calendrical exhibit", href: "https://www.ibiblio.org/expo/deadsea.scrolls.exhibit/Library/calend.html" },
   { label: "1 Enoch (stored in this app)", href: "/library?corpus=enoch" },
   { label: "Jubilees (stored in this app)", href: "/library?corpus=other" },
-  { label: "Holidays — Easter / Nicaea dossier", href: "/customs" },
+  { label: "Daniel 7:25", href: "/library?corpus=bible&book=Daniel&chapter=7" },
+  { label: "Galatians 4:10–11", href: "/library?corpus=bible&book=Galatians&chapter=4" },
+  { label: "Pagan traditions — Sunday, weekdays, months, January, Christmas, Easter", href: "/customs" },
   { label: "Sacha Stern, Calendars in Antiquity", href: "https://academic.oup.com/book/26077" },
 ];
