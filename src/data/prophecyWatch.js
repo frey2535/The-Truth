@@ -254,8 +254,8 @@ Jeremiah’s “land of the north” in the sixth century named the Mesopotamian
     fulfillment_type: "prophecy_fulfillment",
     watch_stage: "in_process",
     evidence_status: "established",
-    scripture_reference: "Ezekiel 36:24; Ezekiel 37:21; Isaiah 11:12",
-    prophecy_reference: "Ezekiel 36:24; Ezekiel 37:21; Isaiah 11:12",
+    scripture_reference: "Ezekiel 36:24; Ezekiel 37:21; Isaiah 11:12; Jeremiah 30:3",
+    prophecy_reference: "Ezekiel 36:24; Ezekiel 37:21; Isaiah 11:12; Jeremiah 30:3",
     modern_date: "1950–present",
     location: "Israel",
     date: "1950-07-05",
@@ -268,6 +268,8 @@ Jeremiah’s “land of the north” in the sixth century named the Mesopotamian
     full_text: `King James, Ezekiel 37:21: “I will take the children of Israel from among the heathen, whither they be gone, and will gather them on every side, and bring them into their own land.”
 
 Isaiah 11:12: “gather together the dispersed of Judah from the four corners of the earth.”
+
+Jeremiah 30:3: “I will cause them to return to the land that I gave to their fathers, and they shall possess it.”
 
 The Law of Return remains Israeli statute. Published immigration statistics still record olim from many countries each year. Jews also remain in large numbers outside the land. The process matches the wording “from all countries” as an unfinished public fact, not as a closed ledger.
 
@@ -300,8 +302,8 @@ What is established is that the nations have not been able to set the city down.
     fulfillment_type: "prophecy_fulfillment",
     watch_stage: "in_process",
     evidence_status: "established_contextual",
-    scripture_reference: "Ezekiel 36:8; Ezekiel 36:33–35; Isaiah 35:1; Amos 9:14; Isaiah 27:6",
-    prophecy_reference: "Ezekiel 36:33–35; Isaiah 35:1; Amos 9:14–15",
+    scripture_reference: "Ezekiel 36:8; Ezekiel 36:33–35; Isaiah 35:1; Isaiah 35:6–7; Isaiah 43:19–20; Amos 9:14; Isaiah 27:6",
+    prophecy_reference: "Ezekiel 36:33–35; Isaiah 35:1; Isaiah 35:6–7; Isaiah 43:19–20; Amos 9:14–15",
     modern_date: "1948–present",
     location: "Land of Israel",
     date: "1948-05-14",
@@ -315,11 +317,15 @@ What is established is that the nations have not been able to set the city down.
 
 Isaiah 35:1: “The wilderness and the solitary place shall be glad for them; and the desert shall rejoice, and blossom as the rose.”
 
+Isaiah 35:6–7: “for in the wilderness shall waters break out, and streams in the desert. And the parched ground shall become a pool.”
+
+Isaiah 43:19: “I will even make a way in the wilderness, and rivers in the desert.”
+
 Amos 9:14: “they shall build the waste cities, and inhabit them; and they shall plant vineyards, and drink the wine thereof.”
 
-Dated public facts: JNF-KKL and state forestry planted hundreds of millions of trees on mapped lands. Drip irrigation (a published Israeli agricultural method) turned portions of the Negev to export produce. Cities that were ruin or swamp in the nineteenth-century surveys are inhabited. NASA orbital photographs show the contrast of irrigated circles against arid ground.
+Dated public facts: JNF-KKL and state forestry planted hundreds of millions of trees on mapped lands. Drip irrigation (a published Israeli agricultural method), pipelines, and desalination have put water and export produce in portions of the Negev. Cities that were ruin or swamp in the nineteenth-century surveys are inhabited. NASA orbital photographs show the contrast of irrigated circles against arid ground.
 
-The measurements are real. The prophets also speak of cleansing, one King, and a land that is no more pulled up (Amos 9:15). Those clauses are not a crop report. This card stores the agriculture and the rebuilt towns beside the verses. It does not close the prophecy.`,
+Irrigation and desalination are ordinary engineering. Isaiah 35 also names the lame leaping and the tongue of the dumb singing. Those clauses are not a pipeline. This card stores the water and the rebuilt towns beside the verses. It does not close the prophecy.`
   },
   {
     title: "Gospel published among the nations",
@@ -386,9 +392,9 @@ Some readers apply the clause to travel and science. Others read it as people se
 
 Luke 21:9: “the end is not by and by.”
 
-Dated public facts: the twentieth and twenty-first centuries published two world wars, regional wars without number, famine series (FAO), pandemic records, and seismic catalogues (USGS). Those catalogues exist. They do not let a reader circle a year and say “this is the end.”
+Dated public facts: the twentieth and twenty-first centuries published two world wars, regional wars without number, famine series (FAO), pandemic records (including COVID-19), and seismic catalogues (USGS). USGS does not find a sustained worldwide rise in major earthquakes; better instruments and denser cities change what is counted. Luke 21:11 adds pestilences. A named disease is not “the” pestilence of the end.
 
-Jesus named these as the beginning of sorrows, and forbade being troubled into a false clock. This card stores the standing condition beside His words. It does not baptize a headline as the last trumpet.`,
+Jesus named these as the beginning of sorrows, and forbade being troubled into a false clock. This card stores the standing condition beside His words. It does not baptize a headline as the last trumpet.`
   },
   {
     title: "Nations parting the land",
@@ -411,6 +417,166 @@ Jesus named these as the beginning of sorrows, and forbade being troubled into a
 Dated public facts: Resolution 181 recommended a Jewish State, an Arab State, and an international Jerusalem. Later UN resolutions, U.S. peace plans, and regional talks have again drawn lines through the same land. The diplomatic project of “two states” is a published, unfinished partition.
 
 Joel names a gathering of all nations for judgment over scattering and parting. A map conference is not that court. The parting papers are real. The valley scene is not claimed here as already present.`,
+  },
+  {
+    title: "Dead Sea springs and microbes — not Ezekiel’s healed sea",
+    fulfillment_type: "prophecy_fulfillment",
+    watch_stage: "in_process",
+    evidence_status: "established_contextual",
+    scripture_reference: "Ezekiel 47:8–10",
+    prophecy_reference: "Ezekiel 47:8–10",
+    modern_date: "21st century",
+    location: "Dead Sea",
+    date: "2011",
+    local_image: "/evidence/dead-sea.jpg",
+    image_caption:
+      "NASA photograph of the Dead Sea, the basin of the mapped springs. The sea itself is still salt.",
+    source_url: "https://earthobservatory.nasa.gov/",
+    verification_note:
+      "Freshwater springs and microbes in the Dead Sea are published. Ezekiel 47 describes the sea healed and fishers from Engedi to Eneglaim. That has not occurred.",
+    full_text: `King James, Ezekiel 47:8–10: “These waters issue out toward the east country, and go down into the desert, and go into the sea: which being brought forth into the sea, the waters shall be healed. … the fishers shall stand upon it from Engedi even unto Eneglaim; they shall be a place to spread forth nets; their fish shall be according to their kinds, as the fish of the great sea, exceeding many.”
+
+Dated public facts: researchers have published dense microbial communities around underwater freshwater springs in the Dead Sea. The NASA photograph stored here is the salt sea itself.
+
+What is not established: that the sea has become fresh, or that commercial nets now stand from Engedi to Eneglaim. Microbes at a spring are not Ezekiel’s multitude of fish. This card stores the discovery beside the vision. It does not close the chapter.`,
+  },
+  {
+    title: "Persecution for His name — still the standing condition",
+    fulfillment_type: "prophecy_fulfillment",
+    watch_stage: "in_process",
+    evidence_status: "established",
+    scripture_reference: "Matthew 24:9; John 15:20; Revelation 6:9–11",
+    prophecy_reference: "Matthew 24:9; John 15:20",
+    modern_date: "first century–present",
+    location: "Worldwide",
+    date: "c. AD 112",
+    local_image: "/evidence/holidays/latin-cross.jpg",
+    image_caption:
+      "Catalogued Latin cross (Metropolitan Museum). The verse is hatred for His name, not this object as a relic.",
+    verification_note:
+      "Persecution of Christians is a published fact from Pliny to the present. Matthew 24:9 does not let a reader date the end from any one country’s report.",
+    full_text: `King James, Matthew 24:9: “Then shall they deliver you up to be afflicted, and shall kill you: and ye shall be hated of all nations for my name’s sake.”
+
+John 15:20: “If they have persecuted me, they will also persecute you.”
+
+Dated public facts stored in this app: Pliny’s letter to Trajan (c. AD 112) and Tacitus on Nero already name Christians put to death for the name. Modern foreign-ministry and church reports still list imprisonments and killings in more than one country.
+
+This is the standing condition Jesus named, not a new clock. Persecution has not been absent since the first century. This card stores the wording and the long record. It does not treat the latest report as the last tribulation.`,
+  },
+  {
+    title: "A falling away, and many offended",
+    fulfillment_type: "prophecy_fulfillment",
+    watch_stage: "in_process",
+    evidence_status: "established_contextual",
+    scripture_reference: "2 Thessalonians 2:3; 1 Timothy 4:1; Matthew 24:10–13",
+    prophecy_reference: "2 Thessalonians 2:3; 1 Timothy 4:1; Matthew 24:10–13",
+    modern_date: "ongoing",
+    location: "Worldwide",
+    date: "present",
+    local_image: "/evidence/prophecy/earth-night.jpg",
+    image_caption:
+      "NASA night earth. The lamps mark the inhabited world in which departure from the faith is counted, not a census of that departure.",
+    verification_note:
+      "Paul said a falling away comes first. Census religion and empty profession are public. This app does not fix the day of the man of sin from a poll.",
+    full_text: `King James, 2 Thessalonians 2:3: “Let no man deceive you by any means: for that day shall not come, except there come a falling away first, and that man of sin be revealed, the son of perdition.”
+
+1 Timothy 4:1: “Now the Spirit speaketh expressly, that in the latter times some shall depart from the faith, giving heed to seducing spirits, and doctrines of devils.”
+
+Matthew 24:10: “And then shall many be offended, and shall betray one another, and shall hate one another.”
+
+Dated public facts: large churches in lands that once named Christ now report empty pews and open denial of the resurrection. Other lands report growth. Measurement of “the” falling away is disputed — some read it as first-century departure, some as a last concentrated rebellion.
+
+What is stored is the wording and the visible cooling in once-Christian nations. What is not stored is a date for the man of sin. The falling away is a watch, not a finished ledger.`,
+  },
+  {
+    title: "False christs and false prophets",
+    fulfillment_type: "prophecy_fulfillment",
+    watch_stage: "in_process",
+    evidence_status: "established",
+    scripture_reference: "Matthew 24:5; Matthew 24:11; Matthew 24:24",
+    prophecy_reference: "Matthew 24:5; Matthew 24:11; Matthew 24:24",
+    modern_date: "first century–present",
+    location: "Worldwide",
+    date: "present",
+    local_image: "/evidence/prophecy/wars-nations.jpg",
+    image_caption:
+      "The UN chamber, a house of nations. The verse is many claiming “I am Christ,” not this hall.",
+    verification_note:
+      "Claimants who take the name of Christ, and prophets who deceive, are a published recurring fact. Matthew 24 also warns of a more concentrated deception still ahead.",
+    full_text: `King James, Matthew 24:5: “For many shall come in my name, saying, I am Christ; and shall deceive many.”
+
+Matthew 24:11: “And many false prophets shall rise, and shall deceive many.”
+
+Matthew 24:24: “For there shall arise false Christs, and false prophets, and shall shew great signs and wonders; insomuch that, if it were possible, they shall deceive the very elect.”
+
+Dated public facts: from Simon Magus in Acts 8 to modern messianic claimants and miracle-sellers, the name has been taken. The app’s Holidays and names shelves already identify some of those trades.
+
+Jesus said this must come to pass and that a sharper deception is still possible. This card stores the recurring sign. It does not name a living man as the last false christ.`,
+  },
+  {
+    title: "Scoffers asking where the promise of His coming is",
+    fulfillment_type: "prophecy_fulfillment",
+    watch_stage: "in_process",
+    evidence_status: "established",
+    scripture_reference: "2 Peter 3:3–4; Matthew 24:48–51",
+    prophecy_reference: "2 Peter 3:3–4",
+    modern_date: "ongoing",
+    location: "Worldwide",
+    date: "present",
+    local_image: "/evidence/prophecy/earth-night.jpg",
+    image_caption:
+      "NASA night earth. The verse is a spoken scoff, not a photograph of a scoffer.",
+    verification_note:
+      "The scoff Peter named is public. The passage gives no date. This app does not treat mockery itself as a calendar.",
+    full_text: `King James, 2 Peter 3:3–4: “Knowing this first, that there shall come in the last days scoffers, walking after their own lusts, And saying, Where is the promise of his coming? for since the fathers fell asleep, all things continue as they were from the beginning of the creation.”
+
+Dated public fact: the question is asked in print and on the public internet every day — that the fathers died, and the world goes on.
+
+Peter’s next lines answer with the flood and with a coming fire, and with the Lord’s longsuffering. This card stores the scoff beside the warning. It does not date the coming from the volume of the mockery.`,
+  },
+  {
+    title: "Lovers of their own selves — 2 Timothy 3",
+    fulfillment_type: "prophecy_fulfillment",
+    watch_stage: "in_process",
+    evidence_status: "established_contextual",
+    scripture_reference: "2 Timothy 3:1–5",
+    prophecy_reference: "2 Timothy 3:1–5",
+    modern_date: "ongoing",
+    location: "Worldwide",
+    date: "present",
+    local_image: "/evidence/prophecy/earth-night.jpg",
+    image_caption:
+      "NASA night earth. The lamps of a self-advertising age; not a proof that the last days are finished.",
+    verification_note:
+      "Paul’s list is a moral description, not a statistic. Headlines about pride and money cannot close the chapter.",
+    full_text: `King James, 2 Timothy 3:1–2, 5: “This know also, that in the last days perilous times shall come. For men shall be lovers of their own selves, covetous, boasters, proud, blasphemers, disobedient to parents, unthankful, unholy, … Having a form of godliness, but denying the power thereof: from such turn away.”
+
+The list is public enough: self as gospel, money as honour, religion as costume. It was already readable in Paul’s century. It is still readable.
+
+This card stores the wording as a watch on the present. It does not turn a fashion season into a fulfilled last-days clock.`,
+  },
+  {
+    title: "As the days of Noah and of Lot — ordinary life until sudden judgment",
+    fulfillment_type: "prophecy_fulfillment",
+    watch_stage: "in_process",
+    evidence_status: "disputed_identification",
+    scripture_reference: "Matthew 24:37–39; Luke 17:26–30; Ezekiel 16:49–50",
+    prophecy_reference: "Matthew 24:37–39; Luke 17:26–30",
+    modern_date: "ongoing",
+    location: "Worldwide",
+    date: "present",
+    local_image: "/evidence/artifacts/mount-sodom.jpg",
+    image_caption:
+      "Mount Sodom salt, the mapped basin of Genesis 19. The photograph is the place. It is not a caption on this century.",
+    verification_note:
+      "Jesus compared the coming to ordinary eating, drinking, marrying, buying, and building until the day broke. Mapping every vice of a city onto “Sodom” is a later reading and is marked disputed.",
+    full_text: `King James, Matthew 24:37–38: “But as the days of Noe were, so shall also the coming of the Son of man be. For as in the days that were before the flood they were eating and drinking, marrying and giving in marriage, until the day that Noe entered into the ark.”
+
+Luke 17:28–29: “Likewise also as it was in the days of Lot; they did eat, they drank, they bought, they sold, they planted, they builded; But the same day that Lot went out of Sodom it rained fire and brimstone from heaven, and destroyed them all.”
+
+Ezekiel 16:49 names Sodom’s iniquity as pride, fulness of bread, abundance of idleness, and neglect of the poor, and then abominations.
+
+The sign Jesus named is ordinary life continuing until a sudden day — not a reader’s ability to stamp this year as Sodom. Genesis 6 also names violence and corruption; some add that. This card stores the comparison. It does not baptize a headline as the flood or the fire.`
   },
 
   // ——— End-time setup ———
@@ -437,7 +603,7 @@ Revelation 11:1–2: John is told to measure the temple of God and the altar; th
 
 Dated public facts: the Herodian Temple was destroyed in AD 70. Since 1967 the platform has been administered for Islamic worship (Dome of the Rock, al-Aqsa) under the waqf, with Israeli security around the compound. No Jewish house stands on the mount.
 
-This is setup, not the abomination. Paul speaks of a man sitting in the temple of God. John measures a temple. Those texts are future or contested in application. The photograph is the present platform. Popular “red heifer” and furniture headlines are not stored here as established fact.`,
+This is setup, not the abomination. Paul speaks of a man sitting in the temple of God. John measures a temple. Those texts are future or contested in application. The photograph is the present platform. Red-heifer arrivals and furniture workshops are stored on the next cards as preparations, not as a standing temple.`
   },
   {
     title: "The whole earth can see an event at once",
@@ -481,7 +647,9 @@ Setup is not fulfillment. Revelation 11 is a dated scene of two witnesses. Light
 
 Dated public facts: card networks, mobile payments, and state digital-identity programmes can already permit or refuse a purchase at a terminal. That is a measured capability of the present economy.
 
-What this is not: the mark. John names the beast, the number of his name, the right hand or the forehead, and a worldwide compulsion. No present card or chip satisfies that text. Charts that baptize a brand as 666 are not stored here. The setup is only this: a world in which “no man might buy or sell” can be administered by machine is no longer unimaginable.`,
+What this is not: the mark. John names the beast, the number of his name, the right hand or the forehead, worship, and a worldwide compulsion. A patent application (including Microsoft WO2020060606), a laboratory enzyme named luciferase, a quantum-dot vaccine patch, a barcode, a vaccine, or a microchip does not satisfy that whole text. Those items are stored here only as things this app refuses to baptize as 666.
+
+The setup is only this: a world in which “no man might buy or sell” can be administered by machine is no longer unimaginable.`
   },
   {
     title: "Euphrates flow reduced by dams and drought",
@@ -574,6 +742,54 @@ Zechariah 12:3: “I will make Jerusalem a burdensome stone for all people.”
 Dated public facts: the U.S. Jerusalem Embassy Act of 1995 (Public Law 104–45) recognized Jerusalem as Israel’s capital and directed the embassy to move. On 14 May 2018 — seventy years to the day from the 1948 proclamation — the United States opened its embassy in Jerusalem. Other states followed or refused. The city’s status remained a UN quarrel.
 
 An embassy is not the LORD dwelling in Zion. It is a dated act that raised the city’s political temperature, which is why it sits under setup beside Zechariah 12, not under a closed fulfillment.`,
+  },
+  {
+    title: "Red heifers brought to the land (September 2022)",
+    fulfillment_type: "end_time_setup",
+    watch_stage: "setup",
+    evidence_status: "disputed_identification",
+    scripture_reference: "Numbers 19:2–9",
+    prophecy_reference: "Numbers 19:2–9",
+    modern_date: "2022-09",
+    location: "Israel",
+    date: "2022-09",
+    local_image: "/evidence/prophecy/temple-mount.jpg",
+    image_caption:
+      "The Temple Mount, the place later rites would concern. A photograph of the 2022 heifers is not stored; the arrival itself is a published news and Temple Institute record.",
+    source_url: "https://templeinstitute.org/",
+    verification_note:
+      "Five red heifers arriving from the United States in September 2022 is a published fact. Numbers 19 is a Torah ordinance for purification ashes, not an explicit last-days clock. Connecting them to a rebuilt temple is a later reading.",
+    full_text: `King James, Numbers 19:2: “Speak unto the children of Israel, that they bring thee a red heifer without spot, wherein is no blemish, and upon which never came yoke.”
+
+Numbers 19:9: the ashes are kept “for a water of separation: it is a purification for sin.”
+
+Dated public facts: in September 2022 five red heifers were flown from Texas to Israel and received in public ceremonies reported by the Temple Institute and the press. Numbers 19 is a commandment for purification, used when there is a priesthood and a sanctuary to approach.
+
+What this is not: a verse that says “when five heifers land, the week begins.” Some readers treat a qualified heifer as a necessary step before renewed temple worship. Others note that the ordinance is older than any modern end-times chart. This card stores the arrival. It does not declare a heifer approved, or a temple begun.`,
+  },
+  {
+    title: "Temple vessels and garments prepared — no house stands",
+    fulfillment_type: "end_time_setup",
+    watch_stage: "setup",
+    evidence_status: "established",
+    scripture_reference: "Daniel 9:27; Matthew 24:15; 2 Thessalonians 2:4; Revelation 11:1–2",
+    prophecy_reference: "Daniel 9:27; Matthew 24:15; 2 Thessalonians 2:4; Revelation 11:1–2",
+    modern_date: "1980s–present",
+    location: "Jerusalem",
+    date: "1987",
+    local_image: "/evidence/prophecy/temple-mount.jpg",
+    image_caption:
+      "The Temple Mount from the Mount of Olives. Workshops and drawings exist. This house does not.",
+    source_url: "https://templeinstitute.org/",
+    verification_note:
+      "Published workshops have made vessels, garments, and architectural drawings. No Third Temple has been built, and no daily sacrifice is offered on the mount.",
+    full_text: `King James, 2 Thessalonians 2:4: “so that he as God sitteth in the temple of God, shewing himself that he is God.”
+
+Revelation 11:1: John is told to measure the temple of God and the altar.
+
+Dated public facts: the Temple Institute (founded 1987) and related workshops publish priestly garments, utensils, and plans for a house on the mount. Those objects exist in museums and workrooms. The platform still holds the Dome of the Rock and al-Aqsa.
+
+Preparations are not a functioning temple. Daniel’s abomination, Paul’s man sitting in the temple, and John’s measuring reed all assume a holy place in use. This card stores the workshop beside those verses. It does not announce that the house has been raised.`,
   },
   {
     title: "The fig-tree reading of 1948 — stored as a dispute",
