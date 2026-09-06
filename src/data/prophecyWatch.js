@@ -7,6 +7,21 @@
 const NOTICE =
   "This app stores the dated public record beside the verse. It does not declare that the prophecy is fulfilled.";
 
+const RED_WATER_NOTE =
+  "Dated public facts about red-running water. Exodus 7 and Revelation 16 name blood as a judgment. This app does not treat iron, dye, sediment, plants, or a tracer as that plague.";
+
+function redWater(fields) {
+  return {
+    fulfillment_type: "end_time_setup",
+    watch_stage: "setup",
+    evidence_status: "disputed_identification",
+    scripture_reference: "Exodus 7:20–21; Revelation 16:4",
+    prophecy_reference: "Exodus 7:20–21; Revelation 16:4",
+    verification_note: RED_WATER_NOTE,
+    ...fields,
+  };
+}
+
 export const PROPHECY_WATCH = [
   // ——— Dated events ———
   {
@@ -686,15 +701,10 @@ Dated public facts: Turkey’s Atatürk Dam (among others) and downstream drough
 
 A dam is not an angel’s vial. The text is a judgment that prepares a way for the kings of the east. The reduced river is a present measurement that makes the wording easier to picture. It is not stored as the sixth vial already poured.`,
   },
-  {
-    title: "Rivers that run red — iron and mineral, not the plague of blood",
-    fulfillment_type: "end_time_setup",
-    watch_stage: "setup",
-    evidence_status: "disputed_identification",
-    scripture_reference: "Exodus 7:20–21; Revelation 16:4",
-    prophecy_reference: "Exodus 7:20–21; Revelation 16:4",
+  redWater({
+    title: "Rivers that run red — not the plague of blood",
     modern_date: "mapped present waters",
-    location: "Rio Tinto, Spain / Taylor Glacier, Antarctica",
+    location: "Named rivers stored on the cards below",
     date: "2002",
     local_image: "/evidence/prophecy/rio-tinto.jpg",
     image_caption:
@@ -707,16 +717,74 @@ A dam is not an angel’s vial. The text is a judgment that prepares a way for t
       },
     ],
     source_url: "https://science.nasa.gov/earth/earth-observatory/spains-stained-river-147459/",
-    verification_note:
-      "Red-running waters are photographed and chemically explained. Exodus 7 and Revelation 16 name blood as a judgment. This app does not treat iron, algae, or dye as that plague.",
     full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood. And the fish that was in the river died.”
 
 Revelation 16:4: “And the third angel poured out his vial upon the rivers and fountains of waters; and they became blood.”
 
-Dated public facts: the Rio Tinto in Spain runs red for tens of kilometres from iron and acid drainage; NASA has photographed it. Blood Falls in Antarctica is iron-rich brine that reddens when it meets air. Press reports of other rivers turning red from algae, sediment, or industrial dye are published from time to time; those news pictures are not stored here.
+Dated public facts stored on the next cards, each with a photograph of the red water itself: Rio Tinto (iron), Blood Falls (iron brine), Daldykan / Norilsk (industrial), and Caño Cristales (a plant). Rivers whose only freely stored picture is ordinary water are not kept here.
 
-What this is not: Moses’ plague on the Nile, or the third vial. The photographs are mineral. Fish die in some of those acidic reaches, but the text is blood by judgment, not rust. This card stores the look of red water so a reader can see why the reports circulate. It does not declare the plague.`,
-  },
+What this is not: Moses’ plague on the Nile, or the third vial. The photographs are mineral, diesel, or vegetation. This shelf stores the published look of red water. It does not declare the plague.`,
+  }),
+  redWater({
+    title: "Rio Tinto — iron, not blood",
+    modern_date: "mapped present waters",
+    location: "Andalusia, Spain",
+    date: "2002",
+    local_image: "/evidence/prophecy/rio-tinto.jpg",
+    image_caption:
+      "NASA Ames photograph of the Rio Tinto. The red is acid mine drainage and iron, not blood.",
+    source_url: "https://science.nasa.gov/earth/earth-observatory/spains-stained-river-147459/",
+    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood.”
+
+Dated public facts: the Rio Tinto in southwestern Spain runs red and orange for tens of kilometres. NASA and basin papers publish the iron, the acidity, and the microbes that oxidize pyrite. Mining in the Iberian Pyrite Belt has long exposed that rock.
+
+This is rust in acid water. It is not the Nile turned to blood, and it is not the third vial.`,
+  }),
+  redWater({
+    title: "Blood Falls — iron brine on Taylor Glacier",
+    modern_date: "mapped present waters",
+    location: "Taylor Glacier, Antarctica",
+    date: "2006-11-26",
+    local_image: "/evidence/prophecy/blood-falls.jpg",
+    image_caption:
+      "Blood Falls at Taylor Glacier (NSF / Peter Rejcek). Iron-rich brine oxidizes red in air. Public-domain government photograph.",
+    source_url: "https://photolibrary.usap.gov/",
+    full_text: `King James, Revelation 16:4: “And the third angel poured out his vial upon the rivers and fountains of waters; and they became blood.”
+
+Dated public facts: a subglacial brine leaks from Taylor Glacier into Lake Bonney. The iron reddens when it meets air. The National Science Foundation published this photograph.
+
+This is chemistry at a glacier snout. It is not a vial poured by an angel.`,
+  }),
+  redWater({
+    title: "Daldykan and Norilsk — industrial red water in Siberia",
+    modern_date: "2014–2020",
+    location: "Norilsk, Krasnoyarsk Krai, Russia",
+    date: "2016-09",
+    local_image: "/evidence/prophecy/norilsk-red.jpg",
+    image_caption:
+      "Copernicus Sentinel-2 / ESA, 31 May 2020: diesel from a Norilsk power plant staining Arctic waterways red. Catalogued satellite record of industrial red water at the same nickel city. Press pictures of the 2016 Daldykan bank are not stored.",
+    source_url: "https://www.npr.org/sections/thetwo-way/2016/09/08/493139519/a-siberian-river-has-mysteriously-turned-blood-red",
+    full_text: `King James, Exodus 7:20–21: “and all the waters that were in the river were turned to blood.”
+
+Dated public facts: the Daldykan near Norilsk, above the Arctic Circle, ran crimson in 2014 and again in September 2016. Published reporting named iron runoff and leaks from Norilsk Nickel works. On 29 May 2020 a diesel tank at a Norilsk power plant failed; ESA’s Sentinel-2 photographed the Ambarnaya and nearby channels stained red.
+
+The 2016 bank photographs belong to the press and are not stored here. The satellite plate is the catalogued industrial record at that city. Pipeline rust and diesel are not the plague on the Nile.`,
+  }),
+  redWater({
+    title: "Caño Cristales — a red plant, not blood",
+    modern_date: "wet season, each year",
+    location: "Serranía de la Macarena, Meta, Colombia",
+    date: "2010",
+    local_image: "/evidence/prophecy/cano-cristales.jpg",
+    image_caption:
+      "Caño Cristales, the river of five colors. The red is Macarenia clavigera on the bed in the wet season. Catalogued site photograph.",
+    source_url: "https://commons.wikimedia.org/wiki/Category:Ca%C3%B1o_Cristales",
+    full_text: `King James, Revelation 16:4: “And the third angel poured out his vial upon the rivers and fountains of waters; and they became blood.”
+
+Dated public facts: Caño Cristales in Colombia turns a brilliant red in the wet months because an endemic aquatic plant, Macarenia clavigera, covers the bed. The same reach also shows green, yellow, blue, and black. This is a mapped botanical season, not a dump and not a vial.
+
+A plant is not blood. The photograph is the named river in that season.`,
+  }),
   {
     title: "Abraham Accords and published “peace and safety” papers",
     fulfillment_type: "end_time_setup",

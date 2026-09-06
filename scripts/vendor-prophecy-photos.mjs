@@ -29,6 +29,23 @@ const DIRECT = [
 
 const COMMONS = [
   {
+    dest: "public/evidence/prophecy/cano-cristales.jpg",
+    files: [
+      "Caño Cristales 01.jpg",
+      "Caño Cristales, Colombia.jpg",
+      "Los Ocho en Caño Cristales.jpg",
+      "Cascadas Manto de La Virgen - Caño Cristales - La Macarena - Meta - Colombia.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/norilsk-red.jpg",
+    files: [
+      "Norilsk oil spill may 31 2020 sentinel-2 esa.jpg",
+      "Leaked diesel fuel in the River Ambarnaya, near Norilsk, Siberia, Krasnoyarsk Krai, Russia, on May 31st and June 1st, 2020. (49982094662).jpg",
+      "Diesel oil spill in Arctic Circle.jpg",
+    ],
+  },
+  {
     dest: "public/evidence/prophecy/red-heifers.jpg",
     files: [
       "Red Poll heifers.JPG",
