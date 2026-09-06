@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -68,7 +68,8 @@ const AuthenticatedApp = () => {
         <Route path="/assistant" element={<Assistant />} />
         <Route path="/evidence" element={<Evidence />} />
         <Route path="/evidence/holidays" element={<EvidenceHolidays />} />
-        <Route path="/modern" element={<ModernFulfillment />} />
+        <Route path="/prophecy" element={<ModernFulfillment />} />
+        <Route path="/modern" element={<Navigate to="/prophecy" replace />} />
         <Route path="/science" element={<Scientific />} />
         <Route path="/government" element={<Government />} />
         <Route path="/library" element={<Library />} />

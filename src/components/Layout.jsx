@@ -17,6 +17,7 @@ import {
   Map as MapIcon,
   CalendarDays,
   BookMarked,
+  Globe,
 } from "lucide-react";
 
 const PRIMARY = [
@@ -25,6 +26,7 @@ const PRIMARY = [
   { to: "/map", label: "Map", icon: MapIcon },
   { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/customs", label: "Holidays", icon: Moon },
+  { to: "/prophecy", label: "Prophecy", icon: Globe },
   { to: "/evidence", label: "Evidence", icon: Landmark, matchEvidence: true },
   { to: "/notebook", label: "Notebook", icon: BookMarked },
 ];
@@ -34,6 +36,7 @@ const MOBILE_NAV = [
   { to: "/search", label: "Search", icon: Search },
   { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/map", label: "Map", icon: MapIcon },
+  { to: "/prophecy", label: "Prophecy", icon: Globe },
   { to: "/evidence", label: "Evidence", icon: Landmark, matchEvidence: true },
   { to: "/assistant", label: "Ask", icon: Sparkles },
 ];
@@ -167,7 +170,7 @@ export default function Layout() {
             : "border-[#e8c97a]/25 bg-[#120c08]/90"
         }`}
       >
-        <div className="grid grid-cols-6 h-[4.25rem]">
+        <div className="grid grid-cols-7 h-[4.25rem]">
           {MOBILE_NAV.map(({ to, label, icon: Icon, matchEvidence }) => {
             const active = navActive(pathname, to, matchEvidence);
             return (

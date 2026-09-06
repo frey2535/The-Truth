@@ -122,7 +122,7 @@ function CustomDetail({ item, onBack }) {
   const related = (intent?.relatedSymbols || [])
     .map((id) => OCCULT_SYMBOLS.find((s) => s.id === id))
     .filter(Boolean);
-  const photoId = evidencePhotoIdForCustom(item.id, intent?.relatedSymbols || []);
+  const photoId = evidencePhotoIdForCustom(item.id);
   return (
     <div className="max-w-3xl">
       <button onClick={onBack} className="inline-flex items-center gap-1.5 text-sm text-[#7a2e2e] hover:underline mb-4">

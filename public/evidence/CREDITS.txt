@@ -31,6 +31,19 @@ holidays/ — Metropolitan Museum of Art Open Access photographs of catalogued o
   zodiac-wheel.jpg — Met 2004.440.1, object 231027
 
 artifacts/ — photographs of the named object, site, or manuscript (not reconstructions):
+  ketef-hinnom.jpg — Bachrach44, Israel Museum silver amulets, CC BY-SA 3.0
+  siloam-tunnel.jpg — Davidbena, Hezekiah’s Tunnel interior, CC BY-SA 4.0
+  jehoiachin-rations.jpg — Scallaham, Vorderasiatisches Museum, CC BY-SA 4.0
+  lachish-letter.jpg — Library of Congress Matson / American Colony, public domain
+  pool-siloam.jpg — excavated Second Temple Pool of Siloam / pilgrimage approach
+  nazareth-inscription.jpg — marble imperial edict on tombs
+  mount-sodom.jpg — Wilson44691, Mount Sodom salt cave, CC BY-SA 3.0
+  tutankhamun-chariot.jpg — 1923 excavation photograph of a KV62 chariot
+  ekron.jpg — Ekron royal inscription, Israel Museum
+  nabonidus.jpg — Nabonidus cylinder from Ur, British Museum
+  shoshenq-karnak.jpg — Bubastite Portal, Karnak
+  magdala.jpg — Magdala stone from the first-century synagogue
+  horeb-rock.jpg — Hatem Moushir, Wadi Feiran (traditional Rephidim), CC BY-SA 4.0
   merneptah.jpg, merneptah-israel.jpg — University of Michigan NES Image Database items 45 and 61
   mesha.jpg — Louvre collections, Mesha Stele AO 5066
   black-obelisk.jpg, black-obelisk-jehu.jpg — University of Michigan items 76 and 78
@@ -51,3 +64,16 @@ artifacts/ — photographs of the named object, site, or manuscript (not reconst
   gallio.jpg — Gérard, Delphi Gallio inscription, CC BY-SA 4.0
   hezekiah-bulla.jpg — Tamir Zegman, CC BY-SA 4.0
   galilee-boat.jpg — Warfieldian, Yigal Allon Centre boat, CC BY-SA 4.0
+
+prophecy/ — dated public records and named places for the Prophecy watch page:
+  balfour.jpg — Balfour Declaration letter, United Kingdom Government, public domain
+  un-181.jpg — published 1947 UN partition plan map (Commons)
+  israel-independence.jpg — Declaration of the State of Israel, 14 May 1948 (GPO / Commons)
+  truman-israel.jpg — Harry S. Truman official portrait, 1945, NARA, public domain
+  hebrew.jpg — Portrait of Eliezer Ben-Yehuda (Commons)
+  western-wall.jpg — Western Wall, Jerusalem (Commons)
+  temple-mount.jpg — Temple Mount from the Mount of Olives (Commons)
+  un-headquarters.jpg — United Nations Headquarters, New York (Commons)
+  wars-nations.jpg — United Nations Security Council chamber (Commons)
+  earth-night.jpg — NASA Black Marble PIA15416, public domain
+  euphrates.jpg — Euphrates near Atatürk Dam, Alen Ištoković / Panoramio, CC BY 3.0

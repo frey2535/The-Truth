@@ -162,12 +162,7 @@ const CUSTOM_PHOTO = {
   crosses: "latin-cross",
   halloween: "skull",
   valentines: "cupid-heart",
-  "sunday-sabbath": "sun-disk",
-  images: "radiate-crown",
   "luck-charms": "eye-of-horus",
-  easter: "ankh",
-  christmas: "sun-disk",
-  "christmas-trees": "evergreen",
   "wedding-rings": "circle-ring",
   horoscopes: "zodiac-wheel",
   "may-day": "maypole",
@@ -186,10 +181,9 @@ export function evidencePhotoFor(id) {
   return HOLIDAY_EVIDENCE_PHOTOS[id] || null;
 }
 
-export function evidencePhotoIdForCustom(customId, relatedSymbolIds = []) {
+export function evidencePhotoIdForCustom(customId) {
   const mapped = CUSTOM_PHOTO[customId];
-  if (mapped && HOLIDAY_EVIDENCE_PHOTOS[mapped]) return mapped;
-  return relatedSymbolIds.find((id) => HOLIDAY_EVIDENCE_PHOTOS[id]) || "";
+  return mapped && HOLIDAY_EVIDENCE_PHOTOS[mapped] ? mapped : "";
 }
 
 export function evidencePhotoIdForName(nameId) {
