@@ -1,4 +1,9 @@
 const CACHE = "the-truth-shell-v6";
+const SCOPE = new URL("./", self.location.href).pathname;
+
+function scoped(path) {
+  return `${SCOPE}${String(path).replace(/^\//, "")}`;
+}
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
@@ -8,11 +13,11 @@ self.addEventListener("install", (event) => {
       .then((cache) =>
         cache
           .addAll([
-            "/manifest.json",
-            "/icon-32.png",
-            "/icon-192.png",
-            "/icon-512.png",
-            "/apple-touch-icon.png",
+            scoped("/manifest.json"),
+            scoped("/icon-32.png"),
+            scoped("/icon-192.png"),
+            scoped("/icon-512.png"),
+            scoped("/apple-touch-icon.png"),
           ])
           .catch(() => undefined)
       )
@@ -43,13 +48,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (
-    url.pathname.startsWith("/ebible") ||
-    url.pathname.startsWith("/api/") ||
-    url.pathname.startsWith("/corpus/") ||
-    url.pathname.startsWith("/dss/") ||
-    url.pathname === "/__lan.json" ||
-    url.pathname === "/version.json" ||
-    url.pathname === "/sw.js"
+    url.pathname.startsWith(scoped("/ebible")) ||
+    url.pathname.startsWith(scoped("/api/")) ||
+    url.pathname.startsWith(scoped("/corpus/")) ||
+    url.pathname.startsWith(scoped("/dss/")) ||
+    url.pathname === scoped("/__lan.json") ||
+    url.pathname === scoped("/version.json") ||
+    url.pathname === scoped("/sw.js")
   ) {
     return;
   }
@@ -57,12 +62,12 @@ self.addEventListener("fetch", (event) => {
   const isDocument =
     request.mode === "navigate" ||
     request.destination === "document" ||
-    url.pathname === "/" ||
-    url.pathname === "/index.html";
+    url.pathname === SCOPE ||
+    url.pathname === scoped("/index.html");
 
   if (isDocument) {
     event.respondWith(
-      fetch(request).catch(async () => (await caches.match("/")) || Response.error())
+      fetch(request).catch(async () => (await caches.match(SCOPE)) || Response.error())
     );
     return;
   }

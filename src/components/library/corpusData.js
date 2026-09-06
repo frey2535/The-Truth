@@ -1,3 +1,4 @@
+import { publicUrl } from "@/lib/publicUrl";
 import { DSS_GROUP } from "./dssWorks";
 
 // Canonical Bible — modern KJV (aruljohn/Bible-kjv). Filenames are camelCase with no spaces.
@@ -127,11 +128,13 @@ export const EXTRA_APOCRYPHA_BOOKS = [
 ];
 
 export const bibleBookUrl = (book, apocrypha) =>
-  apocrypha
-    ? `/corpus/apocrypha/${book.replace(/ /g, "_")}.json`
-    : `/corpus/bible/${book.replace(/ /g, "")}.json`;
+  publicUrl(
+    apocrypha
+      ? `/corpus/apocrypha/${book.replace(/ /g, "_")}.json`
+      : `/corpus/bible/${book.replace(/ /g, "")}.json`
+  );
 
-export const manuscriptUrl = (slug) => `/corpus/manuscripts/${slug}.md`;
+export const manuscriptUrl = (slug) => publicUrl(`/corpus/manuscripts/${slug}.md`);
 
 export const CODEX_VATICANUS_MD = `# Codex Vaticanus (Codex Vaticanus Graecus 1209)
 

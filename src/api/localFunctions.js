@@ -17,6 +17,7 @@ import {
 import { ARCHIVE_NOTICE, searchArchive } from "@/data/inAppArchive";
 import { lookupLexicon } from "@/data/strongsLexicon";
 import { looksLikeAppShell } from "@/lib/fetchStoredText";
+import { publicUrl } from "@/lib/publicUrl";
 
 function wrapResult(result) {
   if (result && typeof result === "object") {
@@ -714,7 +715,7 @@ async function fetch_apocrypha_text({ bookId, chapter }) {
   if (!meta) return fail("Unknown book.");
   const chNum = Math.max(1, parseInt(chapter, 10) || 1);
   const ch = String(chNum).padStart(2, "0");
-  const localUrl = `/corpus/web/${bookId}/${ch}.htm`;
+  const localUrl = publicUrl(`/corpus/web/${bookId}/${ch}.htm`);
   let html = "";
   try {
     const res = await fetch(localUrl);
