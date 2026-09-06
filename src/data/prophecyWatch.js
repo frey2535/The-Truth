@@ -673,7 +673,7 @@ What this is not: the mark. John names the beast, the number of his name, the ri
 The setup is only this: a world in which “no man might buy or sell” can be administered by machine is no longer unimaginable.`
   },
   {
-    title: "Euphrates flow reduced by dams and drought",
+    title: "The Euphrates River is drying up",
     fulfillment_type: "end_time_setup",
     watch_stage: "setup",
     evidence_status: "established_contextual",
