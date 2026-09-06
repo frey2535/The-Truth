@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Download, Share, PlusSquare, MoreVertical, X, ScrollText } from "lucide-react";
+import { Download, Share, PlusSquare, MoreVertical, X, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PUBLISHED_APP_URL } from "@/lib/appOrigin";
-import { getInstallPlatform, isStandaloneDisplay } from "@/lib/pwa";
+import { publicUrl } from "@/lib/publicUrl";
+import {
+  arrivedFromShare,
+  chromeIntentUrl,
+  getInstallPlatform,
+  isInAppBrowser,
+  isStandaloneDisplay,
+} from "@/lib/pwa";
 
 const DISMISS_KEY = "the_truth_install_dismissed_at";
 const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -30,31 +37,35 @@ export default function InstallAppPrompt() {
   const [deferred, setDeferred] = useState(null);
   const [installing, setInstalling] = useState(false);
   const platform = getInstallPlatform();
+  const inApp = isInAppBrowser();
+  const fromShare = arrivedFromShare();
 
   useEffect(() => {
     if (isStandaloneDisplay()) return undefined;
 
+    const shouldForce = fromShare || inApp;
     const onPrompt = (event) => {
       event.preventDefault();
       setDeferred(event);
-      if (!wasDismissedRecently()) setOpen(true);
+      if (shouldForce || !wasDismissedRecently()) setOpen(true);
     };
     const onForceShow = () => setOpen(true);
     window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("truth-show-install", onForceShow);
 
     const timer = window.setTimeout(() => {
-      if (!isStandaloneDisplay() && platform.isMobile && !wasDismissedRecently()) {
+      if (isStandaloneDisplay()) return;
+      if (shouldForce || (platform.isMobile && !wasDismissedRecently())) {
         setOpen(true);
       }
-    }, 1200);
+    }, shouldForce ? 200 : 1200);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("truth-show-install", onForceShow);
       window.clearTimeout(timer);
     };
-  }, [platform.isMobile]);
+  }, [fromShare, inApp, platform.isMobile]);
 
   const close = () => {
     dismiss();
@@ -75,6 +86,10 @@ export default function InstallAppPrompt() {
       setInstalling(false);
       setDeferred(null);
     }
+  };
+
+  const openInChrome = () => {
+    window.location.href = chromeIntentUrl(window.location.href);
   };
 
   if (!open || isStandaloneDisplay()) return null;
@@ -103,27 +118,75 @@ export default function InstallAppPrompt() {
             <X className="w-4 h-4" />
           </button>
           <div className="flex items-center gap-3 pr-8">
-            <div className="w-12 h-12 rounded-2xl bg-[#f3e9c8]/10 border border-[#f3e9c8]/20 flex items-center justify-center">
-              <ScrollText className="w-6 h-6" />
-            </div>
+            <img
+              src={publicUrl("/icon-192.png?v=6")}
+              alt=""
+              width="48"
+              height="48"
+              className="w-12 h-12 rounded-2xl object-cover shadow-[0_0_20px_rgba(232,201,122,0.35)]"
+            />
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#b08d3c]">
-                Phone or computer
+                {inApp ? "Open, then install" : "Install this app"}
               </p>
               <h2 id="install-app-title" className="font-display text-xl leading-tight">
-                Add The Truth
+                The Truth
               </h2>
             </div>
           </div>
           <p className="text-sm text-[#f3e9c8]/80 mt-3 leading-relaxed">
-            Install The Truth as an app on this phone or computer. It is the same site — no store
-            listing. If this page is inside Messages, open it in Safari or Chrome first.
+            {inApp
+              ? "Facebook opened this inside its own browser. Install only works in Chrome or Safari."
+              : "Add The Truth to your home screen. It opens like an app — no store listing."}
           </p>
-          <p className="text-xs text-[#f3e9c8]/70 mt-2 break-all">{PUBLISHED_APP_URL}</p>
         </div>
 
         <div className="px-5 py-4 space-y-4">
-          {deferred ? (
+          {inApp ? (
+            <>
+              {platform.isAndroid ? (
+                <Button
+                  onClick={openInChrome}
+                  className="w-full h-12 text-sm font-medium gap-2 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  Open in Chrome to install
+                </Button>
+              ) : null}
+              <ol className="space-y-3 text-sm text-[#5b5142]">
+                <li className="flex items-start gap-3">
+                  <span className="w-7 h-7 rounded-lg bg-[#f3e9c8]/70 flex items-center justify-center flex-shrink-0">
+                    <MoreVertical className="w-4 h-4 text-[#7a2e2e]" />
+                  </span>
+                  <span>
+                    Tap the <strong className="text-[#2b2620]">⋯</strong> menu in{" "}
+                    {platform.isIOS ? "Facebook" : "this browser"}.
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-7 h-7 rounded-lg bg-[#f3e9c8]/70 flex items-center justify-center flex-shrink-0">
+                    <ExternalLink className="w-4 h-4 text-[#7a2e2e]" />
+                  </span>
+                  <span>
+                    Choose{" "}
+                    <strong className="text-[#2b2620]">
+                      {platform.isIOS ? "Open in Safari" : "Open in Chrome"}
+                    </strong>
+                    .
+                  </span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="w-7 h-7 rounded-lg bg-[#f3e9c8]/70 flex items-center justify-center flex-shrink-0">
+                    <Download className="w-4 h-4 text-[#7a2e2e]" />
+                  </span>
+                  <span>
+                    Then tap <strong className="text-[#2b2620]">Install</strong> or{" "}
+                    <strong className="text-[#2b2620]">Add to Home Screen</strong>.
+                  </span>
+                </li>
+              </ol>
+            </>
+          ) : deferred ? (
             <Button
               onClick={install}
               disabled={installing}
@@ -155,7 +218,7 @@ export default function InstallAppPrompt() {
                   3
                 </span>
                 <span>
-                  Tap <strong className="text-[#2b2620]">Add</strong>. The Truth appears like a native app.
+                  Tap <strong className="text-[#2b2620]">Add</strong>. The Truth appears like an app.
                 </span>
               </li>
             </ol>
@@ -187,7 +250,7 @@ export default function InstallAppPrompt() {
             >
               Not now
             </Button>
-            {deferred ? null : (
+            {deferred || (inApp && platform.isAndroid) ? null : (
               <Button
                 className="flex-1 h-11 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]"
                 onClick={close}
@@ -196,6 +259,7 @@ export default function InstallAppPrompt() {
               </Button>
             )}
           </div>
+          <p className="text-[11px] text-[#8a7f6f] break-all text-center">{PUBLISHED_APP_URL}</p>
         </div>
       </div>
     </div>

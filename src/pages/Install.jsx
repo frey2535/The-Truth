@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { Download, Share2, Copy, Check, Smartphone, Globe, Monitor, Share, PlusSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PUBLISHED_APP_URL } from "@/lib/appOrigin";
+import { facebookShareUrl, SHARE_INSTALL_URL } from "@/lib/appOrigin";
 import { getInstallPlatform, isStandaloneDisplay, requestInstallPrompt } from "@/lib/pwa";
 
 export default function Install() {
   const [copied, setCopied] = useState(false);
   const standalone = isStandaloneDisplay();
   const platform = getInstallPlatform();
-  const installUrl = PUBLISHED_APP_URL;
+  const installUrl = SHARE_INSTALL_URL;
 
   async function copyLink() {
     try {
@@ -25,7 +25,7 @@ export default function Install() {
       try {
         await navigator.share({
           title: "The Truth",
-          text: "Open this in Safari or Chrome, then Add to Home Screen.",
+          text: "Tap to open The Truth, then install it on your phone.",
           url: installUrl,
         });
         return;
@@ -45,13 +45,14 @@ export default function Install() {
       <p className="text-[10px] tracking-[0.25em] uppercase text-[#b08d3c] mb-2">Share</p>
       <h1 className="font-display text-4xl text-[#2b2620] mb-3">Install this app</h1>
       <p className="text-[#5b5142] leading-relaxed mb-6">
-        The Truth is one site that also installs as an app — on a phone home screen or as a desktop
-        window. There is no store download. Open this address in Safari, Chrome, or Edge. If a
-        message preview opened it, tap <strong>Open in Safari</strong> or <strong>Open in Chrome</strong> first.
+        Post the link below on Facebook. Friends see the app icon, tap it, and The Truth opens —
+        then it asks them to install on their phone. There is no store download. If Facebook’s
+        own browser opens the page, they tap <strong>Open in Safari</strong> or{" "}
+        <strong>Open in Chrome</strong> first.
       </p>
 
       <div className="rounded-2xl border border-[#e8ddc7] bg-white/80 p-5 mb-6">
-        <p className="text-xs uppercase tracking-wide text-[#8a7f6f] mb-2">Install this address</p>
+        <p className="text-xs uppercase tracking-wide text-[#8a7f6f] mb-2">Post this address</p>
         <a
           href={installUrl}
           className="block font-medium text-[#7a2e2e] break-all underline mb-4"
@@ -59,6 +60,13 @@ export default function Install() {
           {installUrl}
         </a>
         <div className="flex flex-wrap gap-2">
+          <Button
+            onClick={() => window.open(facebookShareUrl(installUrl), "_blank", "noopener,noreferrer")}
+            className="h-11 bg-[#1877F2] hover:bg-[#166fe5] text-white"
+          >
+            <Share2 className="w-4 h-4 mr-2" />
+            Post on Facebook
+          </Button>
           <Button onClick={copyLink} className="h-11 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]">
             {copied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
             {copied ? "Link copied" : "Copy install link"}
@@ -68,7 +76,7 @@ export default function Install() {
             className="h-11 bg-[#7a2e2e] hover:bg-[#5e2222] text-[#f3e9c8]"
           >
             <Share2 className="w-4 h-4 mr-2" />
-            Send to a phone
+            Send to a friend
           </Button>
         </div>
       </div>
