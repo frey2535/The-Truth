@@ -1,4 +1,5 @@
 import { isLocalInstallOrigin, isPublishedOrigin } from "@/lib/appOrigin";
+import { publicUrl } from "@/lib/publicUrl";
 
 const TRUTH_CACHE_PREFIX = "the-truth-";
 
@@ -29,7 +30,7 @@ export async function checkPublishedBuild() {
   const local = import.meta.env.VITE_TRUTH_BUILD;
   if (!local) return { stale: false };
   try {
-    const res = await fetch(`/version.json?t=${Date.now()}`, { cache: "no-store" });
+    const res = await fetch(`${publicUrl("/version.json")}?t=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) return { stale: false };
     const data = await res.json();
     return { stale: Boolean(data.id && data.id !== local), remote: data.id, local };
@@ -79,7 +80,7 @@ export function registerServiceWorker() {
 
     navigator.serviceWorker.addEventListener("controllerchange", reloadOnce);
 
-    const reg = await navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" });
+    const reg = await navigator.serviceWorker.register(publicUrl("/sw.js"), { updateViaCache: "none" });
     const poke = () => {
       reg.update().catch(() => undefined);
     };

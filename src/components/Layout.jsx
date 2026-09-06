@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
+import { publicUrl } from "@/lib/publicUrl";
 import { GUEST_EMAIL } from "@/api/localAuth";
 import HeavenBackdrop from "@/components/HeavenBackdrop";
 import PapyrusBackdrop from "@/components/PapyrusBackdrop";
@@ -72,7 +73,7 @@ export default function Layout() {
         <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 sm:h-16 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2.5 group min-w-0">
             <img
-              src="/icon-192.png?v=6"
+              src={publicUrl("/icon-192.png?v=6")}
               alt=""
               width="36"
               height="36"

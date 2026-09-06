@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { publicUrl } from "@/lib/publicUrl";
 import EvidencePlate from "./EvidencePlate";
 
 function overlayLine(item) {
@@ -38,7 +39,7 @@ function PhotoFigure({ src, caption, overlay, onBroken, tall, contain }) {
 
 export default function EvidenceVisual({ item }) {
   const extras = Array.isArray(item.extra_images) ? item.extra_images : [];
-  const src = item.local_image || item.image_url;
+  const src = item.local_image ? publicUrl(item.local_image) : item.image_url;
   const [broken, setBroken] = useState(false);
   const [brokenExtras, setBrokenExtras] = useState({});
   if (!src || broken) return <EvidencePlate item={item} />;
@@ -56,7 +57,7 @@ export default function EvidenceVisual({ item }) {
       {extras.length > 0 ? (
         <div className={extras.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 gap-3" : ""}>
           {extras.map((photo, index) => {
-            const extraSrc = photo.local_image || photo.image_url;
+            const extraSrc = photo.local_image ? publicUrl(photo.local_image) : photo.image_url;
             if (!extraSrc || brokenExtras[index]) return null;
             return (
               <PhotoFigure

@@ -44,7 +44,9 @@ npm run publish
 
 That builds `dist` and deploys it to Cloudflare Pages. Custom domain: `thetruth.currentflowconsulting.org`.
 
-A push to `main` also runs **Deploy to Cloudflare Pages** in GitHub Actions (`.github/workflows/deploy-cloudflare.yml`). That job needs repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+GitHub **Actions** publishes the Vite build to **GitHub Pages** (`.github/workflows/deploy-github-pages.yml`) on every push to `main`. In the repo: **Settings → Pages → Source → GitHub Actions**. The site is `https://frey2535.github.io/The-Truth/`. No Cloudflare secrets are required for that workflow.
+
+`npm run publish` still deploys `dist` to Cloudflare Pages (`thetruth`) if you want the custom domain `thetruth.currentflowconsulting.org`.
 
 ## Free local study
 

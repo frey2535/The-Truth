@@ -1,8 +1,10 @@
+import { publicUrl } from "@/lib/publicUrl";
+
 /** Stored public-domain photographs of catalogued objects. No drawings, no invented pictures. */
 
 function photo(file, caption, credit, page) {
   return {
-    src: `/evidence/holidays/${file}`,
+    src: publicUrl(`/evidence/holidays/${file}`),
     caption,
     credit,
     page,

@@ -1,3 +1,5 @@
+import { publicUrl } from "@/lib/publicUrl";
+
 /** Detect the SPA shell so a 200 HTML fallback is never treated as a stored book. */
 
 export function looksLikeHtmlDocument(text, _contentType = "") {
@@ -19,7 +21,7 @@ export function looksLikeAppShell(text) {
 }
 
 export async function fetchStoredText(url) {
-  const res = await fetch(url);
+  const res = await fetch(publicUrl(url));
   if (!res.ok) return { ok: false, text: "", missing: true };
   const contentType = res.headers.get("content-type") || "";
   const text = await res.text();

@@ -189,8 +189,12 @@ export default defineConfig(({ mode }) => {
   if (env.GOOGLE_CLIENT_SECRET) process.env.GOOGLE_CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET;
 
   const truthBuildId = new Date().toISOString();
+  const pagesRepo = process.env.GITHUB_REPOSITORY || "frey2535/The-Truth";
+  const pagesBase =
+    process.env.GITHUB_PAGES === "true" ? `/${pagesRepo.split("/")[1] || "The-Truth"}/` : "/";
 
   return {
+    base: pagesBase,
     define: {
       "import.meta.env.VITE_TRUTH_BUILD": JSON.stringify(truthBuildId),
     },
