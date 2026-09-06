@@ -29,6 +29,73 @@ const DIRECT = [
 
 const COMMONS = [
   {
+    dest: "public/evidence/prophecy/red-heifers.jpg",
+    files: [
+      "Red Poll heifers.JPG",
+      "Red Angus Heifer.jpg",
+      "Red angus cows oregon.jpg",
+      "(Red Angus cattle at Till Farm in Orangeburg) 20191022-OSEC-LSC-1089.jpg",
+      "Red Angus Cow.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/red-heifer-ordinance.jpg",
+    files: [
+      "The Phillip Medhurst Picture Torah 556. The sacrifice of the red heifer. Numbers cap 19 v 2. Heuman.jpg",
+      "The Phillip Medhurst Picture Torah 557. Purification by the red heifer. Numbers cap 19 vv 1-10. Caspar Luyken.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/rio-tinto.jpg",
+    files: [
+      "Rio tinto river CarolStoker NASA Ames Research Center.jpg",
+      "Rio Tinto (river).jpg",
+      "Rio Tinto - Red river - Spain.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/blood-falls.jpg",
+    files: [
+      "Blood Falls by Peter Rejcek.jpg",
+      "Blood Falls in the McMurdo Dry Valleys in Antarctica (30877662646).jpg",
+      "Blood Falls, Taylor Glacier.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/dead-sea-springs.jpg",
+    files: [
+      "Underwater Fresh Water Springs in the Dead Sea, 2012.jpg",
+      "PikiWiki Israel 34293 Einot Tsukim nature reserve.JPG",
+      "Dead Sea sinkholes.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/ein-feshkha.jpg",
+    files: [
+      "PikiWiki Israel 34293 Einot Tsukim nature reserve.JPG",
+      "Einot Tsukim.jpg",
+      "Ain Feshkha.jpg",
+      "Ein Feshkha nature reserve.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/temple-menorah.jpg",
+    files: [
+      "The Golden Menorah replica in Jerusalem.jpg",
+      "Menora.JPG",
+      "Old Jerusalem Golden Menorah replica.jpg",
+      "Model of the Menorah Temple - next to the Temple Institute.jpg",
+    ],
+  },
+  {
+    dest: "public/evidence/prophecy/temple-menorah-cardo.jpg",
+    files: [
+      "Old Jerusalem Golden Menorah replica in the Cardo.jpg",
+      "Old Jerusalem Golden Menorah replica.jpg",
+      "Menora.JPG",
+    ],
+  },
+  {
     dest: "public/evidence/prophecy/hebrew.jpg",
     files: ["Portrait of Eliezer Ben-Yehuda (cropped).jpg", "Portrait of Eliezer Ben-Yehuda (id.34235240).jpg"],
   },

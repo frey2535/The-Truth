@@ -44,6 +44,8 @@ function item(kind, n, fields) {
     image_url: "",
     local_image: fields.local_image || "",
     image_caption: fields.image_caption || "",
+    image_fit: fields.image_fit || "",
+    extra_images: Array.isArray(fields.extra_images) ? fields.extra_images : [],
   };
 }
 

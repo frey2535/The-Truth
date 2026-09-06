@@ -6,6 +6,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
+import ResumePath from './components/ResumePath';
 import Layout from "@/components/Layout";
 import Home from "@/pages/Home";
 import StudyPlanView from "@/pages/StudyPlanView";
@@ -98,6 +99,7 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <ScrollToTop />
+          <ResumePath />
           <AuthenticatedApp />
           <InstallAppPrompt />
         </Router>
