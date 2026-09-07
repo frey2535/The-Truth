@@ -2,9 +2,7 @@ import { localEntities } from "./localEntities";
 import { requireAdmin, requireUser } from "./localAuth";
 import { LOCAL_ASSISTANT_ATTESTATION, normalizeSource } from "@/lib/truthMandate";
 import {
-  contentWordsForQuestion,
   corpusCoverage,
-  extractReferencesFromQuestion,
   findReferencedPassages,
   KJV_TOPIC_ALIASES,
   matchesToResearchVerses,
@@ -14,6 +12,9 @@ import {
   SOURCE_LABEL,
   wordHitsText,
 } from "@/lib/localCorpusSearch";
+import { recordAssistantLearning } from "@/lib/assistantLearn";
+import { understandQuestion } from "@/lib/questionUnderstand";
+import { familyHitsText } from "@/lib/wordFamilies";
 import { ARCHIVE_NOTICE, searchArchive } from "@/data/inAppArchive";
 import { lookupLexicon } from "@/data/strongsLexicon";
 import { looksLikeAppShell } from "@/lib/fetchStoredText";
@@ -160,18 +161,6 @@ const ASK_SCRIPTURE_SOURCES = [
   "other",
 ];
 
-const FOLLOW_UP_RE =
-  /^(and|also|what about|how about|why|more|continue|yes|no|again|same|that|those)\b/i;
-const PRONOUN_RE = /\b(he|she|they|it|this|that|those|him|his|them|their)\b/i;
-const BIBLE_REQUEST_RE =
-  /\b(?:bible|scripture|king james|kjv|holy bible|old testament|new testament|gospels?)\b/i;
-const LEAD_SOURCE_PATTERNS = [
-  { source: "josephus", re: /\b(?:josephus|antiquities of the jews)\b/i },
-  { source: "fathers", re: /\b(?:(?:church|early|ante-?nicene)\s+fathers?|ante-?nicene)\b/i },
-  { source: "dead_sea_scrolls", re: /\b(?:dead sea scrolls?|qumran scrolls?)\b/i },
-  { source: "enoch", re: /\b(?:(?:1|2|book of)\s+enoch|(?:in|from)\s+enoch|enoch says)\b/i },
-  { source: "apocrypha", re: /\b(?:apocrypha|deuterocanon(?:ical)?)\b/i },
-];
 const SOURCE_ORDER = [
   "canon",
   "apocrypha",
@@ -187,135 +176,10 @@ const SOURCE_ORDER = [
   "modern",
 ];
 
-function leadSourceFromQuestion(question) {
-  const q = String(question || "");
-  if (BIBLE_REQUEST_RE.test(q)) return "canon";
-  for (const { source, re } of LEAD_SOURCE_PATTERNS) {
-    if (re.test(q)) return source;
-  }
-  return "canon";
-}
-
 function sourceRank(source, lead) {
   if (lead && lead !== "canon" && source === lead) return -1;
   const i = SOURCE_ORDER.indexOf(source);
   return i < 0 ? SOURCE_ORDER.length : i;
-}
-
-function uniqueWords(list) {
-  const seen = new Set();
-  const out = [];
-  for (const w of list || []) {
-    const key = String(w || "").toLowerCase();
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    out.push(String(w));
-  }
-  return out;
-}
-
-function isComparisonQuestion(question) {
-  const q = String(question || "");
-  if (!/^\s*(?:is|are|was|were)\s+.+\s+the\s+.+/i.test(q) && !/\b(?:same as|instead of|rather than)\b/i.test(q)) {
-    return false;
-  }
-  return contentWordsForQuestion(q).some((w) => KJV_TOPIC_ALIASES[String(w).toLowerCase()]);
-}
-
-function topicWordsWithoutRefs(question, refs) {
-  const skip = new Set();
-  for (const ref of refs || []) {
-    String(ref.book || "")
-      .toLowerCase()
-      .split(/\s+/)
-      .forEach((w) => {
-        if (w.length > 1) skip.add(w);
-      });
-  }
-  return contentWordsForQuestion(question).filter((w) => !skip.has(w) && !/^\d+$/.test(w));
-}
-
-function parseAskShape(question) {
-  const q = String(question || "").trim();
-  const leadSource = leadSourceFromQuestion(q);
-  const comparison = isComparisonQuestion(q);
-  const refs = extractReferencesFromQuestion(q);
-  const about = q.match(
-    /\b(?:what|how|where)\s+do(?:es)?\s+(.+?)\s+(?:say|teach|tell|speak|command)\s+(?:about|of|concerning)\s+(.+)/i
-  );
-  if (about) {
-    return {
-      question: q,
-      search: contentWordsForQuestion(about[2]).join(" ") || q,
-      words: contentWordsForQuestion(about[2]),
-      boostWords: contentWordsForQuestion(about[1]),
-      refs,
-      preferSpeech: true,
-      leadSource,
-      comparison,
-    };
-  }
-  const bibleSay = q.match(
-    /\bdoes\s+(?:the\s+)?(?:bible|scripture|word|lord|god|jesus|messiah|moses|paul)\s+(?:say|teach|mention|speak|command)\s+(?:that\s+|about\s+|of\s+)?(.+)/i
-  );
-  if (bibleSay) {
-    const words = contentWordsForQuestion(bibleSay[1]);
-    return { question: q, search: words.join(" ") || q, words, boostWords: [], refs, preferSpeech: false, leadSource, comparison };
-  }
-  const tellAbout = q.match(/\b(?:tell me about|explain|define)\s+(.+)/i);
-  if (tellAbout) {
-    const words = contentWordsForQuestion(tellAbout[1]);
-    return { question: q, search: words.join(" ") || q, words, boostWords: [], refs, preferSpeech: false, leadSource, comparison };
-  }
-  const who = q.match(/^\s*who\s+(?:is|are|was|were)\s+(.+)/i);
-  if (who) {
-    const words = contentWordsForQuestion(who[1]);
-    return { question: q, search: words.join(" ") || q, words, boostWords: [], refs, preferSpeech: false, leadSource, comparison };
-  }
-  const what = q.match(/^\s*what\s+(?:is|are|was|were)\s+(.+)/i);
-  if (what) {
-    const words = contentWordsForQuestion(what[1]);
-    return { question: q, search: words.join(" ") || q, words, boostWords: [], refs, preferSpeech: false, leadSource, comparison };
-  }
-  const why = q.match(/^\s*why\s+(?:did|does|do|is|was|were)\s+(.+)/i);
-  if (why) {
-    const words = contentWordsForQuestion(why[1]);
-    return { question: q, search: words.join(" ") || q, words, boostWords: [], refs, preferSpeech: false, leadSource, comparison };
-  }
-  const words = topicWordsWithoutRefs(q, refs);
-  return {
-    question: q,
-    search: words.join(" ") || q,
-    words,
-    boostWords: [],
-    refs,
-    preferSpeech: false,
-    leadSource,
-    comparison,
-  };
-}
-
-function resolveAskQuestion(question, history) {
-  const q = String(question || "").trim();
-  const hist = Array.isArray(history) ? history : [];
-  const lastUser = [...hist].reverse().find((m) => m.role === "user" && String(m.content || "").trim());
-  const asked = parseAskShape(q);
-  const thin = !asked.words.length && !asked.refs.length;
-  const follow =
-    lastUser &&
-    (thin || FOLLOW_UP_RE.test(q) || (PRONOUN_RE.test(q) && asked.words.length <= 2));
-  if (!follow) return asked;
-  const prior = parseAskShape(String(lastUser.content).trim());
-  return {
-    question: `${prior.question}\n\nFollow-up: ${q}`,
-    search: uniqueWords([...asked.words, ...prior.words]).join(" ") || prior.search,
-    words: uniqueWords([...asked.words, ...prior.words]),
-    boostWords: uniqueWords([...asked.boostWords, ...prior.boostWords, ...prior.words]),
-    refs: asked.refs.length ? asked.refs : prior.refs,
-    preferSpeech: asked.preferSpeech || prior.preferSpeech,
-    leadSource: asked.leadSource !== "canon" ? asked.leadSource : prior.leadSource || "canon",
-    comparison: asked.comparison || prior.comparison,
-  };
 }
 
 function uniquePassages(rows) {
@@ -330,39 +194,14 @@ function uniquePassages(rows) {
   return out;
 }
 
-const JESUS_NAMES = new Set(["jesus", "christ", "messiah", "yeshua"]);
-const GOSPEL_BOOKS = new Set(["Matthew", "Mark", "Luke", "John"]);
 const SPEAKER_IGNORE = new Set(["bible", "scripture", "scriptures", "word", "texts", "text"]);
-
-function escapeAskRe(s) {
-  return String(s || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
 
 function hitsTopicTerm(text, word) {
   const hay = String(text || "");
-  if (wordHitsText(hay, word)) return true;
+  if (familyHitsText(hay, word) || wordHitsText(hay, word)) return true;
   return (KJV_TOPIC_ALIASES[String(word).toLowerCase()] || []).some((alias) =>
-    hay.toLowerCase().includes(String(alias).toLowerCase())
+    familyHitsText(hay, alias) || hay.toLowerCase().includes(String(alias).toLowerCase())
   );
-}
-
-function termPosition(text, word) {
-  const hay = String(text || "");
-  if (wordHitsText(hay, word)) {
-    const m = hay.match(new RegExp(`\\b${escapeAskRe(word)}`, "i"));
-    return m ? m.index : -1;
-  }
-  for (const alias of KJV_TOPIC_ALIASES[String(word).toLowerCase()] || []) {
-    const i = hay.toLowerCase().indexOf(String(alias).toLowerCase());
-    if (i >= 0) return i;
-  }
-  return -1;
-}
-
-function termsNearEachOther(text, words, window = 240) {
-  const positions = words.map((w) => termPosition(text, w)).filter((i) => i >= 0);
-  if (positions.length < 2) return positions.length === words.length;
-  return Math.max(...positions) - Math.min(...positions) <= window;
 }
 
 function speakersForQuestion(asked) {
@@ -372,30 +211,10 @@ function speakersForQuestion(asked) {
 function verseAppliesToQuestion(row, asked) {
   const text = String(row.text || "").trim();
   if (!text) return false;
-  const topic = asked.words || [];
+  const topic = asked.topics || asked.words || [];
   if (row.askedReference && !topic.length) return true;
   if (!topic.length) return false;
-
-  const hitCount = topic.filter((w) => hitsTopicTerm(text, w)).length;
-  if (asked.comparison) {
-    if (!hitCount) return false;
-  } else if (hitCount < topic.length) {
-    return false;
-  }
-
-  if (text.length > 800 && topic.length >= 2 && !asked.comparison && !termsNearEachOther(text, topic)) {
-    return false;
-  }
-
-  const speakers = speakersForQuestion(asked);
-  if (asked.preferSpeech && speakers.length) {
-    const jesusAsk = speakers.some((w) => JESUS_NAMES.has(String(w).toLowerCase()));
-    const speakerHit = speakers.some((w) => hitsTopicTerm(text, w));
-    const gospelSpeech = jesusAsk && GOSPEL_BOOKS.has(row.book);
-    if (!speakerHit && !gospelSpeech) return false;
-  }
-
-  return true;
+  return topic.some((w) => hitsTopicTerm(text, w));
 }
 
 function askSearchQueries(asked) {
@@ -405,17 +224,14 @@ function askSearchQueries(asked) {
     if (!q || out.some((item) => item.q === q)) return;
     out.push({ q, requirePhrase });
   };
-  if (asked.comparison) {
-    for (const w of asked.words || []) {
-      add(w);
-      for (const alias of KJV_TOPIC_ALIASES[String(w).toLowerCase()] || []) add(alias, true);
+  const topics = asked.topics || asked.words || [];
+  for (const w of topics) {
+    add(w);
+    for (const alias of KJV_TOPIC_ALIASES[String(w).toLowerCase()] || []) {
+      add(alias, /\s/.test(alias));
     }
-    return out.length ? out : [{ q: asked.question, requirePhrase: false }];
   }
-  add(asked.search);
-  for (const w of asked.words || []) {
-    for (const alias of KJV_TOPIC_ALIASES[String(w).toLowerCase()] || []) add(alias, true);
-  }
+  if (asked.search && topics.length <= 1) add(asked.search);
   return out.length ? out : [{ q: asked.question, requirePhrase: false }];
 }
 
@@ -440,22 +256,26 @@ function selectRelevantPassages(passages, asked) {
 
 function understoodAs(asked) {
   const q = String(asked.question || "").split("\n")[0].trim();
-  const topic = (asked.words || []).join(", ");
+  const topic = (asked.topics || asked.words || []).join(", ");
   const speakers = speakersForQuestion(asked);
+  const families = (asked.topics || []).map((t) => (asked.families?.[t] || []).slice(0, 8).join("/")).filter(Boolean);
   if (asked.refs.length && topic) {
     return `Does **${asked.refs[0].label}** address ${topic}?`;
   }
   if (asked.preferSpeech && speakers.length && topic) {
     return `What does ${speakers.join(", ")} say about ${topic}?`;
   }
-  if (topic) return `${q} Topic words used to search the stored texts: ${topic}.`;
+  if (topic) {
+    const familyNote = families.length ? ` Word families searched: ${families.join("; ")}.` : "";
+    return `${q} Topic understood: ${topic}.${familyNote}`;
+  }
   return q;
 }
 
 function yesNoLine(primary) {
   const n = primary.length;
   if (!n) {
-    return "**No.** The question is understood, but no stored verse directly answers it. Other stored wording is listed below when any was found. Nothing was invented.";
+    return "**No.** The question is understood, but no stored wording in the selected texts uses this topic or its word family. Nothing was invented.";
   }
   return `**Yes.** The question is understood. The first section quotes the stored texts that answer it. Conflicting stored wording, if any, is quoted in the second section.`;
 }
@@ -534,7 +354,7 @@ function quoteOnlyAnswer(question, passages, asked) {
     lines.push("");
     if (abundance) {
       lines.push(
-        `These passages answer the question. Count by stored source: ${abundance}. The reader weighs abundance and agreement. No opinion is added.`
+        `Every stored passage that belongs to this topic’s word family is listed. Count by stored source: ${abundance}. The reader weighs the wording. No opinion is added.`
       );
       lines.push("");
     }
@@ -573,12 +393,12 @@ async function searchAskSources(asked, sources) {
     const found = await searchCorpus(q, {
       limit: Infinity,
       sources,
-      contentWords: requirePhrase ? [] : asked.words,
+      contentWords: [],
       boostWords: asked.boostWords,
       preferSpeech: asked.preferSpeech,
       preferCanon: sources.includes("canon"),
       requirePhrase,
-      mustHitAll: !asked.comparison && !requirePhrase && (asked.words || []).length > 1,
+      mustHitAll: false,
     });
     matches.push(...found.matches);
   }
@@ -593,21 +413,23 @@ const ASK_ALL_SOURCES = ASK_SCRIPTURE_SOURCES.concat([
   "modern",
 ]);
 
-async function gatherAskPassages(asked) {
-  const cited = await findReferencedPassages(asked.question);
-  const canon = await searchAskSources(asked, ["canon"]);
-  const extra = await searchAskSources(
-    asked,
-    ASK_ALL_SOURCES.filter((s) => s !== "canon")
-  );
-  return uniquePassages([...cited, ...sortAskPassages([...canon, ...extra], asked)]);
+function sourcesForAsk(asked) {
+  if (asked.restrictSources?.length) return asked.restrictSources;
+  return ASK_ALL_SOURCES;
 }
 
-async function study_assistant({ question, history }) {
+async function gatherAskPassages(asked) {
+  const cited = await findReferencedPassages(asked.question);
+  const sources = sourcesForAsk(asked);
+  const found = await searchAskSources(asked, sources);
+  return uniquePassages([...cited, ...sortAskPassages(found, asked)]);
+}
+
+async function study_assistant({ question, history, corpus }) {
   requireUser();
   const q = String(question || "").trim();
   if (!q) return fail("A question is required.");
-  const asked = resolveAskQuestion(q, history);
+  const asked = understandQuestion(q, { history, corpus });
   let coverage;
   try {
     coverage = await corpusCoverage();
@@ -625,6 +447,7 @@ async function study_assistant({ question, history }) {
   } catch (error) {
     return fail(error.message);
   }
+  recordAssistantLearning({ topics: asked.topics || asked.words, passages });
 
   return { answer: quoteOnlyAnswer(asked.question, passages, asked) };
 }
