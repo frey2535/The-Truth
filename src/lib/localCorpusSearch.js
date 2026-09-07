@@ -440,7 +440,7 @@ function sortScored(unique, preferCanon) {
  * One pass over the stored corpus for many queries. Used by Assistant so it does not
  * freeze the page by scanning every book once per related word.
  */
-export async function searchCorpusMany(queries, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, mustHitAll } = {}) {
+export async function searchCorpusMany(queries, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, mustHitAll, clipLong = true } = {}) {
   const prepared = [];
   const seenQ = new Set();
   for (const item of queries || []) {
@@ -465,16 +465,25 @@ export async function searchCorpusMany(queries, { limit = Infinity, sources, con
     const folded = foldMarks(row.text).toLowerCase();
     for (const pq of prepared) {
       if (!cheapRowHit(folded, pq)) continue;
-      const units = hitsFromRow(row, pq.forms);
+      const units = clipLong
+        ? hitsFromRow(row, pq.forms)
+        : (() => {
+            const score = scoreText(row.text, pq.forms);
+            return score > 0 ? [{ ...row, score }] : [];
+          })();
       if (!units.length) continue;
+      let added = false;
       for (const unit of units) {
         if (pq.requirePhrase && pq.foldedPhrase && !foldMarks(unit.text).toLowerCase().includes(pq.foldedPhrase)) {
           continue;
         }
         const decorated = decorateHit(unit, extras);
-        if (decorated) scored.push(decorated);
+        if (decorated) {
+          scored.push(decorated);
+          added = true;
+        }
       }
-      break;
+      if (added) break;
     }
   }
   const unique = sortScored(uniqueMatches(scored), preferCanon);

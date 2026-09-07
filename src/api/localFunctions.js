@@ -236,6 +236,7 @@ async function searchAskSources(asked, sources) {
     preferSpeech: asked.preferSpeech,
     preferCanon: sources.includes("canon"),
     mustHitAll: false,
+    clipLong: false,
   });
   return found.matches;
 }
