@@ -23,3 +23,10 @@ export function isLocalInstallOrigin(hostname = window.location.hostname) {
   }
   return /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(hostname);
 }
+
+/** Same-origin on local/live; GitHub Pages uses the Cloudflare API. */
+export function publishedApiOrigin() {
+  if (typeof window === "undefined") return "";
+  if (isLocalInstallOrigin() || isPublishedOrigin()) return "";
+  return PUBLISHED_APP_URL;
+}

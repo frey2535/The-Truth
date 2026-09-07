@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { toast } from "@/components/ui/use-toast";
 import { safeReturnTo } from "@/lib/authReturnTo";
-import { googleSignInOriginHint } from "@/lib/googleIdentity";
+import { googleSignInOriginHint, resolveGoogleClientId } from "@/lib/googleIdentity";
 
 export default function Register() {
   const [email, setEmail] = useState("");
@@ -21,6 +21,17 @@ export default function Register() {
   const [showOtp, setShowOtp] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [localOtp, setLocalOtp] = useState("");
+  const [googleReady, setGoogleReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    resolveGoogleClientId().then((id) => {
+      if (!cancelled) setGoogleReady(Boolean(id));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -174,6 +185,12 @@ export default function Register() {
         )}
         Continue with Google
       </Button>
+      {googleReady ? null : (
+        <p className="text-xs text-muted-foreground -mt-4 mb-6">
+          Google is not connected on this site yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET as
+          Secrets on the Cloudflare Pages project thetruth, then redeploy.
+        </p>
+      )}
 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">

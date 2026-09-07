@@ -1,11 +1,41 @@
+import { publishedApiOrigin } from "@/lib/appOrigin";
+import { loginUrl } from "@/lib/publicUrl";
+
 const GIS_SRC = "https://accounts.google.com/gsi/client";
 const PKCE_KEY = "truth_google_pkce";
 const REDIRECT_KEY = "truth_google_redirect";
 
-export function getGoogleClientId() {
-  return String(import.meta.env.VITE_GOOGLE_CLIENT_ID || "")
+let cachedClientId = "";
+
+function normalizeClientId(value) {
+  return String(value || "")
     .trim()
     .replace(/(\.apps\.googleusercontent\.com)+$/i, ".apps.googleusercontent.com");
+}
+
+export function getGoogleClientId() {
+  return cachedClientId || normalizeClientId(import.meta.env.VITE_GOOGLE_CLIENT_ID);
+}
+
+export async function resolveGoogleClientId() {
+  if (cachedClientId) return cachedClientId;
+  const fromBuild = normalizeClientId(import.meta.env.VITE_GOOGLE_CLIENT_ID);
+  if (fromBuild) {
+    cachedClientId = fromBuild;
+    return cachedClientId;
+  }
+  try {
+    const res = await fetch(`${publishedApiOrigin()}/api/google-token`, { cache: "no-store" });
+    const data = await res.json().catch(() => ({}));
+    const fromApi = normalizeClientId(data.clientId);
+    if (fromApi) {
+      cachedClientId = fromApi;
+      return cachedClientId;
+    }
+  } catch {
+    /* live site may not have the function yet */
+  }
+  return "";
 }
 
 export function googleSignInOriginHint() {
@@ -50,7 +80,8 @@ function decodeJwtPayload(token) {
 }
 
 function loginRedirectUri() {
-  return `${window.location.origin}/login`;
+  const path = loginUrl();
+  return `${window.location.origin}${path.startsWith("/") ? path : `/${path}`}`;
 }
 
 function profileFromIdToken(idToken) {
@@ -102,10 +133,10 @@ function loadGis() {
 }
 
 export async function requestGoogleProfile() {
-  const clientId = getGoogleClientId();
+  const clientId = await resolveGoogleClientId();
   if (!clientId) {
     throw new Error(
-      "Google sign-in is not configured. Add VITE_GOOGLE_CLIENT_ID to .env.local, then restart npm run dev."
+      "Google sign-in is not configured. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET as Secrets on the Cloudflare Pages project thetruth (or VITE_GOOGLE_CLIENT_ID in .env.local), then redeploy."
     );
   }
   const google = await loadGis();

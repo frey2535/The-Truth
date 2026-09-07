@@ -8,7 +8,7 @@ import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
-import { consumeGoogleRedirect, googleSignInOriginHint } from "@/lib/googleIdentity";
+import { consumeGoogleRedirect, googleSignInOriginHint, resolveGoogleClientId } from "@/lib/googleIdentity";
 import { normalizeEmail, OWNER_EMAIL_DEFAULT } from "@/lib/installLedger";
 import { useOwner } from "@/lib/OwnerContext";
 
@@ -19,6 +19,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleReady, setGoogleReady] = useState(false);
   // Post-login destination (e.g. the MCP OAuth consent page sends users here
   // with returnTo so the grant flow can resume). Same-origin paths only.
   const returnTo = safeReturnTo();
@@ -27,6 +28,8 @@ export default function Login() {
     let cancelled = false;
     (async () => {
       try {
+        const clientId = await resolveGoogleClientId();
+        if (!cancelled) setGoogleReady(Boolean(clientId));
         const result = await consumeGoogleRedirect();
         if (result) {
           setLoading(true);
@@ -129,6 +132,12 @@ export default function Login() {
         )}
         Continue with Google
       </Button>
+      {googleReady ? null : (
+        <p className="text-xs text-muted-foreground -mt-4 mb-6">
+          Google is not connected on this site yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET as
+          Secrets on the Cloudflare Pages project thetruth, then redeploy.
+        </p>
+      )}
 
       <div className="relative mb-6">
         <div className="absolute inset-0 flex items-center">
