@@ -1,6 +1,13 @@
 /** The published copy that home-screen apps should install from. */
 export const PUBLISHED_APP_URL = "https://thetruth.currentflowconsulting.org";
 
+/** Public link for Facebook and friends — opens the app, then asks to install. */
+export const SHARE_INSTALL_URL = `${PUBLISHED_APP_URL}/?install=1`;
+
+export function facebookShareUrl(url = SHARE_INSTALL_URL) {
+  return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+}
+
 export function isPublishedOrigin(origin = window.location.origin) {
   try {
     return new URL(origin).host === new URL(PUBLISHED_APP_URL).host;

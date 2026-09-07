@@ -32,6 +32,8 @@ This is a Progressive Web App. People open it once in the phone’s browser, the
 
 iPhone install works best in Safari. For people not on your Wi‑Fi, use the public HTTPS site: **https://thetruth.currentflowconsulting.org**.
 
+To post it on Facebook, share **https://thetruth.currentflowconsulting.org/?install=1** (or use **Install this app → Post on Facebook**). The post shows the app icon. Friends tap it, the site opens, and it asks them to install. After a deploy, refresh Facebook’s preview at [developers.facebook.com/tools/debug](https://developers.facebook.com/tools/debug/).
+
 ## Publish
 
 Live app: [https://thetruth.currentflowconsulting.org](https://thetruth.currentflowconsulting.org)

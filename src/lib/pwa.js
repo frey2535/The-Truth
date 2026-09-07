@@ -1,5 +1,8 @@
 import { isLocalInstallOrigin, isPublishedOrigin } from "@/lib/appOrigin";
 import { publicUrl } from "@/lib/publicUrl";
+import { chromeIntentUrl, urlWantsInstall } from "@/lib/shareInstall";
+
+export { chromeIntentUrl, urlWantsInstall };
 
 const TRUTH_CACHE_PREFIX = "the-truth-";
 
@@ -130,6 +133,20 @@ export function getInstallPlatform() {
     isAndroid,
     isMobile: isIOS || isAndroid || window.matchMedia("(max-width: 768px)").matches,
   };
+}
+
+/** Facebook, Instagram, Messenger, and similar in-app browsers cannot install a PWA. */
+export function isInAppBrowser() {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return /FBAN|FBAV|FB_IAB|FB4A|FBIOS|Instagram|Messenger|Line\/|Twitter|LinkedInApp|Snapchat|Pinterest|WhatsApp/i.test(
+    ua
+  );
+}
+
+export function arrivedFromShare() {
+  if (typeof window === "undefined") return false;
+  return urlWantsInstall(window.location.search, document.referrer);
 }
 
 export function requestInstallPrompt() {
