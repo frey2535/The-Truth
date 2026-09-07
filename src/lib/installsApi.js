@@ -22,7 +22,7 @@ export async function handleOwnerLogin({ body, credentials, load, save }) {
       status: 503,
       body: {
         error:
-          "Platform owner login is not configured. Add PLATFORM_OWNER_PASSWORD in Cloudflare Pages secrets (live site) or .env.local (this computer).",
+          "The live site still cannot see PLATFORM_OWNER_PASSWORD. Add it as a Secret on the Cloudflare Pages project named thetruth, then retry the latest deploy.",
       },
     };
   }
@@ -62,7 +62,7 @@ export async function handleInstallsRequest({ method, body, authorization, crede
       status: 503,
       body: {
         error:
-          "Platform owner login is not configured. Add PLATFORM_OWNER_PASSWORD in Cloudflare Pages secrets, or .env.local on this computer.",
+          "The live site still cannot see PLATFORM_OWNER_PASSWORD. Add it as a Secret on the Cloudflare Pages project named thetruth, then retry the latest deploy.",
       },
     };
   }

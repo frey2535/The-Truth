@@ -34,6 +34,7 @@ export default function OwnerLogin() {
 
   return (
     <AuthLayout
+      variant="dark"
       icon={KeyRound}
       title="Platform owner"
       subtitle="See every device that installed The Truth"
@@ -47,40 +48,44 @@ export default function OwnerLogin() {
       }
     >
       {error ? (
-        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">{error}</div>
+        <div className="mb-4 p-3 rounded-lg bg-red-950/70 text-red-100 text-sm">{error}</div>
       ) : null}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4 text-white">
         <div className="space-y-2">
-          <Label htmlFor="owner-email">Owner email</Label>
+          <Label htmlFor="owner-email" className="text-white">
+            Owner email
+          </Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" aria-hidden="true" />
             <Input
               id="owner-email"
               type="email"
               autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-10 h-12"
+              className="pl-10 h-12 text-white border-white/40 placeholder:text-white/50"
               required
             />
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="owner-password">Owner password</Label>
+          <Label htmlFor="owner-password" className="text-white">
+            Owner password
+          </Label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/70" aria-hidden="true" />
             <Input
               id="owner-password"
               type="password"
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="pl-10 h-12"
+              className="pl-10 h-12 text-white border-white/40 placeholder:text-white/50"
               required
             />
           </div>
         </div>
-        <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
+        <Button type="submit" className="w-full h-12 font-medium bg-[#f3e9c8] text-[#2b2620] hover:bg-white" disabled={loading}>
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -90,8 +95,9 @@ export default function OwnerLogin() {
             "View downloads"
           )}
         </Button>
-        <p className="text-xs text-muted-foreground text-center">
-          On this computer, if no owner password is set, use <span className="font-medium text-[#2b2620]">owner-local</span>.
+        <p className="text-xs text-white/80 text-center">
+          Use the password you saved as PLATFORM_OWNER_PASSWORD. On this computer only, if that is not set, use{" "}
+          <span className="font-semibold text-white">owner-local</span>.
         </p>
       </form>
     </AuthLayout>
