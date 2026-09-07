@@ -17,6 +17,10 @@
     "test:reading": "node scripts/test-reading-layout.mjs",
     "test:share": "node scripts/test-share-install.mjs",
     "test:installs": "node scripts/test-install-ledger.mjs",
+    "test:play": "node scripts/test-play-store.mjs",
+    "play:assets": "python3 scripts/play/generate-store-assets.py",
+    "play:assetlinks": "node scripts/play/write-assetlinks.mjs",
+    "play:bundle": "cd android && ./gradlew bundleRelease",
     "vendor-catalog": "node scripts/vendor-catalog-texts.mjs"
   },
   "dependencies": {

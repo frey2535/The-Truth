@@ -74,6 +74,10 @@ export function setSessionToken(token) {
   else window.localStorage.removeItem(SESSION_KEY);
 }
 
+export function emptyStudyEntities() {
+  return EMPTY_DB().entities;
+}
+
 export function publicUser(user) {
   if (!user) return null;
   const { passwordHash, passwordSalt, sessionToken, ...safe } = user;

@@ -1,4 +1,4 @@
-const CACHE = "the-truth-shell-v6";
+const CACHE = "the-truth-shell-v7";
 const SCOPE = new URL("./", self.location.href).pathname;
 
 function scoped(path) {

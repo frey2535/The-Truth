@@ -29,7 +29,9 @@ The app works immediately. Sign-in is optional; the first named account you crea
 
 ## Install on a phone
 
-This is a Progressive Web App. People open it once in the phone’s browser, then add it to the home screen — it launches like a native app. There is no App Store or Play Store listing.
+This is a Progressive Web App. People open it once in the phone’s browser, then add it to the home screen — it launches like a native app.
+
+Google Play uses the same public site as a Trusted Web Activity (`org.currentflowconsulting.thetruth`). Store copy, graphics, the Android project, and the remaining Play Console steps are in [`store/play/PUBLISH.md`](store/play/PUBLISH.md). There is not yet an Apple App Store listing; iPhone install is still Safari → Add to Home Screen.
 
 1. Run `npm run dev` (or `npm run share` for a production build on port **4174**).
 2. On the phone, open the LAN address shown as Vite’s **Network** URL, or open **Install on a phone** in the app and share/copy that link.
@@ -50,6 +52,8 @@ Each home-screen install is recorded once per device. Sign in at **/owner** to s
 - **Live site:** on the Cloudflare Pages project named **thetruth** (the one `npm run publish` / GitHub Actions deploys), add Secret `PLATFORM_OWNER_PASSWORD`, then **retry the latest deploy**. Dashboard secrets are not visible to the live function until a new deploy. You can also add the same value as a GitHub Actions secret named `PLATFORM_OWNER_PASSWORD`. Then open `https://thetruth.currentflowconsulting.org/owner`.
 
 There is a quiet **Platform owner** link at the bottom of the Install page. The live count is stored on the Cloudflare site, so GitHub Pages installs report there too.
+
+Privacy policy: [https://thetruth.currentflowconsulting.org/privacy](https://thetruth.currentflowconsulting.org/privacy). Play data-safety answers and on-device account deletion: `/data-safety` and `/account`.
 
 ## Publish
 
@@ -104,6 +108,17 @@ npm run dev
 npm run build
 npm run preview
 npm run share
+npm run play:assets
+npm run test:play
 ```
 
 `npm run share` builds a production copy and serves it on your LAN at port **4174** so phones can open and install it.
+
+Play Store (Android App Bundle on a machine with the Android SDK):
+
+```bash
+bash scripts/play/create-upload-keystore.sh
+cd android && ./gradlew bundleRelease
+```
+
+See [`store/play/PUBLISH.md`](store/play/PUBLISH.md). After Play App Signing is on, put the signing-cert SHA-256 in `public/.well-known/assetlinks.json` with `npm run play:assetlinks` and deploy the site.

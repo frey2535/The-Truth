@@ -25,4 +25,8 @@ manifest.shortcuts = (manifest.shortcuts || []).map((shortcut) => ({
   url: prefix(shortcut.url),
   icons: (shortcut.icons || []).map((icon) => ({ ...icon, src: prefix(icon.src) })),
 }));
+manifest.screenshots = (manifest.screenshots || []).map((shot) => ({
+  ...shot,
+  src: prefix(shot.src),
+}));
 writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);

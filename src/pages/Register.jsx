@@ -168,6 +168,10 @@ export default function Register() {
           >
             Log in
           </Link>
+          {" · "}
+          <Link to="/privacy" className="text-primary font-medium hover:underline">
+            Privacy
+          </Link>
         </>
       }
     >

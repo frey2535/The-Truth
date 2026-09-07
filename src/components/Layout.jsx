@@ -175,6 +175,17 @@ export default function Layout() {
               Install this app
             </Link>
           )}
+          <p className="mt-3 flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+            <Link to="/privacy" className="hover:underline">
+              Privacy
+            </Link>
+            <Link to="/data-safety" className="hover:underline">
+              Data safety
+            </Link>
+            <Link to="/account" className="hover:underline">
+              Delete account
+            </Link>
+          </p>
         </div>
       </footer>
       <nav

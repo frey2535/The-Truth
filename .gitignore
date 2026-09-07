@@ -37,3 +37,14 @@ base44/.app.jsonc
 
 # Local install-count ledger for npm run dev
 .data
+
+# Play / TWA signing — never commit a real keystore
+android/local.properties
+android/.gradle
+android/build
+android/app/build
+android/*.keystore
+android/*.jks
+android/keystore.properties
+*.aab
+*.apk

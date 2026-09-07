@@ -60,6 +60,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const deleteLocalAccount = async (options) => {
+    await base44.auth.deleteLocalAccount(options);
+    const guest = base44.auth.ensureGuest();
+    setUser(guest);
+    setIsAuthenticated(!!guest);
+    return guest;
+  };
+
   const logout = (shouldRedirect = true) => {
     setUser(null);
     setIsAuthenticated(false);
@@ -88,6 +96,7 @@ export const AuthProvider = ({ children }) => {
         appPublicSettings,
         authChecked,
         logout,
+        deleteLocalAccount,
         navigateToLogin,
         checkUserAuth,
         checkAppState,

@@ -1,0 +1,6 @@
+/.well-known/assetlinks.json
+  Content-Type: application/json
+  Access-Control-Allow-Origin: *
+
+/privacy
+  X-Robots-Tag: all
