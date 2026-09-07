@@ -1,7 +1,8 @@
 import React from "react";
 import HeavenBackdrop from "@/components/HeavenBackdrop";
 
-export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
+export default function AuthLayout({ icon: Icon, title, subtitle, footer, children, variant = "light" }) {
+  const dark = variant === "dark";
   return (
     <div className="min-h-screen truth-app truth-app--auth relative flex items-center justify-center px-4 py-12">
       <HeavenBackdrop />
@@ -17,7 +18,13 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
             <p className="text-[#f3e9c8]/85 mt-2 drop-shadow-[0_1px_8px_rgba(0,0,0,0.5)]">{subtitle}</p>
           )}
         </div>
-        <div className="bg-[#faf6ef]/88 backdrop-blur-md rounded-2xl shadow-lg border border-[#e8c97a]/35 p-8">
+        <div
+          className={
+            dark
+              ? "bg-[#2b2620]/95 backdrop-blur-md rounded-2xl shadow-lg border border-[#e8c97a]/40 p-8 text-white"
+              : "bg-[#faf6ef] rounded-2xl shadow-lg border border-[#e8c97a]/35 p-8 text-[#2b2620]"
+          }
+        >
           {children}
         </div>
         {footer && (

@@ -67,8 +67,8 @@ export default function Login() {
         } catch (readerErr) {
           if (normalizeEmail(email) === OWNER_EMAIL_DEFAULT) {
             throw new Error(
-              /not configured/i.test(ownerErr.message || "")
-                ? "This is the platform owner email. Add PLATFORM_OWNER_PASSWORD in Cloudflare, then sign in again — or use Platform owner sign-in."
+              /cannot see PLATFORM_OWNER_PASSWORD|not configured/i.test(ownerErr.message || "")
+                ? "This is the platform owner email. Add PLATFORM_OWNER_PASSWORD as a Secret on the Cloudflare Pages project named thetruth, then retry the latest deploy."
                 : "This is the platform owner email. Use the password you saved in Cloudflare, or open Platform owner sign-in."
             );
           }

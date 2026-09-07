@@ -41,7 +41,7 @@ Each home-screen install is recorded once per device. Sign in at **/owner** to s
 - **Local:** [http://truth.localhost:5174/owner](http://truth.localhost:5174/owner)  
   Email `owner@thetruth.currentflowconsulting.org`  
   Password `owner-local` (used when `PLATFORM_OWNER_PASSWORD` is not set)
-- **Live site:** add `PLATFORM_OWNER_EMAIL` and `PLATFORM_OWNER_PASSWORD` in Cloudflare Pages → Settings → Environment variables (Production). Then open `https://thetruth.currentflowconsulting.org/owner`.
+- **Live site:** on the Cloudflare Pages project named **thetruth** (the one `npm run publish` / GitHub Actions deploys), add Secret `PLATFORM_OWNER_PASSWORD`, then **retry the latest deploy**. Dashboard secrets are not visible to the live function until a new deploy. You can also add the same value as a GitHub Actions secret named `PLATFORM_OWNER_PASSWORD`. Then open `https://thetruth.currentflowconsulting.org/owner`.
 
 There is a quiet **Platform owner** link at the bottom of the Install page. The live count is stored on the Cloudflare site, so GitHub Pages installs report there too.
 

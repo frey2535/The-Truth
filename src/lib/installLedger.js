@@ -12,9 +12,18 @@ export function normalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
 
+function envValue(env, names) {
+  const bag = env || {};
+  for (const name of names) {
+    const value = String(bag[name] || "").trim();
+    if (value) return value;
+  }
+  return "";
+}
+
 export function ownerCredentials(env = {}, { allowLocalFallback = false } = {}) {
-  const email = normalizeEmail(env.PLATFORM_OWNER_EMAIL || OWNER_EMAIL_DEFAULT);
-  const configured = String(env.PLATFORM_OWNER_PASSWORD || "").trim();
+  const email = normalizeEmail(envValue(env, ["PLATFORM_OWNER_EMAIL"]) || OWNER_EMAIL_DEFAULT);
+  const configured = envValue(env, ["PLATFORM_OWNER_PASSWORD", "PLATFORM_OWNER_PASS"]);
   const password = configured || (allowLocalFallback ? LOCAL_OWNER_PASSWORD : "");
   return {
     email,

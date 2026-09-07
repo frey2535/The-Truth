@@ -10,7 +10,7 @@ function json(status, body) {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "Authorization, Content-Type",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     },
   });
 }
@@ -21,7 +21,7 @@ export async function onRequestOptions() {
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "Authorization, Content-Type",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     },
   });
 }
@@ -49,6 +49,11 @@ async function saveLedger(env, ledger) {
       },
     })
   );
+}
+
+export async function onRequestGet({ env }) {
+  const credentials = readOwnerCredentials(env, false);
+  return json(200, { configured: credentials.configured });
 }
 
 export async function onRequestPost({ request, env }) {
