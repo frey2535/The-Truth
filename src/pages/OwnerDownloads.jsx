@@ -13,6 +13,7 @@ function platformLabel(platform) {
 }
 
 function sourceLabel(source) {
+  if (source === "prior") return "Recorded from before the counter";
   if (source === "appinstalled") return "Browser install";
   if (source === "prompt") return "Install prompt";
   return "Opened as installed app";
@@ -32,6 +33,11 @@ export default function OwnerDownloads() {
   const [stats, setStats] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [platform, setPlatform] = useState("ios");
+  const [when, setWhen] = useState("");
+  const [note, setNote] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState("");
 
   useEffect(() => {
     if (!isOwner) return undefined;
@@ -50,6 +56,27 @@ export default function OwnerDownloads() {
       cancelled = true;
     };
   }, [isOwner]);
+
+  async function addPastInstall(event) {
+    event.preventDefault();
+    setFormError("");
+    setSaving(true);
+    try {
+      const data = await base44.owner.backfill([
+        {
+          platform,
+          at: when ? new Date(`${when}T12:00:00`).toISOString() : new Date().toISOString(),
+          note,
+        },
+      ]);
+      setStats(data);
+      setNote("");
+    } catch (err) {
+      setFormError(err.message || "Could not record that install");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   if (!isOwner) return <Navigate to="/owner" replace />;
 
@@ -88,6 +115,9 @@ export default function OwnerDownloads() {
                 <div>
                   <p className="text-xs uppercase tracking-wide text-[#8a7f6f]">Devices that installed</p>
                   <p className="font-display text-5xl text-[#2b2620] leading-none">{stats.total}</p>
+                  {stats.prior ? (
+                    <p className="text-xs text-[#8a7f6f] mt-2">{stats.prior} recorded from before the counter</p>
+                  ) : null}
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-3 text-center">
@@ -102,17 +132,62 @@ export default function OwnerDownloads() {
           )}
         </div>
 
+        <div className="rounded-2xl border border-[#e8c97a]/35 bg-[#faf6ef]/92 backdrop-blur-md p-6 mb-5">
+          <h2 className="font-display text-xl text-[#2b2620] mb-2">Add a past install</h2>
+          <p className="text-sm text-[#5b5142] mb-4">
+            The live counter started on 7 September 2026. Installs from before that were not stored.
+            Record them here, or they appear automatically the next time that home-screen app opens.
+          </p>
+          {formError ? <p className="mb-3 text-sm text-[#7a2e2e]">{formError}</p> : null}
+          <form onSubmit={addPastInstall} className="grid gap-3 sm:grid-cols-2">
+            <label className="text-sm text-[#2b2620]">
+              Device
+              <select
+                value={platform}
+                onChange={(e) => setPlatform(e.target.value)}
+                className="mt-1 w-full h-11 rounded-md border border-[#e8ddc7] bg-white px-3"
+              >
+                <option value="ios">iPhone / iPad</option>
+                <option value="android">Android</option>
+                <option value="desktop">Computer</option>
+              </select>
+            </label>
+            <label className="text-sm text-[#2b2620]">
+              Installed on
+              <input
+                type="date"
+                value={when}
+                onChange={(e) => setWhen(e.target.value)}
+                className="mt-1 w-full h-11 rounded-md border border-[#e8ddc7] bg-white px-3"
+              />
+            </label>
+            <label className="text-sm text-[#2b2620] sm:col-span-2">
+              Note
+              <input
+                type="text"
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                placeholder="Friend who installed from Facebook, my iPhone, …"
+                className="mt-1 w-full h-11 rounded-md border border-[#e8ddc7] bg-white px-3"
+              />
+            </label>
+            <Button type="submit" className="h-11 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8] sm:col-span-2" disabled={saving}>
+              {saving ? "Saving…" : "Add to downloads"}
+            </Button>
+          </form>
+        </div>
+
         <div className="rounded-2xl border border-[#e8c97a]/35 bg-[#faf6ef]/92 backdrop-blur-md p-6">
           <h2 className="font-display text-xl text-[#2b2620] mb-4">Every download</h2>
           {!loading && !error && stats?.downloads?.length === 0 ? (
             <p className="text-sm text-[#5b5142]">
-              No installs recorded yet. When someone adds The Truth to their home screen, it appears here.
+              No installs recorded yet. Add past installs above, or wait until a home-screen app opens again.
             </p>
           ) : null}
           <ul className="space-y-3">
             {(stats?.downloads || []).map((row) => (
               <li
-                key={`${row.device}-${row.at}`}
+                key={`${row.device}-${row.at}-${row.note}`}
                 className="flex items-start gap-3 rounded-xl border border-[#e8ddc7] bg-white/70 p-3"
               >
                 <span className="w-9 h-9 rounded-lg bg-[#f3e9c8] flex items-center justify-center shrink-0">
@@ -121,6 +196,7 @@ export default function OwnerDownloads() {
                 <span>
                   <span className="block text-sm font-medium text-[#2b2620]">{platformLabel(row.platform)}</span>
                   <span className="block text-xs text-[#5b5142]">{sourceLabel(row.source)}</span>
+                  {row.note ? <span className="block text-xs text-[#2b2620] mt-1">{row.note}</span> : null}
                   <span className="block text-xs text-[#8a7f6f] mt-1">{formatWhen(row.at)}</span>
                 </span>
               </li>

@@ -45,13 +45,6 @@ export async function reportAppInstall(source = "standalone") {
   if (typeof window === "undefined") return { recorded: false };
   const device = installDeviceId();
   if (!device) return { recorded: false };
-  try {
-    if (window.localStorage.getItem(REPORTED_KEY) === "1") {
-      return { recorded: false };
-    }
-  } catch {
-    /* continue */
-  }
   const origin = installMetricsOrigin();
   try {
     const res = await fetch(`${origin}/api/installs`, {
@@ -109,6 +102,23 @@ export async function ownerLogin(email, password) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || "Owner sign-in failed");
+  return data;
+}
+
+export async function backfillOwnerDownloads(downloads) {
+  const session = readOwnerSession();
+  if (!session?.token) throw new Error("Platform owner sign-in is required");
+  const origin = installMetricsOrigin();
+  const res = await fetch(`${origin}/api/installs`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.token}`,
+    },
+    body: JSON.stringify({ backfill: true, downloads }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Could not record past installs");
   return data;
 }
 

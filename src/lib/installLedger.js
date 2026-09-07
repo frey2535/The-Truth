@@ -83,7 +83,10 @@ export function recordDevice(ledger, event) {
   }
   const at = event.at || new Date().toISOString();
   const platform = ["ios", "android", "desktop"].includes(event.platform) ? event.platform : "desktop";
-  const source = ["appinstalled", "standalone", "prompt"].includes(event.source) ? event.source : "standalone";
+  const source = ["appinstalled", "standalone", "prompt", "prior"].includes(event.source)
+    ? event.source
+    : "standalone";
+  const note = String(event.note || "").trim();
   return {
     ledger: {
       ...ledger,
@@ -94,11 +97,26 @@ export function recordDevice(ledger, event) {
           platform,
           source,
           standalone: Boolean(event.standalone),
+          ...(note ? { note } : {}),
         },
       },
     },
     added: true,
   };
+}
+
+export function mergeDevices(ledger, extras = []) {
+  let next = ledger || emptyLedger();
+  let added = 0;
+  for (const row of extras || []) {
+    const result = recordDevice(next, row);
+    if (result.error) continue;
+    if (result.added) {
+      next = result.ledger;
+      added += 1;
+    }
+  }
+  return { ledger: next, added };
 }
 
 export function ownerStats(ledger) {
@@ -109,6 +127,7 @@ export function ownerStats(ledger) {
       platform: row.platform,
       source: row.source,
       standalone: Boolean(row.standalone),
+      note: row.note || "",
     }))
     .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
   const byPlatform = { ios: 0, android: 0, desktop: 0 };
@@ -117,6 +136,7 @@ export function ownerStats(ledger) {
   }
   return {
     total: downloads.length,
+    prior: downloads.filter((row) => row.source === "prior").length,
     byPlatform,
     downloads,
   };

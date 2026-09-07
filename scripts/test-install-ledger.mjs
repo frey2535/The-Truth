@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   createOwnerSession,
   emptyLedger,
+  mergeDevices,
   OWNER_EMAIL_DEFAULT,
   ownerCredentials,
   ownerSession,
@@ -50,6 +51,22 @@ assert.equal(stats.total, 2);
 assert.equal(stats.byPlatform.ios, 1);
 assert.equal(stats.byPlatform.android, 1);
 assert.equal(stats.downloads[0].device, "device-b");
+
+const withPrior = mergeDevices(ledger, [
+  {
+    device: "prior-ios-home",
+    platform: "ios",
+    source: "prior",
+    at: "2026-08-01T12:00:00.000Z",
+    note: "Installed before the counter",
+  },
+  { device: "device-aaaa-1111", platform: "ios" },
+]);
+assert.equal(withPrior.added, 1);
+const priorStats = ownerStats(withPrior.ledger);
+assert.equal(priorStats.total, 3);
+assert.equal(priorStats.prior, 1);
+assert.equal(priorStats.downloads.find((row) => row.source === "prior").note, "Installed before the counter");
 
 const session = createOwnerSession(ledger, OWNER_EMAIL_DEFAULT, 1_000);
 assert.ok(session.token.startsWith("own_"));
