@@ -659,9 +659,17 @@ Setup is not fulfillment. Revelation 11 is a dated scene of two witnesses. Light
     modern_date: "present",
     location: "Worldwide",
     date: "2000",
-    local_image: "/evidence/prophecy/buy-sell.jpg",
+    local_image: "/evidence/prophecy/buy-sell-palm.png",
     image_caption:
-      "A published payment terminal that can accept or refuse a card. Capability only — not the mark of the beast.",
+      "Published Amazon One store gate: enter and pay with a scanned palm. A present identity-and-payment machine. Capability only — not the mark of the beast.",
+    extra_images: [
+      {
+        local_image: "/evidence/prophecy/buy-sell-neuralink.png",
+        image_fit: "contain",
+        image_caption:
+          "Published USAII banner on Neuralink and brain–computer interfaces. Implant and identity research exists. This is not the mark of Revelation 13.",
+      },
+    ],
     verification_note:
       "Digital payments and identity systems exist. They are not the mark of the beast. This app will not name a card, chip, vaccine, or currency as that mark.",
     full_text: `King James, Revelation 13:16–17: “And he causeth all, both small and great, rich and poor, free and bond, to receive a mark in their right hand, or in their foreheads: And that no man might buy or sell, save he that had the mark, or the name of the beast, or the number of his name.”
