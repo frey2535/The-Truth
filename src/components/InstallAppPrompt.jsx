@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Download, Share, PlusSquare, MoreVertical, X, ExternalLink, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PUBLISHED_APP_URL } from "@/lib/appOrigin";
@@ -40,6 +40,7 @@ function dismiss() {
 export default function InstallAppPrompt() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const windowPath = typeof window !== "undefined" ? window.location.pathname : pathname;
   const [open, setOpen] = useState(false);
   const [canPrompt, setCanPrompt] = useState(() => Boolean(getDeferredInstall()));
   const [installing, setInstalling] = useState(false);
@@ -47,7 +48,7 @@ export default function InstallAppPrompt() {
   const platform = getInstallPlatform();
   const inApp = isInAppBrowser();
   const fromShare = arrivedFromShare();
-  const onAuth = isAuthPath(pathname);
+  const onAuth = isAuthPath(pathname) || isAuthPath(windowPath);
 
   useEffect(() => {
     return onDeferredInstallChange((event) => setCanPrompt(Boolean(event)));
@@ -110,26 +111,24 @@ export default function InstallAppPrompt() {
     window.location.href = chromeIntentUrl(window.location.href);
   };
 
-  const goToLogin = () => {
+  const closeForLogin = () => {
     dismiss();
     setOpen(false);
-    navigate("/login");
   };
 
   if (!open || onAuth || isStandaloneDisplay()) return null;
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-3 sm:p-6">
-      <button
-        type="button"
-        className="absolute inset-0 z-0 bg-[#2b2620]/50 backdrop-blur-[2px]"
-        aria-label="Dismiss install prompt"
+    <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-3 sm:p-6 pointer-events-none">
+      <div
+        className="absolute inset-0 z-0 bg-[#2b2620]/50 backdrop-blur-[2px] pointer-events-auto"
+        aria-hidden="true"
         onClick={close}
       />
       <div
         role="dialog"
         aria-labelledby="install-app-title"
-        className="relative z-10 w-full max-w-md rounded-2xl bg-[#faf6ef] border border-[#e8ddc7] shadow-2xl overflow-hidden"
+        className="relative z-10 w-full max-w-md rounded-2xl bg-[#faf6ef] border border-[#e8ddc7] shadow-2xl overflow-hidden pointer-events-auto"
         style={{ marginBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="bg-[#2b2620] px-5 pt-5 pb-4 text-[#f3e9c8]">
@@ -252,15 +251,14 @@ export default function InstallAppPrompt() {
             </>
           )}
 
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full h-12 border-[#e8ddc7] text-[#2b2620]"
-            onClick={goToLogin}
+          <Link
+            to="/login"
+            className="inline-flex items-center justify-center gap-2 w-full h-12 rounded-md text-sm font-medium border border-[#e8ddc7] bg-white text-[#2b2620] hover:bg-[#f3e9c8]/60"
+            onClick={closeForLogin}
           >
             <LogIn className="w-4 h-4" />
             Sign in
-          </Button>
+          </Link>
 
           <div className="flex gap-2">
             <Button

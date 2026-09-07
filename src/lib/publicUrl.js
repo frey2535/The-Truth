@@ -6,3 +6,8 @@ export function publicUrl(path) {
   if (base !== "/" && path.startsWith(base)) return path;
   return `${base}${String(path).replace(/^\//, "")}`;
 }
+
+/** Login page href, including the GitHub Pages base path when needed. */
+export function loginUrl() {
+  return publicUrl("/login");
+}

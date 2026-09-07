@@ -27,7 +27,6 @@ import MyStudy from "@/pages/MyStudy";
 import MapExplore from "@/pages/MapExplore";
 import Calendar from "@/pages/Calendar";
 import Login from "@/pages/Login";
-import InstallAppPrompt from "@/components/InstallAppPrompt";
 import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
@@ -103,7 +102,6 @@ function App() {
           <ScrollToTop />
           <ResumePath />
           <AuthenticatedApp />
-          <InstallAppPrompt />
         </Router>
         <Toaster />
       </QueryClientProvider>

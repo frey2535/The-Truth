@@ -12,6 +12,7 @@ import {
   requestGoogleProfile,
   shouldBounceGoogleToLoopback,
 } from "@/lib/googleIdentity";
+import { loginUrl } from "@/lib/publicUrl";
 
 export const GUEST_EMAIL = "guest@local";
 
@@ -221,7 +222,7 @@ export const localAuth = {
   },
 
   redirectToLogin() {
-    if (typeof window !== "undefined") window.location.href = "/login";
+    if (typeof window !== "undefined") window.location.assign(loginUrl());
   },
 
   async signInWithGoogle(profile) {

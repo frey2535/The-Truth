@@ -20,5 +20,7 @@ assert.equal(isAuthPath("/register"), true);
 assert.equal(isAuthPath("/forgot-password"), true);
 assert.equal(isAuthPath("/library"), false);
 assert.equal(isAuthPath("/"), false);
+assert.equal(isAuthPath("/The-Truth/login", "/The-Truth/"), true);
+assert.equal(isAuthPath("/The-Truth/library", "/The-Truth/"), false);
 
 console.log("share-install helpers ok");
