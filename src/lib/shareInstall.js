@@ -8,6 +8,12 @@ export function urlWantsInstall(search = "", referrer = "") {
   );
 }
 
+export const AUTH_PATHS = ["/login", "/register", "/forgot-password", "/reset-password"];
+
+export function isAuthPath(pathname = "") {
+  return AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+}
+
 export function chromeIntentUrl(href) {
   const target = href || "";
   try {

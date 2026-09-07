@@ -152,3 +152,58 @@ export function arrivedFromShare() {
 export function requestInstallPrompt() {
   window.dispatchEvent(new Event("truth-show-install"));
 }
+
+let deferredInstall = null;
+const deferredListeners = new Set();
+
+function setDeferredInstall(event) {
+  deferredInstall = event;
+  deferredListeners.forEach((fn) => {
+    try {
+      fn(event);
+    } catch {
+      /* ignore */
+    }
+  });
+}
+
+/** Capture Chrome's install event as soon as the module loads — before React mounts. */
+export function listenForInstallPrompt() {
+  if (typeof window === "undefined" || window.__truthInstallListening) return;
+  window.__truthInstallListening = true;
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    setDeferredInstall(event);
+  });
+  window.addEventListener("appinstalled", () => {
+    setDeferredInstall(null);
+  });
+}
+
+export function getDeferredInstall() {
+  return deferredInstall;
+}
+
+export function onDeferredInstallChange(fn) {
+  deferredListeners.add(fn);
+  return () => deferredListeners.delete(fn);
+}
+
+export async function promptAppInstall() {
+  const event = deferredInstall;
+  if (!event || typeof event.prompt !== "function") {
+    return { outcome: "unavailable" };
+  }
+  try {
+    await event.prompt();
+    const result = await event.userChoice;
+    setDeferredInstall(null);
+    return { outcome: result?.outcome || "dismissed" };
+  } catch {
+    return { outcome: "unavailable" };
+  }
+}
+
+if (typeof window !== "undefined") {
+  listenForInstallPrompt();
+}
