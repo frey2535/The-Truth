@@ -173,7 +173,7 @@ export default function InstallAppPrompt() {
           <p className="text-sm text-[#f3e9c8]/80 mt-3 leading-relaxed">
             {inApp
               ? "Facebook opened this inside its own browser. Install only works in Chrome or Safari."
-              : "Add The Truth to your home screen. It opens like an app — no store listing."}
+              : "Add The Truth to your home screen. It opens like an app. Google Play uses this same public site."}
           </p>
         </div>
 
