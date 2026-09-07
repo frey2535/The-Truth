@@ -166,13 +166,6 @@ const COMMONS = [
     ],
   },
   {
-    dest: "public/evidence/prophecy/buy-sell.jpg",
-    files: [
-      "Credit card terminal.jpg",
-      "Payment terminal at self-checkout.jpg",
-    ],
-  },
-  {
     dest: "public/evidence/prophecy/waste-land.jpg",
     files: [
       "Yatir Forest, Israel no.1.jpg",
@@ -374,10 +367,6 @@ const LEGACY = [
       "Jerusalem-2013(2)-Aerial-Temple Mount-Temple Mount (south exposure).jpg",
       "View of Temple Mount from Mount of Olives.jpg",
     ],
-  },
-  {
-    dest: "public/evidence/prophecy/buy-sell.jpg",
-    files: ["Credit card payment terminal.jpg", "POS-Terminal.jpg", "EC-Cash Terminal.jpg"],
   },
   {
     dest: "public/evidence/prophecy/abraham-accords.jpg",
