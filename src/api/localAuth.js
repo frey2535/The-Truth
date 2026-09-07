@@ -154,7 +154,7 @@ export const localAuth = {
       return publicUser(user);
     }
 
-    throw httpError("No local account for this email. Create one — Base44 logins were not imported.");
+    throw httpError("No reader account for this email on this device. Create one, or use Platform owner sign-in.");
   },
 
   async register({ email, password }) {

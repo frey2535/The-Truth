@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +9,12 @@ import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
 import { consumeGoogleRedirect, googleSignInOriginHint } from "@/lib/googleIdentity";
+import { normalizeEmail, OWNER_EMAIL_DEFAULT } from "@/lib/installLedger";
+import { useOwner } from "@/lib/OwnerContext";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { login: loginOwner } = useOwner();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -51,8 +55,26 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      await base44.auth.loginViaEmailPassword(email, password);
-      window.location.href = returnTo;
+      try {
+        await loginOwner(email, password);
+        navigate("/owner/downloads", { replace: true });
+        return;
+      } catch (ownerErr) {
+        try {
+          await base44.auth.loginViaEmailPassword(email, password);
+          window.location.href = returnTo;
+          return;
+        } catch (readerErr) {
+          if (normalizeEmail(email) === OWNER_EMAIL_DEFAULT) {
+            throw new Error(
+              /not configured/i.test(ownerErr.message || "")
+                ? "This is the platform owner email. Add PLATFORM_OWNER_PASSWORD in Cloudflare, then sign in again — or use Platform owner sign-in."
+                : "This is the platform owner email. Use the password you saved in Cloudflare, or open Platform owner sign-in."
+            );
+          }
+          throw readerErr;
+        }
+      }
     } catch (err) {
       setError(err.message || "Invalid email or password");
     } finally {
@@ -85,6 +107,10 @@ export default function Login() {
             className="text-primary font-medium hover:underline"
           >
             Create one
+          </Link>
+          {" · "}
+          <Link to="/owner" className="text-primary font-medium hover:underline">
+            Platform owner
           </Link>
         </>
       }
