@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  buildAssistantAnswer,
   extraSearchesForKind,
   isYesNoQuestion,
   questionKind,
@@ -138,5 +139,11 @@ const learned = recordAssistantLearning({
 });
 assert.equal(learned.learnedOnlyExpandsRecall, true);
 assert.equal(learned.recorded, true);
+
+const built = buildAssistantAnswer("What must I do to be saved?", samples, savedAsk);
+assert.match(built.markdown, /Understanding of the literature/);
+assert.ok(built.related.some((row) => row.reference === "John 3:16"));
+assert.doesNotMatch(built.markdown, /baptism doth also now save us/);
+assert.match(writeAssistantAnswer("What must I do to be saved?", samples, savedAsk), /baptism doth also now save us/);
 
 console.log("assistant understanding ok");
