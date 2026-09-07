@@ -1,7 +1,10 @@
+import { extraSearchesForKind, isYesNoQuestion, questionKind } from "./assistantAnswer.js";
 import { expandWithLearning } from "./assistantLearn.js";
 import { extractReferencesFromQuestion, KJV_TOPIC_ALIASES, SEARCH_CORPORA } from "./localCorpusSearch.js";
 import { familyOf } from "./wordFamilies.js";
 import { topicTermsFrom } from "./questionTopics.js";
+
+export { isYesNoQuestion, questionKind };
 
 export { topicTermsFrom };
 
@@ -104,6 +107,7 @@ export function understandQuestion(question, { history = [], corpus = "all" } = 
   const fallback = topicTermsFrom(q).filter((w) => !skipBooks.has(w));
   const topics = parsed?.topics?.length ? parsed.topics : fallback;
   const boost = parsed?.boost || [];
+  const kind = questionKind(q, topics);
   const asked = {
     question: q,
     topics,
@@ -111,6 +115,9 @@ export function understandQuestion(question, { history = [], corpus = "all" } = 
     boostWords: boost,
     search: topics.join(" ") || q,
     refs,
+    yesNo: isYesNoQuestion(q),
+    kind,
+    extraSearches: extraSearchesForKind(kind),
     preferSpeech: Boolean(parsed?.preferSpeech),
     leadSource: leadSourceFromQuestion(q),
     comparison: isComparisonQuestion(q, topics),
@@ -126,6 +133,7 @@ export function understandQuestion(question, { history = [], corpus = "all" } = 
   if (!follow) return asked;
   const prior = understandQuestion(String(lastUser.content).trim(), { corpus });
   const mergedTopics = unique(asked.topics.concat(prior.topics));
+  const mergedKind = asked.kind !== "topic-family" ? asked.kind : prior.kind || "topic-family";
   return {
     question: `${prior.question}\n\nFollow-up: ${q}`,
     topics: mergedTopics,
@@ -133,6 +141,9 @@ export function understandQuestion(question, { history = [], corpus = "all" } = 
     boostWords: unique(asked.boostWords.concat(prior.boostWords, prior.topics)),
     search: mergedTopics.join(" ") || prior.search,
     refs: asked.refs.length ? asked.refs : prior.refs,
+    yesNo: asked.yesNo,
+    kind: mergedKind,
+    extraSearches: extraSearchesForKind(mergedKind),
     preferSpeech: asked.preferSpeech || prior.preferSpeech,
     leadSource: asked.leadSource !== "canon" ? asked.leadSource : prior.leadSource || "canon",
     comparison: asked.comparison || prior.comparison,
