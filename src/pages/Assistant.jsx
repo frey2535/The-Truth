@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Send, Loader2, ShieldCheck, Square, History, PlusCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import HistoryDialog from "@/components/assistant/HistoryDialog";
+import { SEARCH_CORPORA } from "@/lib/localCorpusSearch";
 
 export default function Assistant() {
   const [messages, setMessages] = useState([]);
@@ -15,6 +16,7 @@ export default function Assistant() {
   const reqId = useRef(0);
 
   const [conversationId, setConversationId] = useState(null);
+  const [corpus, setCorpus] = useState("all");
   const [historyOpen, setHistoryOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -72,7 +74,11 @@ export default function Assistant() {
     setLoading(true);
     const myId = ++reqId.current;
     try {
-      const res = await base44.functions.invoke("study_assistant", { question: q, history: messages });
+      const res = await base44.functions.invoke("study_assistant", {
+        question: q,
+        history: messages,
+        corpus,
+      });
       if (reqId.current !== myId) return;
       if (res.data?.error) throw new Error(res.data.error);
       const final = [...next, { role: "assistant", content: res.data.answer }];
@@ -163,10 +169,12 @@ export default function Assistant() {
           <div className="text-center text-[#8a7f6f] py-16">
             <p className="font-display text-2xl text-[#2b2620] mb-2">Ask a question.</p>
             <p>
-              The question is read first. Then every stored text in this app is searched — King James,
+              The question is read first. Then every selected stored text is searched — King James,
               Apocrypha, Enoch, Dead Sea Scrolls, fathers, Josephus, other manuscripts, and the empirical
-              archive. The answer quotes what those texts say. Conflicting stored wording is listed in its
-              own section. Nothing is invented, guessed, or taken from the internet.
+              archive unless you pick one corpus. It matches word families (baptism, baptised, baptizing),
+              not a single keyword. Every relevant stored passage is listed. Learning only remembers extra
+              word-forms that appeared; it cannot hide text or steer you. Nothing is invented or taken from
+              the internet.
             </p>
           </div>
         )}
@@ -205,7 +213,23 @@ export default function Assistant() {
         )}
       </div>
 
-      <form onSubmit={send} className="flex gap-3 mt-4">
+      <div className="flex flex-wrap gap-2 mt-4 mb-2">
+        {SEARCH_CORPORA.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => setCorpus(item.id)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium border ${
+              corpus === item.id
+                ? "bg-[#2b2620] text-[#f3e9c8] border-[#2b2620]"
+                : "bg-white/70 text-[#5b5142] border-[#e8ddc7]"
+            }`}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      <form onSubmit={send} className="flex gap-3">
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}

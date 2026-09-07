@@ -2,6 +2,8 @@ import { APOCRYPHA_BOOKS, CANON_BOOKS, bibleBookUrl, manuscriptUrl } from "@/com
 import { DSS_LOCAL_TEXT } from "@/components/library/dssLocalTexts";
 import { ALL_ARCHIVE } from "@/data/inAppArchive";
 import { fetchStoredText, looksLikeHtmlDocument } from "@/lib/fetchStoredText";
+import { expandWithLearning } from "./assistantLearn.js";
+import { familyHitsText, familyOf } from "./wordFamilies.js";
 
 const STOP = new Set([
   "the", "and", "of", "to", "a", "in", "that", "is", "was", "for", "it", "with", "as",
@@ -9,6 +11,7 @@ const STOP = new Set([
   "you", "your", "were", "have", "had", "has", "will", "shall", "unto", "which",
   "what", "when", "who", "how", "did", "does", "been", "their", "there", "then", "than",
   "into", "upon", "also", "all", "any", "can", "may", "our", "out", "about",
+  "must", "need", "needs",
 ]);
 
 /** Question filler that pulls the wrong verses if used as search keys. */
@@ -21,6 +24,8 @@ const QUESTION_WEAK = new Set([
   "please", "really", "just", "like", "thing", "things", "someone", "something",
   "should", "would", "could", "yes", "very", "always", "still", "even", "because",
   "whether", "thanks", "thank", "everyone", "anybody", "somebody",
+  "must", "need", "needs", "wanted", "want", "information", "question", "answer",
+  "find", "looking", "know", "think",
 ]);
 
 /** Modern question words that are rare or absent in the King James wording. */
@@ -35,8 +40,9 @@ export const KJV_TOPIC_ALIASES = {
   spirit: ["holy ghost"],
   forgive: ["forgiveness", "remission"],
   forgiveness: ["remission"],
-  baptize: ["baptism", "baptist"],
-  baptism: ["baptize", "baptist"],
+  baptize: ["baptism", "baptist", "baptise", "baptised"],
+  baptism: ["baptize", "baptized", "baptist", "baptise", "baptised"],
+  baptise: ["baptize", "baptism", "baptist"],
   repent: ["repentance"],
   repentance: ["repent"],
   sabbath: ["seventh day"],
@@ -95,11 +101,8 @@ export function expandSearchForms(topic) {
   if (phrase) forms.add(phrase);
   for (const w of words) {
     forms.add(w);
-    const stem = w.replace(/(eth|est|ing|ied|ies|ed|es|s|ly|er)$/i, "");
-    if (stem.length >= 3) {
-      ["", "s", "es", "ed", "ing", "eth", "est", "er", "ied"].forEach((suf) => forms.add(stem + suf));
-      forms.add(stem);
-    }
+    for (const form of familyOf(w)) forms.add(form);
+    for (const form of expandWithLearning(w)) forms.add(form);
   }
   return { phrase, words, forms: [...forms].filter((f) => f.length >= 3) };
 }
@@ -144,10 +147,7 @@ function sameBookName(a, b) {
 }
 
 export function wordHitsText(text, word) {
-  const hay = String(text || "");
-  if (new RegExp(`\\b${escapeRe(word)}\\b`, "i").test(hay)) return true;
-  const stem = String(word || "").replace(/(eth|est|ing|ied|ies|ed|es|s|ly|er)$/i, "");
-  return stem.length >= 3 && new RegExp(`\\b${escapeRe(stem)}`, "i").test(hay);
+  return familyHitsText(text, word);
 }
 
 function scoreText(text, { phrase, forms }) {
