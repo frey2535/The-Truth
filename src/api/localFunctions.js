@@ -94,10 +94,10 @@ async function investigate_claim({ query }) {
   const q = String(query || "").trim();
   if (!q) return fail("A claim or question is required.");
   try {
-    const found = await searchCorpus(q, { limit: 120 });
+    const found = await searchCorpus(q, { limit: Infinity });
     const parts = partitionMatches(found.matches);
     const toItems = (rows) =>
-      rows.slice(0, 40).map((m) => ({
+      rows.map((m) => ({
         title: m.reference,
         reference: m.reference,
         description: m.text,

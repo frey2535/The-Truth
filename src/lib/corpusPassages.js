@@ -11,27 +11,6 @@ function escapeRe(s) {
   return String(s || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-const NEPHILIM_NAMES = ["nephilim", "nephil", "nephillim", "naphilim", "naphil", "naphilims"];
-const NEPHILIM_STORED = [
-  ...NEPHILIM_NAMES,
-  "giants",
-  "giant",
-  "watchers",
-  "watcher",
-  "grigori",
-  "anakim",
-  "anakims",
-  "rephaim",
-  "rephaims",
-  "emim",
-  "emims",
-];
-
-/** One-way: a Nephilim search also finds the English those books actually print. */
-export const SEARCH_TOPIC_ALIASES = Object.fromEntries(
-  NEPHILIM_NAMES.map((name) => [name, NEPHILIM_STORED.filter((w) => w !== name)])
-);
-
 export const INDEXED_PLAIN_TEXTS = [
   { title: "Ante-Nicene Fathers, Volume 1", file: "/corpus/fathers/ante-nicene-vol1.txt", source: "fathers" },
   { title: "Ante-Nicene Fathers, Volume 2", file: "/corpus/fathers/ante-nicene-vol2.txt", source: "fathers" },
@@ -83,23 +62,44 @@ export function prettyBookTitle(title) {
   return raw.replace(/\b([a-z])/g, (ch) => ch.toUpperCase());
 }
 
-export function aliasesForSearchWord(word) {
-  const folded = foldMarks(word).toLowerCase();
-  return SEARCH_TOPIC_ALIASES[folded] || [];
+/** Same stored name with different vowels/accents (Nâphîlîm / Nephilim). */
+export function consonantKey(word) {
+  const w = foldMarks(word)
+    .toLowerCase()
+    .replace(/[^a-z]/g, "");
+  if (w.length < 7) return "";
+  const cons = w.replace(/[aeiouy]/g, "");
+  if (cons.length < 4) return "";
+  return `${w[0]}:${cons}:${w[w.length - 1]}`;
+}
+
+function tokensOf(folded) {
+  return folded.match(/[\p{L}\p{N}']+/gu) || [];
 }
 
 export function scorePassage(text, { phrase, forms }) {
   const folded = foldMarks(text).toLowerCase();
   if (!folded) return 0;
-  const foldedPhrase = foldMarks(phrase || "").toLowerCase();
-  if (foldedPhrase.length > 3 && folded.includes(foldedPhrase)) {
-    return 10 + (foldedPhrase.split(" ").length > 1 ? 6 : 0);
-  }
+  const tokens = tokensOf(folded);
+  const tokenSet = new Set(tokens);
+  const tokenKeys = new Set(tokens.map(consonantKey).filter(Boolean));
+  const candidates = new Set(
+    [phrase, ...(forms || [])]
+      .map((item) => foldMarks(item).toLowerCase().trim())
+      .filter((item) => item.length >= 3)
+  );
   let hits = 0;
-  for (const form of forms || []) {
-    const ff = foldMarks(form).toLowerCase();
-    if (!ff || ff === foldedPhrase || ff.length < 3) continue;
-    if (new RegExp(`\\b${escapeRe(ff)}\\b`, "i").test(folded)) hits += 1;
+  for (const ff of candidates) {
+    if (ff.includes(" ")) {
+      if (folded.includes(ff)) hits += 6;
+      continue;
+    }
+    if (tokenSet.has(ff) || new RegExp(`\\b${escapeRe(ff)}\\b`, "i").test(folded)) {
+      hits += 1;
+      continue;
+    }
+    const key = consonantKey(ff);
+    if (key && tokenKeys.has(key)) hits += 1;
   }
   return hits;
 }
@@ -224,6 +224,18 @@ export function clipAroundMatch(text, forms, windowSize = 720) {
     if (!ff) continue;
     const at = folded.search(new RegExp(`\\b${escapeRe(ff)}\\b`, "i"));
     if (at >= 0 && (idx < 0 || at < idx)) idx = at;
+    if (idx < 0) {
+      const want = consonantKey(ff);
+      if (!want) continue;
+      const tokenRe = /[\p{L}\p{N}']+/gu;
+      let m;
+      while ((m = tokenRe.exec(folded))) {
+        if (consonantKey(m[0]) === want) {
+          idx = m.index;
+          break;
+        }
+      }
+    }
   }
   if (idx < 0) return `${raw.slice(0, windowSize).trim()}…`;
   const start = Math.max(0, idx - Math.floor(windowSize / 3));

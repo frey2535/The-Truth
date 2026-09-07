@@ -4,14 +4,10 @@ import { ALL_ARCHIVE } from "@/data/inAppArchive";
 import { fetchStoredText, looksLikeHtmlDocument } from "@/lib/fetchStoredText";
 import { expandWithLearning } from "./assistantLearn.js";
 import {
-  aliasesForSearchWord,
   clipAroundMatch,
-  documentRow,
   foldMarks,
   INDEXED_PLAIN_TEXTS,
-  passageHitsQuery,
   rankSource,
-  rowsFromVerseMarks,
   rowsFromStoredText,
   scorePassage,
   uniqueMatches,
@@ -61,10 +57,6 @@ export const KJV_TOPIC_ALIASES = {
   sabbath: ["seventh day"],
   sheol: ["grave", "hell"],
   hell: ["sheol", "grave"],
-  nephilim: ["naphilim", "naphil", "giants", "giant", "watchers", "watcher", "grigori"],
-  nephil: ["nephilim", "naphilim", "giants", "watchers"],
-  naphilim: ["nephilim", "naphil", "giants", "watchers"],
-  naphil: ["nephilim", "naphilim", "giants"],
 };
 
 const bookCache = new Map();
@@ -105,7 +97,7 @@ function addFormsForWord(forms, word) {
   forms.add(folded);
   for (const form of familyOf(folded)) forms.add(foldMarks(form).toLowerCase());
   for (const form of expandWithLearning(folded)) forms.add(foldMarks(form).toLowerCase());
-  for (const alias of [...(KJV_TOPIC_ALIASES[folded] || []), ...aliasesForSearchWord(folded)]) {
+  for (const alias of KJV_TOPIC_ALIASES[folded] || []) {
     const aliasFolded = foldMarks(alias).toLowerCase();
     if (aliasFolded) forms.add(aliasFolded);
   }
@@ -239,27 +231,14 @@ async function loadScriptureRows() {
 }
 
 function rowsForLoadedText(title, text, source) {
-  const marked = rowsFromVerseMarks(title, text, source);
-  if (marked.length >= 2) return marked;
-  return documentRow(title, text, source);
-}
-
-function explodeDocumentHits(row, queryForms) {
-  if (!passageHitsQuery(row.text, queryForms)) return [];
-  return rowsFromStoredText(row.book, row.text, row.source)
-    .map((unit) => {
-      const score = scoreText(unit.text, queryForms);
-      if (score <= 0) return null;
-      const text = unit.text.length > 900 ? clipAroundMatch(unit.text, queryForms.forms) : unit.text;
-      return { ...unit, text, score };
-    })
-    .filter(Boolean);
+  return rowsFromStoredText(title, text, source);
 }
 
 function hitsFromRow(row, queryForms) {
-  if (row.atomic === false) return explodeDocumentHits(row, queryForms);
   const score = scoreText(row.text, queryForms);
-  return score > 0 ? [{ ...row, score }] : [];
+  if (score <= 0) return [];
+  const text = row.text.length > 900 ? clipAroundMatch(row.text, queryForms.forms) : row.text;
+  return [{ ...row, text, score }];
 }
 
 async function fetchText(url) {
@@ -302,7 +281,7 @@ async function loadManuscriptRows() {
     try {
       const txt = await fetchText(item.file);
       if (!txt) return [];
-      return documentRow(item.title, txt, item.source);
+      return rowsForLoadedText(item.title, txt, item.source);
     } catch {
       return [];
     }
@@ -315,15 +294,7 @@ async function loadManuscriptRows() {
         const html = await fetchText(`/corpus/web/${book.id}/${ch}.htm`);
         const text = stripHtml(html);
         if (text.length > 40) {
-          chapters.push({
-            book: book.title,
-            chapter: n,
-            verse: 1,
-            reference: `${book.title} ${n}`,
-            text,
-            source: "apocrypha",
-            atomic: false,
-          });
+          chapters.push(...rowsForLoadedText(`${book.title} ${n}`, text, "apocrypha"));
         }
       } catch {
         /* skip missing chapter */
@@ -395,7 +366,7 @@ export const SEARCH_CORPORA = [
 const JESUS_NAMES = new Set(["jesus", "christ", "messiah", "yeshua"]);
 const GOSPEL_BOOKS = new Set(["Matthew", "Mark", "Luke", "John"]);
 
-export async function searchCorpus(topic, { limit = 180, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll } = {}) {
+export async function searchCorpus(topic, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll } = {}) {
   const q = String(topic || "").trim();
   if (!q) return { query: q, forms: [], matches: [] };
   const forms = expandSearchForms(q);

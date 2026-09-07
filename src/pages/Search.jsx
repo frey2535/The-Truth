@@ -72,9 +72,9 @@ export default function Search() {
       <header className="text-center mb-8">
         <h1 className="font-display text-4xl text-[#2b2620] mb-2">Search every stored verse</h1>
         <p className="text-[#5b5142] max-w-2xl mx-auto">
-          Search all texts and records by default. Every matching verse and paragraph in this app is listed —
-          the King James, Apocrypha, Enoch, Jubilees, the Scrolls, the fathers, Josephus, and stored records.
-          Nothing is invented, and no result is dropped because a book uses another stored spelling.
+          Any word is searched in every verse and paragraph stored in this app — the King James, Apocrypha,
+          Enoch, Jubilees, the Scrolls, the fathers, Josephus, and the dated records. Every hit is listed.
+          Results quote only the wording on disk.
         </p>
       </header>
 
