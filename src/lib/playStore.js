@@ -10,11 +10,14 @@ export const PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${P
 /** Play Console app name — 30 characters max. */
 export const PLAY_TITLE = "The Truth";
 
+/** Play Console: create the app as Free. Do not add in-app products. */
+export const PLAY_IS_FREE = true;
+
 /** Play Console short description — 80 characters max. */
 export const PLAY_SHORT_DESCRIPTION =
-  "Read Scripture and ancient writings. Investigate claims from stored texts.";
+  "Free Scripture research. Read and investigate claims from stored texts.";
 
-export const PLAY_FULL_DESCRIPTION = `The Truth is a Scripture research app. Read the King James Bible, the 1611 Apocrypha, Dead Sea Scrolls English already stored here, Enoch, early church fathers, Josephus, and other published records that ship with the app.
+export const PLAY_FULL_DESCRIPTION = `The Truth is a free Scripture research app. There is no paid download and no in-app purchases. Read the King James Bible, the 1611 Apocrypha, Dead Sea Scrolls English already stored here, Enoch, early church fathers, Josephus, and other published records that ship with the app.
 
 Investigate a claim and the answers quote wording stored in this app — not a live internet search, and not invented verses.
 
@@ -34,7 +37,7 @@ Create a local account on this device, or continue with Google. That is optional
 Optional extra AI
 Some extra tools may call OpenAI if the site operator has configured a key. Ordinary study search does not.
 
-No ads. No store payments inside the app.
+This listing is free. No ads. No in-app purchases or subscriptions.
 
 Privacy: ${PRIVACY_POLICY_URL}
 Delete this device’s account: ${ACCOUNT_DELETION_URL}

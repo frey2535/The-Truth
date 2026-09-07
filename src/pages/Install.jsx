@@ -50,7 +50,8 @@ export default function Install() {
       <p className="text-[#5b5142] leading-relaxed mb-6">
         Post the link below on Facebook. Friends see the app icon, tap it, and The Truth opens —
         then it asks them to install on their phone. A Google Play listing is prepared from this
-        same public site. Until that listing is live, install from Chrome or this page. If
+        same public site. That listing is free — no paid download and no in-app purchases. Until
+        it is live, install from Chrome or this page. If
         Facebook’s own browser opens the page, they tap <strong>Open in Safari</strong> or{" "}
         <strong>Open in Chrome</strong> first.
       </p>

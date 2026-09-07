@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Free app: do not add com.android.vending.BILLING or Play Billing. -->
 
     <application
         android:allowBackup="true"

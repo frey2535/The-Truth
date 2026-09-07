@@ -7,6 +7,7 @@ import {
   isLegalPath,
   PLAY_FULL_DESCRIPTION,
   PLAY_HOST,
+  PLAY_IS_FREE,
   PLAY_PACKAGE_ID,
   PLAY_SHORT_DESCRIPTION,
   PLAY_START_URL,
@@ -14,8 +15,12 @@ import {
   PRIVACY_POLICY_URL,
 } from "../src/lib/playStore.js";
 
+assert.equal(PLAY_IS_FREE, true);
 assert.equal(PLAY_TITLE.length <= 30, true, "Play title must be 30 characters or fewer");
 assert.equal(PLAY_SHORT_DESCRIPTION.length <= 80, true, "Play short description must be 80 characters or fewer");
+assert.match(PLAY_SHORT_DESCRIPTION, /Free/i);
+assert.match(PLAY_FULL_DESCRIPTION, /free/i);
+assert.match(PLAY_FULL_DESCRIPTION, /no in-app purchases/i);
 assert.ok(PLAY_FULL_DESCRIPTION.length > 200);
 assert.ok(PLAY_FULL_DESCRIPTION.length <= 4000);
 assert.equal(PLAY_PACKAGE_ID, "org.currentflowconsulting.thetruth");
@@ -44,6 +49,11 @@ const gradle = readFileSync("android/app/build.gradle", "utf8");
 assert.match(gradle, /targetSdk 36/);
 assert.match(gradle, /compileSdk 36/);
 assert.match(gradle, /applicationId "org\.currentflowconsulting\.thetruth"/);
+assert.doesNotMatch(gradle, /billingclient|play-billing|com\.android\.vending\.BILLING/i);
+
+const manifestXml = readFileSync("android/app/src/main/AndroidManifest.xml", "utf8");
+assert.equal(/<uses-permission[^>]*BILLING/i.test(manifestXml), false);
+assert.match(readFileSync("store/play/listing.md", "utf8"), /Pricing[\s\S]*Free/i);
 
 const redirects = readFileSync("public/_redirects", "utf8");
 assert.match(redirects, /\.well-known/);

@@ -17,7 +17,7 @@ GitHub Pages (`frey2535.github.io`) is a mirror only. Do not point the TWA at it
 ## You still do in Play Console
 
 1. Pay the one-time Play developer fee and finish identity verification.
-2. Create an app named **The Truth**, package `org.currentflowconsulting.thetruth`, app type App, category Books & Reference.
+2. Create an app named **The Truth**, package `org.currentflowconsulting.thetruth`, app type App, category Books & Reference. Set **Free** (not Paid). Do not create in-app products or subscriptions — that choice is usually permanent.
 3. Turn on **Play App Signing**.
 4. Complete Data safety using `/data-safety`, privacy URL, and account-deletion URL.
 5. Complete the IARC content rating questionnaire (expect Teen; not Designed for Families).
@@ -65,6 +65,7 @@ Until the live fingerprint matches Play App Signing, Android shows the site as a
 
 ## Review notes for Play
 
+- The app is free. There is no checkout, paid unlock, or subscription.
 - Demo: open the app; reading works without an account.
 - Sign-in is optional. Local test account: create one on the device from Create account.
 - Owner login is not for reviewers.

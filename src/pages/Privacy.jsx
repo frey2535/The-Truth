@@ -77,8 +77,8 @@ export default function Privacy() {
 
       <LegalH2>What we do not do</LegalH2>
       <LegalList>
+        <li>The app is free. There is no paid download, in-app purchase, or subscription.</li>
         <li>No advertising SDK and no sale of personal information.</li>
-        <li>No in-app payments or store checkout.</li>
         <li>No contacts, precise location, photos, or microphone access for study.</li>
         <li>Study search is not an internet search engine.</li>
       </LegalList>

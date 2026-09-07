@@ -6,13 +6,17 @@ Paste these fields in Play Console → Grow → Store presence → Main store li
 
 The Truth
 
+## Pricing (Play Console → Monetize)
+
+Free. Do not add in-app products or subscriptions. This choice is usually permanent once the app is created.
+
 ## Short description (80)
 
-Read Scripture and ancient writings. Investigate claims from stored texts.
+Free Scripture research. Read and investigate claims from stored texts.
 
 ## Full description (4000)
 
-The Truth is a Scripture research app. Read the King James Bible, the 1611 Apocrypha, Dead Sea Scrolls English already stored here, Enoch, early church fathers, Josephus, and other published records that ship with the app.
+The Truth is a free Scripture research app. There is no paid download and no in-app purchases. Read the King James Bible, the 1611 Apocrypha, Dead Sea Scrolls English already stored here, Enoch, early church fathers, Josephus, and other published records that ship with the app.
 
 Investigate a claim and the answers quote wording stored in this app — not a live internet search, and not invented verses.
 
@@ -32,7 +36,7 @@ Create a local account on this device, or continue with Google. That is optional
 Optional extra AI
 Some extra tools may call OpenAI if the site operator has configured a key. Ordinary study search does not.
 
-No ads. No store payments inside the app.
+This listing is free. No ads. No in-app purchases or subscriptions.
 
 Privacy: https://thetruth.currentflowconsulting.org/privacy
 Delete this device’s account: https://thetruth.currentflowconsulting.org/account

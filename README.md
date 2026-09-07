@@ -31,7 +31,7 @@ The app works immediately. Sign-in is optional; the first named account you crea
 
 This is a Progressive Web App. People open it once in the phone’s browser, then add it to the home screen — it launches like a native app.
 
-Google Play uses the same public site as a Trusted Web Activity (`org.currentflowconsulting.thetruth`). Store copy, graphics, the Android project, and the remaining Play Console steps are in [`store/play/PUBLISH.md`](store/play/PUBLISH.md). There is not yet an Apple App Store listing; iPhone install is still Safari → Add to Home Screen.
+Google Play uses the same public site as a Trusted Web Activity (`org.currentflowconsulting.thetruth`). The Play listing is **free** — no paid download and no in-app purchases. Store copy, graphics, the Android project, and the remaining Play Console steps are in [`store/play/PUBLISH.md`](store/play/PUBLISH.md). There is not yet an Apple App Store listing; iPhone install is still Safari → Add to Home Screen.
 
 1. Run `npm run dev` (or `npm run share` for a production build on port **4174**).
 2. On the phone, open the LAN address shown as Vite’s **Network** URL, or open **Install on a phone** in the app and share/copy that link.

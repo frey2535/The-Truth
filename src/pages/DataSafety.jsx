@@ -19,6 +19,7 @@ export default function DataSafety() {
 
       <LegalH2>Overview</LegalH2>
       <LegalList>
+        <li>The app is free. No paid download, in-app purchases, or subscriptions.</li>
         <li>Does the app collect required user data to work? No. Reading works without an account.</li>
         <li>Data is encrypted in transit (HTTPS).</li>
         <li>Users can request deletion of the on-device account: {ACCOUNT_DELETION_URL}</li>
@@ -51,7 +52,7 @@ export default function DataSafety() {
       <LegalH2>Do not declare</LegalH2>
       <LegalList>
         <li>Location</li>
-        <li>Financial info</li>
+        <li>Financial info (the app is free; it never takes a payment)</li>
         <li>Health and fitness</li>
         <li>Messages, contacts, calendar</li>
         <li>Files and docs as a collected type (reader uploads stay on the device if used)</li>
