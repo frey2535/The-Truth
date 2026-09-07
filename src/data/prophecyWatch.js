@@ -713,8 +713,7 @@ The text names an angel’s vial that prepares a way for the kings of the east. 
     location: "Merzouga / Moroccan Sahara",
     date: "2024-09",
     local_image: "/evidence/prophecy/sahara-lagoons.jpg",
-    image_caption:
-      "Floodwaters and palms at the dune line in the Moroccan Sahara after the September 2024 rains.",
+    image_caption: "",
     source_url:
       "https://apnews.com/article/sahara-flooding-oasis-rain-morocco-2b6c28d2487a0ef370aff60775d0245d",
     verification_note:
