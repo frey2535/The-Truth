@@ -42,7 +42,7 @@ To post it on Facebook, share **https://thetruth.currentflowconsulting.org/?inst
 
 ### Platform owner — download count
 
-Each home-screen install is recorded once per device. Sign in at **/owner** to see the full list.
+Each home-screen install is recorded once per device. Sign in at **/owner** to see the full list. Installs from before 7 September 2026 were not stored; add them on that page, or they appear when that home-screen app opens again.
 
 - **Local:** [http://truth.localhost:5174/owner](http://truth.localhost:5174/owner)  
   Email `owner@thetruth.currentflowconsulting.org`  
