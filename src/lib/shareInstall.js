@@ -10,8 +10,19 @@ export function urlWantsInstall(search = "", referrer = "") {
 
 export const AUTH_PATHS = ["/login", "/register", "/forgot-password", "/reset-password"];
 
-export function isAuthPath(pathname = "") {
-  return AUTH_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+/** Strip Vite's GitHub Pages base so `/The-Truth/login` still counts as login. */
+export function appPathname(pathname = "", baseUrl = import.meta.env?.BASE_URL || "/") {
+  const raw = String(pathname || "");
+  const base = String(baseUrl || "/").replace(/\/$/, "");
+  if (base && (raw === base || raw.startsWith(`${base}/`))) {
+    return raw.slice(base.length) || "/";
+  }
+  return raw || "/";
+}
+
+export function isAuthPath(pathname = "", baseUrl = import.meta.env?.BASE_URL || "/") {
+  const path = appPathname(pathname, baseUrl);
+  return AUTH_PATHS.some((auth) => path === auth || path.startsWith(`${auth}/`));
 }
 
 export function chromeIntentUrl(href) {

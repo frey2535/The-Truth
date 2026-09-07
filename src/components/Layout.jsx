@@ -7,6 +7,7 @@ import HeavenBackdrop from "@/components/HeavenBackdrop";
 import PapyrusBackdrop from "@/components/PapyrusBackdrop";
 import { CUSTOMS_NAV_LABEL } from "@/data/inheritedCustoms";
 import AppUpdateBanner from "@/components/AppUpdateBanner";
+import InstallAppPrompt from "@/components/InstallAppPrompt";
 import { isEvidencePath } from "@/components/evidence/EvidenceSectionNav";
 import { isStandaloneDisplay } from "@/lib/pwa";
 import {
@@ -65,7 +66,7 @@ export default function Layout() {
       {usePapyrus ? <PapyrusBackdrop /> : <HeavenBackdrop />}
       <AppUpdateBanner />
       <header
-        className={`sticky top-0 z-40 border-b pt-[env(safe-area-inset-top)] ${
+        className={`sticky top-0 z-[90] border-b pt-[env(safe-area-inset-top)] ${
           usePapyrus
             ? "border-[#c9b27c]/50 bg-[#efe0b8]"
             : "border-[#e8c97a]/25 bg-[#120c08]"
@@ -122,7 +123,7 @@ export default function Layout() {
             {isGuest ? (
               <Link
                 to="/login"
-                className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${
+                className={`relative z-[91] inline-flex items-center px-3 py-2 rounded-full text-sm ${
                   usePapyrus ? "text-[#3a3328] hover:bg-[#2b2620]/8" : "text-[#f3e9c8]/90 hover:bg-white/10"
                 }`}
               >
@@ -196,6 +197,7 @@ export default function Layout() {
           })}
         </div>
       </nav>
+      <InstallAppPrompt />
     </div>
   );
 }
