@@ -16,10 +16,16 @@ The app works immediately. Sign-in is optional; the first named account you crea
 ### Google sign-in
 
 1. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials) create a **Web application** OAuth client.
-2. Add **Authorized JavaScript origins** `http://127.0.0.1:5174` and your HTTPS site (this is what Google 400 is usually missing).
-3. Optionally add redirect URIs `http://127.0.0.1:5174/login` and `https://your-site/login`.
-4. Put `VITE_GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env.local` (secret has no `VITE_` prefix) and restart `npm run dev`.
-5. Open **http://127.0.0.1:5174/login** (not `truth.localhost`) and click **Continue with Google**.
+2. **Authorized JavaScript origins**
+   - `http://127.0.0.1:5174`
+   - `https://thetruth.currentflowconsulting.org`
+   - `https://frey2535.github.io`
+3. **Authorized redirect URIs**
+   - `http://127.0.0.1:5174/login`
+   - `https://thetruth.currentflowconsulting.org/login`
+   - `https://frey2535.github.io/The-Truth/login`
+4. **Local:** put `VITE_GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env.local` and restart `npm run dev`. Open [http://127.0.0.1:5174/login](http://127.0.0.1:5174/login) (not `truth.localhost`).
+5. **Live site:** on the Cloudflare Pages project named **thetruth**, add Secrets `GOOGLE_CLIENT_ID` (the client ID string) and `GOOGLE_CLIENT_SECRET`, then retry the latest deploy. Because `wrangler.toml` manages text variables, these must be **Secrets**, not Text. You can also add GitHub Actions secrets `VITE_GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` so every deploy binds them.
 
 ## Install on a phone
 

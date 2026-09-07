@@ -33,6 +33,7 @@ jobs:
       - run: npm run build
         env:
           GITHUB_PAGES: "true"
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
       - run: node scripts/prepare-github-pages.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
@@ -52,17 +53,28 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Bind platform owner password
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+      - name: Bind Cloudflare Pages secrets
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PLATFORM_OWNER_PASSWORD: ${{ secrets.PLATFORM_OWNER_PASSWORD }}
+          GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: |
-          if [ -z "$PLATFORM_OWNER_PASSWORD" ]; then
-            echo "No GitHub secret PLATFORM_OWNER_PASSWORD. Dashboard secret on project thetruth is used if present."
-            exit 0
-          fi
-          printf '%s' "$PLATFORM_OWNER_PASSWORD" | npx wrangler pages secret put PLATFORM_OWNER_PASSWORD --project-name=thetruth
+          put_secret() {
+            local name="$1"
+            local value="$2"
+            if [ -z "$value" ]; then
+              echo "No GitHub secret for $name; dashboard secret on project thetruth is used if present."
+              return 0
+            fi
+            printf '%s' "$value" | npx wrangler pages secret put "$name" --project-name=thetruth
+          }
+          put_secret PLATFORM_OWNER_PASSWORD "$PLATFORM_OWNER_PASSWORD"
+          put_secret GOOGLE_CLIENT_ID "$GOOGLE_CLIENT_ID"
+          put_secret GOOGLE_CLIENT_SECRET "$GOOGLE_CLIENT_SECRET"
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

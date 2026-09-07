@@ -105,6 +105,15 @@ function googleTokenPlugin() {
       res.end();
       return;
     }
+    if (req.method === "GET") {
+      const clientId = String(
+        process.env.GOOGLE_CLIENT_ID || process.env.VITE_GOOGLE_CLIENT_ID || ""
+      ).trim();
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "application/json");
+      res.end(JSON.stringify({ configured: Boolean(clientId), clientId }));
+      return;
+    }
     if (req.method !== "POST") {
       res.statusCode = 405;
       res.setHeader("Content-Type", "application/json");
