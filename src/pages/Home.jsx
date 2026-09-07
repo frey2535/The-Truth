@@ -20,7 +20,7 @@ import PlanCard from "@/components/study/PlanCard";
 
 const ACTIONS = [
   { to: "/library", label: "Read", desc: "Open the wording stored in this published app — the same library for every reader", icon: BookOpenText },
-  { to: "/search", label: "Search a text", desc: "Search inside the Bible, Apocrypha, scrolls, or records only", icon: Search },
+  { to: "/search", label: "Search a text", desc: "Find every matching verse in every stored text and record", icon: Search },
   { to: "/map", label: "Biblical map", desc: "Places named in the texts on today's globe — journeys and kingdom outlines for study", icon: Sparkles },
   { to: "/calendar", label: "Calendar", desc: "See the appointed times — and the civil names that covered them", icon: CalendarDays },
   { to: "/notebook", label: "Notebook", desc: "Your plans, notes, highlights, and favorites", icon: GraduationCap },

@@ -4,17 +4,30 @@ import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search as SearchIcon } from "lucide-react";
-import { SEARCH_CORPORA } from "@/lib/localCorpusSearch";
+import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
 import { libraryHref } from "@/lib/libraryLinks";
+
+const PAGE = 400;
+
+function sourceCounts(matches) {
+  const counts = {};
+  for (const m of matches) {
+    counts[m.source] = (counts[m.source] || 0) + 1;
+  }
+  return Object.entries(counts)
+    .map(([source, count]) => `${count} ${SOURCE_LABEL[source] || source}`)
+    .join(" · ");
+}
 
 export default function Search() {
   const [params, setParams] = useSearchParams();
   const [query, setQuery] = useState(params.get("q") || "");
-  const [corpus, setCorpus] = useState(params.get("corpus") || "canon");
+  const [corpus, setCorpus] = useState(params.get("corpus") || "all");
   const [matches, setMatches] = useState([]);
   const [label, setLabel] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [shown, setShown] = useState(PAGE);
   const lastKey = useRef("");
   const chosen = useMemo(() => SEARCH_CORPORA.find((c) => c.id === corpus), [corpus]);
 
@@ -29,6 +42,7 @@ export default function Search() {
     setParams({ q, corpus: nextCorpus });
     setLoading(true);
     setError("");
+    setShown(PAGE);
     try {
       const res = await base44.functions.invoke("search_texts", { query: q, corpus: nextCorpus });
       if (res.data?.error) throw new Error(res.data.error);
@@ -44,20 +58,23 @@ export default function Search() {
 
   useEffect(() => {
     const q = params.get("q") || "";
-    const c = params.get("corpus") || "canon";
+    const c = params.get("corpus") || "all";
     setQuery(q);
     setCorpus(c);
     if (q && lastKey.current !== `${c}|${q}`) run(null, q, c);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params]);
 
+  const visible = matches.slice(0, shown);
+
   return (
     <div>
       <header className="text-center mb-8">
-        <h1 className="font-display text-4xl text-[#2b2620] mb-2">Search a text</h1>
+        <h1 className="font-display text-4xl text-[#2b2620] mb-2">Search every stored verse</h1>
         <p className="text-[#5b5142] max-w-2xl mx-auto">
-          Search inside one corpus at a time — the Holy Bible, the Apocrypha, Enoch, the Scrolls, the
-          fathers, Josephus, or the stored records. Results quote only what is in this app.
+          Any word is searched in every verse and paragraph stored in this app — the King James, Apocrypha,
+          Enoch, Jubilees, the Scrolls, the fathers, Josephus, and the dated records. Every hit is listed.
+          Results quote only the wording on disk.
         </p>
       </header>
 
@@ -82,7 +99,7 @@ export default function Search() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={`Search inside ${chosen?.label || "this text"}`}
+            placeholder={`Search every verse in ${chosen?.label || "this text"}`}
             className="flex-1 h-12 bg-white border-[#e8ddc7]"
           />
           <Button type="submit" disabled={loading} className="h-12 px-6 bg-[#2b2620] text-[#f3e9c8]">
@@ -92,13 +109,16 @@ export default function Search() {
       </form>
       {error && <p className="text-center text-[#7a2e2e] mb-4">{error}</p>}
       {!loading && matches.length > 0 && (
-        <p className="text-center text-sm text-[#8a7f6f] mb-4">
-          {matches.length} match{matches.length === 1 ? "" : "es"} in {label}
-        </p>
+        <div className="text-center text-sm text-[#8a7f6f] mb-4 max-w-3xl mx-auto">
+          <p>
+            {matches.length} match{matches.length === 1 ? "" : "es"} in {label}
+          </p>
+          <p className="mt-1 text-xs">{sourceCounts(matches)}</p>
+        </div>
       )}
       <div className="space-y-3 max-w-3xl mx-auto">
-        {matches.map((m) => (
-          <article key={`${m.reference}-${m.source}-${m.chapter}`} className="rounded-2xl border border-[#e8ddc7] bg-white/80 p-4">
+        {visible.map((m, i) => (
+          <article key={`${m.source}-${m.reference}-${i}`} className="rounded-2xl border border-[#e8ddc7] bg-white/80 p-4">
             <p className="text-sm font-medium text-[#7a2e2e]">
               <Link
                 to={libraryHref({ book: m.book, chapter: m.chapter, source: m.source, reference: m.reference })}
@@ -112,6 +132,18 @@ export default function Search() {
           </article>
         ))}
       </div>
+      {!loading && matches.length > shown && (
+        <div className="text-center mt-6">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShown(matches.length)}
+            className="border-[#e8ddc7] text-[#2b2620]"
+          >
+            Show remaining {matches.length - shown} matches
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

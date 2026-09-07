@@ -3,6 +3,15 @@ import { DSS_LOCAL_TEXT } from "@/components/library/dssLocalTexts";
 import { ALL_ARCHIVE } from "@/data/inAppArchive";
 import { fetchStoredText, looksLikeHtmlDocument } from "@/lib/fetchStoredText";
 import { expandWithLearning } from "./assistantLearn.js";
+import {
+  clipAroundMatch,
+  foldMarks,
+  INDEXED_PLAIN_TEXTS,
+  rankSource,
+  rowsFromStoredText,
+  scorePassage,
+  uniqueMatches,
+} from "./corpusPassages.js";
 import { familyHitsText, familyOf } from "./wordFamilies.js";
 
 const STOP = new Set([
@@ -73,11 +82,7 @@ const LOCAL_MARKDOWN = [
   "/corpus/manuscripts/jubilees.md",
 ];
 
-const LOCAL_PLAIN = [
-  { title: "Ante-Nicene Fathers, Volume 1", file: "/corpus/fathers/ante-nicene-vol1.txt", source: "fathers" },
-  { title: "Josephus, Antiquities of the Jews", file: "/corpus/fathers/josephus-antiquities.txt", source: "josephus" },
-  { title: "Josephus, The Jewish War", file: "/corpus/fathers/josephus-wars.txt", source: "josephus" },
-];
+const LOCAL_PLAIN = INDEXED_PLAIN_TEXTS;
 
 const WEB_BOOKS = [
   { id: "additions_esther", title: "Additions to Esther", chapters: 10 },
@@ -86,12 +91,20 @@ const WEB_BOOKS = [
   { id: "4_maccabees", title: "4 Maccabees", chapters: 18 },
 ];
 
-function escapeRe(s) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function addFormsForWord(forms, word) {
+  const folded = foldMarks(word).toLowerCase();
+  if (!folded) return;
+  forms.add(folded);
+  for (const form of familyOf(folded)) forms.add(foldMarks(form).toLowerCase());
+  for (const form of expandWithLearning(folded)) forms.add(foldMarks(form).toLowerCase());
+  for (const alias of KJV_TOPIC_ALIASES[folded] || []) {
+    const aliasFolded = foldMarks(alias).toLowerCase();
+    if (aliasFolded) forms.add(aliasFolded);
+  }
 }
 
 export function expandSearchForms(topic) {
-  const phrase = String(topic || "")
+  const phrase = foldMarks(topic)
     .toLowerCase()
     .replace(/[^\p{L}\p{N}\s'-]/gu, " ")
     .replace(/\s+/g, " ")
@@ -99,11 +112,7 @@ export function expandSearchForms(topic) {
   const words = phrase.split(" ").filter((w) => w.length > 2 && !STOP.has(w));
   const forms = new Set();
   if (phrase) forms.add(phrase);
-  for (const w of words) {
-    forms.add(w);
-    for (const form of familyOf(w)) forms.add(form);
-    for (const form of expandWithLearning(w)) forms.add(form);
-  }
+  for (const w of words) addFormsForWord(forms, w);
   return { phrase, words, forms: [...forms].filter((f) => f.length >= 3) };
 }
 
@@ -150,16 +159,8 @@ export function wordHitsText(text, word) {
   return familyHitsText(text, word);
 }
 
-function scoreText(text, { phrase, forms }) {
-  const lower = String(text || "").toLowerCase();
-  if (!lower) return 0;
-  if (phrase.length > 3 && lower.includes(phrase)) return 10 + (phrase.split(" ").length > 1 ? 6 : 0);
-  let hits = 0;
-  for (const f of forms) {
-    if (f === phrase) continue;
-    if (new RegExp(`\\b${escapeRe(f)}\\b`, "i").test(text)) hits += 1;
-  }
-  return hits;
+function scoreText(text, queryForms) {
+  return scorePassage(text, queryForms);
 }
 
 async function loadBook(book, apocrypha) {
@@ -229,52 +230,15 @@ async function loadScriptureRows() {
   return [...canon.flat(), ...apoc.flat()];
 }
 
-function stripGutenberg(text) {
-  const start = text.search(/\*\*\*\s*START OF (THE|THIS) PROJECT GUTENBERG/i);
-  const end = text.search(/\*\*\*\s*END OF (THE|THIS) PROJECT GUTENBERG/i);
-  let body = text;
-  if (start >= 0) body = body.slice(text.indexOf("\n", start) + 1);
-  if (end >= 0) {
-    const cut = body.search(/\*\*\*\s*END OF (THE|THIS) PROJECT GUTENBERG/i);
-    if (cut >= 0) body = body.slice(0, cut);
-  }
-  return body.trim();
+function rowsForLoadedText(title, text, source) {
+  return rowsFromStoredText(title, text, source);
 }
 
-function rowsFromChunks(title, text, source, maxChunk = 1600) {
-  const clean = stripGutenberg(String(text || ""));
-  const parts = clean.split(/\n(?=## |BOOK |Book |CHAPTER |Chapter |\*\*\*)/);
-  const rows = [];
-  let n = 0;
-  for (const part of parts) {
-    const body = part.trim();
-    if (body.length < 40) continue;
-    const heading = body.match(/^(## |BOOK |Book |CHAPTER |Chapter )(.+)/);
-    const slices = [];
-    for (let i = 0; i < body.length; i += maxChunk) slices.push(body.slice(i, i + maxChunk));
-    for (const slice of slices) {
-      n += 1;
-      rows.push({
-        book: title,
-        chapter: n,
-        verse: 1,
-        reference: heading ? `${title} — ${heading[2].trim().slice(0, 80)}` : `${title} §${n}`,
-        text: slice,
-        source,
-      });
-    }
-  }
-  if (!rows.length && clean) {
-    rows.push({
-      book: title,
-      chapter: 1,
-      verse: 1,
-      reference: title,
-      text: clean.slice(0, maxChunk),
-      source,
-    });
-  }
-  return rows;
+function hitsFromRow(row, queryForms) {
+  const score = scoreText(row.text, queryForms);
+  if (score <= 0) return [];
+  const text = row.text.length > 900 ? clipAroundMatch(row.text, queryForms.forms) : row.text;
+  return [{ ...row, text, score }];
 }
 
 async function fetchText(url) {
@@ -297,7 +261,8 @@ async function loadManuscriptRows() {
   const remote = await mapPool(MANUSCRIPT_SLUGS, 4, async (slug) => {
     try {
       const md = await fetchText(manuscriptUrl(slug));
-      return rowsFromChunks(slug.replace(/-/g, " "), md, slug === "1-enoch" || slug === "2-enoch" ? "enoch" : "other");
+      const source = slug === "1-enoch" || slug === "2-enoch" ? "enoch" : "other";
+      return rowsForLoadedText(slug.replace(/-/g, " "), md, source);
     } catch {
       return [];
     }
@@ -306,16 +271,17 @@ async function loadManuscriptRows() {
     try {
       const md = await fetchText(url);
       const name = url.split("/").pop().replace(/\.md$/, "").replace(/-/g, " ");
-      return rowsFromChunks(name, md, "dead_sea_scrolls");
+      const source = url.includes("jubilees") ? "other" : "dead_sea_scrolls";
+      return rowsForLoadedText(name, md, source);
     } catch {
       return [];
     }
   });
-  const plain = await mapPool(LOCAL_PLAIN, 2, async (item) => {
+  const plain = await mapPool(LOCAL_PLAIN, 4, async (item) => {
     try {
       const txt = await fetchText(item.file);
       if (!txt) return [];
-      return rowsFromChunks(item.title, txt, item.source);
+      return rowsForLoadedText(item.title, txt, item.source);
     } catch {
       return [];
     }
@@ -328,14 +294,7 @@ async function loadManuscriptRows() {
         const html = await fetchText(`/corpus/web/${book.id}/${ch}.htm`);
         const text = stripHtml(html);
         if (text.length > 40) {
-          chapters.push({
-            book: book.title,
-            chapter: n,
-            verse: 1,
-            reference: `${book.title} ${n}`,
-            text: text.slice(0, 2000),
-            source: "apocrypha",
-          });
+          chapters.push(...rowsForLoadedText(`${book.title} ${n}`, text, "apocrypha"));
         }
       } catch {
         /* skip missing chapter */
@@ -348,7 +307,7 @@ async function loadManuscriptRows() {
 
 function loadDssInlineRows() {
   return Object.entries(DSS_LOCAL_TEXT).flatMap(([id, md]) =>
-    rowsFromChunks(id.replace(/-/g, " "), md, "dead_sea_scrolls")
+    rowsForLoadedText(id.replace(/-/g, " "), md, "dead_sea_scrolls")
   );
 }
 
@@ -407,54 +366,67 @@ export const SEARCH_CORPORA = [
 const JESUS_NAMES = new Set(["jesus", "christ", "messiah", "yeshua"]);
 const GOSPEL_BOOKS = new Set(["Matthew", "Mark", "Luke", "John"]);
 
-export async function searchCorpus(topic, { limit = 180, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll } = {}) {
+export async function searchCorpus(topic, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll } = {}) {
   const q = String(topic || "").trim();
   if (!q) return { query: q, forms: [], matches: [] };
   const forms = expandSearchForms(q);
   if (!forms.forms.length && !forms.phrase) return { query: q, forms: [], matches: [] };
   const must = (contentWords || []).filter(Boolean);
   const boost = (boostWords || []).filter(Boolean);
+  const foldedPhrase = foldMarks(forms.phrase).toLowerCase();
 
   const corpus = await loadCorpus();
   const allow = Array.isArray(sources) && sources.length ? new Set(sources) : null;
   const scored = [];
   for (const row of corpus) {
     if (allow && !allow.has(row.source)) continue;
-    if (requirePhrase && forms.phrase && !String(row.text || "").toLowerCase().includes(forms.phrase)) continue;
-    let score = scoreText(row.text, forms);
-    if (score <= 0) continue;
-    if (must.length) {
-      const hits = must.filter((w) => wordHitsText(row.text, w)).length;
-      if (mustHitAll) {
-        if (hits < must.length) continue;
-      } else if (hits < 1 && score < 10) {
-        continue;
+    if (requirePhrase && foldedPhrase && !foldMarks(row.text).toLowerCase().includes(foldedPhrase)) continue;
+    const units = hitsFromRow(row, forms);
+    for (const unit of units) {
+      if (requirePhrase && foldedPhrase && !foldMarks(unit.text).toLowerCase().includes(foldedPhrase)) continue;
+      let score = unit.score;
+      if (must.length) {
+        const hits = must.filter((w) => wordHitsText(unit.text, w)).length;
+        if (mustHitAll) {
+          if (hits < must.length) continue;
+        } else if (hits < 1 && score < 10) {
+          continue;
+        }
+        score += hits * 4;
       }
-      score += hits * 4;
+      if (boost.length) {
+        score += boost.filter((w) => wordHitsText(unit.text, w)).length * 6;
+        if (boost.some((w) => JESUS_NAMES.has(w)) && GOSPEL_BOOKS.has(unit.book)) score += 8;
+      }
+      if (preferSpeech) {
+        if (/\b(saith|said|verily|commandment|command)\b/i.test(unit.text)) score += 5;
+        if (/\b(thou shalt|ye shall|love one another|love thy|love your)\b/i.test(unit.text)) score += 8;
+      }
+      if (preferCanon && unit.source === "canon") score += 3;
+      scored.push({ ...unit, score });
     }
-    if (boost.length) {
-      score += boost.filter((w) => wordHitsText(row.text, w)).length * 6;
-      if (boost.some((w) => JESUS_NAMES.has(w)) && GOSPEL_BOOKS.has(row.book)) score += 8;
-    }
-    if (preferSpeech) {
-      if (/\b(saith|said|verily|commandment|command)\b/i.test(row.text)) score += 5;
-      if (/\b(thou shalt|ye shall|love one another|love thy|love your)\b/i.test(row.text)) score += 8;
-    }
-    if (preferCanon && row.source === "canon") score += 3;
-    scored.push({ ...row, score });
   }
-  scored.sort((a, b) => {
+  const unique = uniqueMatches(scored);
+  unique.sort((a, b) => {
     if (preferCanon) {
       const ac = a.source === "canon" ? 0 : 1;
       const bc = b.source === "canon" ? 0 : 1;
       if (ac !== bc) return ac - bc;
     }
-    return b.score - a.score || a.book.localeCompare(b.book) || Number(a.chapter) - Number(b.chapter);
+    const src = rankSource(a.source) - rankSource(b.source);
+    if (src) return src;
+    return (
+      String(a.book || "").localeCompare(String(b.book || "")) ||
+      Number(a.chapter) - Number(b.chapter) ||
+      Number(a.verse) - Number(b.verse) ||
+      b.score - a.score
+    );
   });
   return {
     query: q,
     forms: forms.forms,
-    matches: Number.isFinite(limit) && limit > 0 ? scored.slice(0, limit) : scored,
+    total: unique.length,
+    matches: Number.isFinite(limit) && limit > 0 ? unique.slice(0, limit) : unique,
   };
 }
 
@@ -486,7 +458,7 @@ export const SOURCE_LABEL = {
   apocrypha: "1611 Apocrypha / deuterocanon",
   enoch: "1 Enoch / 2 Enoch",
   dead_sea_scrolls: "Dead Sea Scrolls",
-  fathers: "Ante-Nicene Fathers",
+  fathers: "early Christian writings stored in this app",
   josephus: "Josephus",
   other: "early manuscript stored in this app",
   archaeology: "archaeological record stored in this app",

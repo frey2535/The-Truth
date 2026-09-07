@@ -178,8 +178,14 @@ function escapeRe(s) {
   return String(s || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function foldMarks(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "");
+}
+
 export function familyHitsText(text, word) {
-  const hay = String(text || "");
+  const hay = foldMarks(text);
   if (!hay || !word) return false;
   const members = familyOf(word);
   for (const form of members) {
@@ -191,6 +197,6 @@ export function familyHitsText(text, word) {
 }
 
 export function observedFamilyMembers(text, word) {
-  const hay = String(text || "");
+  const hay = foldMarks(text);
   return familyOf(word).filter((form) => new RegExp(`\\b${escapeRe(form)}\\b`, "i").test(hay));
 }

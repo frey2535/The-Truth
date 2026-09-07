@@ -94,10 +94,10 @@ async function investigate_claim({ query }) {
   const q = String(query || "").trim();
   if (!q) return fail("A claim or question is required.");
   try {
-    const found = await searchCorpus(q, { limit: 120 });
+    const found = await searchCorpus(q, { limit: Infinity });
     const parts = partitionMatches(found.matches);
     const toItems = (rows) =>
-      rows.slice(0, 40).map((m) => ({
+      rows.map((m) => ({
         title: m.reference,
         reference: m.reference,
         description: m.text,
@@ -537,11 +537,12 @@ async function search_texts({ query, corpus }) {
   if (!q) return fail("A search word is required.");
   const chosen = SEARCH_CORPORA.find((c) => c.id === corpus) || SEARCH_CORPORA[0];
   try {
-    const found = await searchCorpus(q, { limit: 80, sources: chosen.sources || undefined });
+    const found = await searchCorpus(q, { limit: Infinity, sources: chosen.sources || undefined });
     return {
       query: q,
       corpus: chosen.id,
       label: chosen.label,
+      total: found.total ?? found.matches.length,
       matches: found.matches,
     };
   } catch (error) {
