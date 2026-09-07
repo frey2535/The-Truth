@@ -213,7 +213,23 @@ function questionSense(asked) {
   if (/\b(to be saved|salvation|be saved)\b/.test(q) && /\b(must|how|do i|what.+do|to be)\b/.test(q)) {
     return {
       kind: "salvation-duty",
-      nearby: ["believe", "faith", "repent", "baptize", "confess", "jesus", "christ", "lord", "grace", "cross", "eternal", "soul", "gospel", "sin"],
+      nearby: [
+        "believe",
+        "faith",
+        "repent",
+        "baptize",
+        "confess",
+        "jesus",
+        "grace",
+        "cross",
+        "eternal",
+        "everlasting",
+        "soul",
+        "gospel",
+        "justified",
+        "justification",
+        "mercy",
+      ],
     };
   }
   return { kind: "topic-family", nearby: [] };
@@ -228,11 +244,19 @@ function verseHitsTopicFamily(row, asked) {
   return topic.some((w) => hitsTopicTerm(text, w));
 }
 
+function looksMilitaryDeliverance(text) {
+  return /\b(philistine|philistines|slew|smote|battle|war against|the army|enemies|host of|great deliverance)\b/i.test(
+    String(text || "")
+  );
+}
+
 function verseAnswersQuestion(row, asked) {
   if (!verseHitsTopicFamily(row, asked)) return false;
   const sense = questionSense(asked);
   if (sense.kind === "topic-family") return true;
   const text = String(row.text || "");
+  if (looksMilitaryDeliverance(text)) return false;
+  if (/\b(shall be saved|might be saved|may be saved|to be saved|unto salvation)\b/i.test(text)) return true;
   return sense.nearby.some((w) => familyHitsText(text, w) || hitsTopicTerm(text, w));
 }
 
