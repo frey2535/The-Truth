@@ -1,6 +1,6 @@
 /** Footer for the live local Assistant (quote-only; no internet; no opinion). */
 export const LOCAL_ASSISTANT_ATTESTATION =
-  "This answer uses only texts and records stored in this app. Every applicable stored passage is quoted. Other stored wording on the same topic is listed separately, including wording that conflicts. Nothing was invented, omitted by preference, or taken from the internet. The reader decides.";
+  "This answer is the understanding of the stored literature read together. Every applicable stored passage was used for that reading and is quoted. Nothing was invented, omitted by preference, or taken from the internet.";
 
 export const TRUTH_MANDATE = `You are a biblical research engine operating under an ABSOLUTE TRUTH MANDATE. You exist to help people discover truth for themselves — not to accept what any church, denomination, teacher, or tradition tells them.
 

@@ -169,10 +169,11 @@ export default function Assistant() {
           <div className="text-center text-[#8a7f6f] py-16">
             <p className="font-display text-2xl text-[#2b2620] mb-2">Ask a question.</p>
             <p>
-              Yes or No is used only when you ask a yes-or-no question. Every other question gets a
-              detailed answer taken from the stored texts, then every matching passage is quoted. The
-              search covers the King James, Apocrypha, Enoch, Scrolls, fathers, Josephus, and the other
-              writings in this app. Nothing is invented or taken from the internet.
+              Yes or No is used only when you ask a yes-or-no question. The Assistant reads the meaning
+              of every stored writing that belongs to the question, answers from that whole-literature
+              understanding, then quotes the passages. King James, Apocrypha, Enoch, Scrolls, fathers,
+              Josephus, and the other writings in this app are searched. Nothing is invented or taken
+              from the internet.
             </p>
           </div>
         )}
