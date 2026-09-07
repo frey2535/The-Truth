@@ -169,12 +169,10 @@ export default function Assistant() {
           <div className="text-center text-[#8a7f6f] py-16">
             <p className="font-display text-2xl text-[#2b2620] mb-2">Ask a question.</p>
             <p>
-              The question is read first. Then every selected stored text is searched — King James,
-              Apocrypha, Enoch, Dead Sea Scrolls, fathers, Josephus, other manuscripts, and the empirical
-              archive unless you pick one corpus. It matches word families (baptism, baptised, baptizing),
-              not a single keyword. Every relevant stored passage is listed. Learning only remembers extra
-              word-forms that appeared; it cannot hide text or steer you. Nothing is invented or taken from
-              the internet.
+              Yes or No is used only when you ask a yes-or-no question. Every other question gets a
+              detailed answer taken from the stored texts, then every matching passage is quoted. The
+              search covers the King James, Apocrypha, Enoch, Scrolls, fathers, Josephus, and the other
+              writings in this app. Nothing is invented or taken from the internet.
             </p>
           </div>
         )}
@@ -194,7 +192,7 @@ export default function Assistant() {
                 }`}
               >
                 {m.role === "assistant" ? (
-                  <div className="text-[#3a3328] leading-relaxed space-y-2 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-[#2b2620] [&_h2]:mt-0 [&_h3]:font-display [&_h3]:text-xl [&_h3]:text-[#2b2620] [&_h4]:font-display [&_h4]:text-lg [&_h4]:text-[#7a2e2e] [&_ul]:list-disc [&_ul]:pl-5 [&_li]:my-1 [&_a]:text-[#7a2e2e] [&_a]:underline">
+                  <div className="text-[#3a3328] leading-relaxed space-y-2 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-[#2b2620] [&_h2]:mt-0 [&_h3]:font-display [&_h3]:text-xl [&_h3]:text-[#2b2620] [&_h4]:font-display [&_h4]:text-lg [&_h4]:text-[#7a2e2e] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_a]:text-[#7a2e2e] [&_a]:underline">
                     <ReactMarkdown>{m.content}</ReactMarkdown>
                   </div>
                 ) : (

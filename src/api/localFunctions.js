@@ -9,12 +9,10 @@ import {
   partitionMatches,
   searchCorpus,
   SEARCH_CORPORA,
-  SOURCE_LABEL,
-  wordHitsText,
 } from "@/lib/localCorpusSearch";
 import { recordAssistantLearning } from "@/lib/assistantLearn";
+import { writeAssistantAnswer } from "@/lib/assistantAnswer";
 import { understandQuestion } from "@/lib/questionUnderstand";
-import { familyHitsText } from "@/lib/wordFamilies";
 import { ARCHIVE_NOTICE, searchArchive } from "@/data/inAppArchive";
 import { lookupLexicon } from "@/data/strongsLexicon";
 import { looksLikeAppShell } from "@/lib/fetchStoredText";
@@ -147,10 +145,6 @@ async function investigate_claim({ query }) {
   }
 }
 
-function escapeMd(s) {
-  return String(s || "").trim();
-}
-
 const ASK_SCRIPTURE_SOURCES = [
   "canon",
   "apocrypha",
@@ -194,76 +188,6 @@ function uniquePassages(rows) {
   return out;
 }
 
-const SPEAKER_IGNORE = new Set(["bible", "scripture", "scriptures", "word", "texts", "text"]);
-
-function hitsTopicTerm(text, word) {
-  const hay = String(text || "");
-  if (familyHitsText(hay, word) || wordHitsText(hay, word)) return true;
-  return (KJV_TOPIC_ALIASES[String(word).toLowerCase()] || []).some((alias) =>
-    familyHitsText(hay, alias) || hay.toLowerCase().includes(String(alias).toLowerCase())
-  );
-}
-
-function speakersForQuestion(asked) {
-  return (asked.boostWords || []).filter((w) => !SPEAKER_IGNORE.has(String(w).toLowerCase()));
-}
-
-function questionSense(asked) {
-  const q = String(asked.question || "").toLowerCase();
-  if (/\b(to be saved|salvation|be saved)\b/.test(q) && /\b(must|how|do i|what.+do|to be)\b/.test(q)) {
-    return {
-      kind: "salvation-duty",
-      nearby: [
-        "believe",
-        "faith",
-        "repent",
-        "baptize",
-        "confess",
-        "jesus",
-        "grace",
-        "cross",
-        "eternal",
-        "everlasting",
-        "soul",
-        "gospel",
-        "justified",
-        "justification",
-        "mercy",
-      ],
-    };
-  }
-  return { kind: "topic-family", nearby: [] };
-}
-
-function verseHitsTopicFamily(row, asked) {
-  const text = String(row.text || "").trim();
-  if (!text) return false;
-  const topic = asked.topics || asked.words || [];
-  if (row.askedReference && !topic.length) return true;
-  if (!topic.length) return false;
-  return topic.some((w) => hitsTopicTerm(text, w));
-}
-
-function looksMilitaryDeliverance(text) {
-  return /\b(philistine|philistines|slew|smote|battle|war against|the army|enemies|host of|great deliverance)\b/i.test(
-    String(text || "")
-  );
-}
-
-function verseAnswersQuestion(row, asked) {
-  if (!verseHitsTopicFamily(row, asked)) return false;
-  const sense = questionSense(asked);
-  if (sense.kind === "topic-family") return true;
-  const text = String(row.text || "");
-  if (looksMilitaryDeliverance(text)) return false;
-  if (/\b(shall be saved|might be saved|may be saved|to be saved|unto salvation)\b/i.test(text)) return true;
-  return sense.nearby.some((w) => familyHitsText(text, w) || hitsTopicTerm(text, w));
-}
-
-function verseAppliesToQuestion(row, asked) {
-  return verseHitsTopicFamily(row, asked);
-}
-
 function askSearchQueries(asked) {
   const out = [];
   const add = (value, requirePhrase = false) => {
@@ -279,11 +203,8 @@ function askSearchQueries(asked) {
     }
   }
   if (asked.search && topics.length <= 1) add(asked.search);
+  for (const extra of asked.extraSearches || []) add(extra, /\s/.test(extra));
   return out.length ? out : [{ q: asked.question, requirePhrase: false }];
-}
-
-function sourceLabel(source) {
-  return SOURCE_LABEL[source] || source || "stored text";
 }
 
 function sortAskPassages(rows, asked) {
@@ -297,141 +218,9 @@ function sortAskPassages(rows, asked) {
   });
 }
 
-function selectRelevantPassages(passages, asked) {
-  return uniquePassages((passages || []).filter((p) => verseAnswersQuestion(p, asked)));
-}
-
-function understoodAs(asked) {
-  const q = String(asked.question || "").split("\n")[0].trim();
-  const topic = (asked.topics || asked.words || []).join(", ");
-  const speakers = speakersForQuestion(asked);
-  const families = (asked.topics || []).map((t) => (asked.families?.[t] || []).slice(0, 8).join("/")).filter(Boolean);
-  if (asked.refs.length && topic) {
-    return `Does **${asked.refs[0].label}** address ${topic}?`;
-  }
-  if (asked.preferSpeech && speakers.length && topic) {
-    return `What does ${speakers.join(", ")} say about ${topic}?`;
-  }
-  if (topic) {
-    const familyNote = families.length ? ` Word families searched: ${families.join("; ")}.` : "";
-    return `${q} Topic understood: ${topic}.${familyNote}`;
-  }
-  return q;
-}
-
-function yesNoLine(primary) {
-  const n = primary.length;
-  if (!n) {
-    return "**No.** The question is understood, but no stored wording in the selected texts uses this topic or its word family. Nothing was invented.";
-  }
-  return `**Yes.** The question is understood. The first section quotes the stored texts that answer it. Conflicting stored wording, if any, is quoted in the second section.`;
-}
-
-function passageKey(row) {
-  return `${row.source}|${row.reference}|${String(row.text || "").slice(0, 80)}`;
-}
-
-function hasNegation(text) {
-  return /\b(not|neither|never|no more|cannot|shall not|shalt not|ye shall not|thou shalt not)\b/i.test(
-    String(text || "")
-  );
-}
-
-function writePassageBlock(lines, rows, asked) {
-  const body = sortAskPassages(rows, asked);
-  let lastGroup = "";
-  for (const p of body) {
-    const group = sourceLabel(p.source);
-    if (group !== lastGroup) {
-      lines.push(`#### ${group}`);
-      lines.push("");
-      lastGroup = group;
-    }
-    lines.push(`**${escapeMd(p.reference)}**`);
-    lines.push(`> ${escapeMd(p.text)}`);
-    lines.push("");
-  }
-}
-
-function splitRelatedPassages(primary, leftover, asked) {
-  const canonPrimary = primary.filter((p) => p.source === "canon");
-  const sample = canonPrimary.length ? canonPrimary : primary;
-  const negCount = sample.filter((p) => hasNegation(p.text)).length;
-  const majorityNeg = sample.length ? negCount > sample.length / 2 : null;
-  const conflicting = [];
-  const related = [];
-  for (const row of leftover) {
-    const disputed = String(row.archiveItem?.evidence_status || "").toLowerCase() === "disputed";
-    const differs =
-      majorityNeg !== null &&
-      sample.length &&
-      hasNegation(row.text) !== majorityNeg &&
-      (asked.words || []).some((w) => hitsTopicTerm(row.text, w));
-    if (disputed || differs) conflicting.push(row);
-    else related.push(row);
-  }
-  return { conflicting, related };
-}
-
 function quoteOnlyAnswer(question, passages, asked) {
-  const all = uniquePassages(passages || []);
-  const primary = selectRelevantPassages(all, asked);
-  const primaryKeys = new Set(primary.map(passageKey));
-  const leftover = all.filter((row) => !primaryKeys.has(passageKey(row)));
-  const { conflicting, related } = splitRelatedPassages(primary, leftover, asked);
-  const bySource = {};
-  for (const p of primary) {
-    const label = sourceLabel(p.source);
-    bySource[label] = (bySource[label] || 0) + 1;
-  }
-  const abundance = Object.entries(bySource)
-    .map(([label, n]) => `${n} from ${label}`)
-    .join("; ");
-
-  const lines = [];
-  lines.push(`### Your question`);
-  lines.push(String(question).split("\n")[0]);
-  lines.push("");
-  lines.push(`Understood as: ${understoodAs(asked)}`);
-  lines.push("");
-  lines.push(yesNoLine(primary));
-  lines.push("");
-  if (primary.length) {
-    lines.push("### Answer from the stored texts");
-    lines.push("");
-    if (abundance) {
-      lines.push(
-        `Every stored passage that belongs to this topic’s word family is listed. Count by stored source: ${abundance}. The reader weighs the wording. No opinion is added.`
-      );
-      lines.push("");
-    }
-    writePassageBlock(lines, primary, asked);
-  }
-  if (conflicting.length) {
-    lines.push("### Conflicting stored wording");
-    lines.push("");
-    lines.push(
-      "These stored texts also address the topic but differ from the wording above. They are not omitted. The reader decides."
-    );
-    lines.push("");
-    writePassageBlock(lines, conflicting, asked);
-  }
-  if (related.length) {
-    lines.push("### Other stored wording on this topic");
-    lines.push("");
-    lines.push(
-      "These stored passages use the same word family. They do not answer the question as understood, so they are listed here rather than treated as the answer. They are not omitted."
-    );
-    lines.push("");
-    writePassageBlock(lines, related, asked);
-  }
-  if (!primary.length && !conflicting.length && !related.length) {
-    lines.push("No stored passage in this app uses wording that matches the question.");
-    lines.push("");
-  }
-  lines.push("---");
-  lines.push(`**Completeness attestation:** ${LOCAL_ASSISTANT_ATTESTATION} ${ARCHIVE_NOTICE}`);
-  return lines.join("\n");
+  const body = writeAssistantAnswer(question, uniquePassages(passages || []), asked);
+  return `${body}\n---\n**Completeness attestation:** ${LOCAL_ASSISTANT_ATTESTATION} ${ARCHIVE_NOTICE}`;
 }
 
 async function searchAskSources(asked, sources) {

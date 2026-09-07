@@ -22,6 +22,7 @@ const WEAK = new Set([
   "finding", "looking", "know", "knew", "knows", "think", "thought", "people",
   "person", "give", "gives", "given", "make", "makes", "made", "come", "came",
   "going", "gone", "done", "doing", "true", "truth", "help", "helping",
+  "required", "require", "requires", "requirement",
 ]);
 
 export function topicTermsFrom(text) {
