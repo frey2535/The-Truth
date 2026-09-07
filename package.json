@@ -19,6 +19,7 @@
     "test:installs": "node scripts/test-install-ledger.mjs",
     "test:play": "node scripts/test-play-store.mjs",
     "test:assistant": "node scripts/test-assistant-understand.mjs",
+    "test:search": "node scripts/test-search-all-verses.mjs",
     "play:assets": "python3 scripts/play/generate-store-assets.py",
     "play:assetlinks": "node scripts/play/write-assetlinks.mjs",
     "play:bundle": "cd android && ./gradlew bundleRelease",

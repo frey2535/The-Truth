@@ -9,7 +9,7 @@ import { SEARCH_CORPORA } from "@/lib/localCorpusSearch";
 export default function CorpusSearch() {
   const [params, setParams] = useSearchParams();
   const [query, setQuery] = useState(params.get("q") || "");
-  const [corpus, setCorpus] = useState(params.get("corpus") || "canon");
+  const [corpus, setCorpus] = useState(params.get("corpus") || "all");
   const [matches, setMatches] = useState([]);
   const [label, setLabel] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,7 +37,7 @@ export default function CorpusSearch() {
 
   useEffect(() => {
     const q = params.get("q");
-    if (q) run(null, q, params.get("corpus") || "canon");
+    if (q) run(null, q, params.get("corpus") || "all");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -46,7 +46,7 @@ export default function CorpusSearch() {
       <header className="text-center mb-8">
         <h1 className="font-display text-4xl text-[#2b2620] mb-2">Search a text</h1>
         <p className="text-[#5b5142] max-w-2xl mx-auto">
-          Choose a corpus, then search only that text. Results are quoted from what is stored in this app.
+          Search all stored texts by default. Every matching verse and paragraph in this app is listed.
         </p>
       </header>
 
