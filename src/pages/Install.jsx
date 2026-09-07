@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Download, Share2, Copy, Check, Smartphone, Globe, Monitor, Share, PlusSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { facebookShareUrl, SHARE_INSTALL_URL } from "@/lib/appOrigin";
-import { getInstallPlatform, isStandaloneDisplay, requestInstallPrompt } from "@/lib/pwa";
+import { getInstallPlatform, isStandaloneDisplay, promptAppInstall, requestInstallPrompt } from "@/lib/pwa";
 
 export default function Install() {
   const [copied, setCopied] = useState(false);
@@ -36,7 +36,9 @@ export default function Install() {
     await copyLink();
   }
 
-  function installHere() {
+  async function installHere() {
+    const result = await promptAppInstall();
+    if (result.outcome === "accepted") return;
     requestInstallPrompt();
   }
 
