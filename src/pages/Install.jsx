@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Download, Share2, Copy, Check, Smartphone, Globe, Monitor, Share, PlusSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { facebookShareUrl, SHARE_INSTALL_URL } from "@/lib/appOrigin";
@@ -145,6 +146,12 @@ export default function Install() {
           Use the public address above. That is the copy that can receive new builds.
         </p>
       </section>
+
+      <p className="text-center text-[11px] text-[#8a7f6f] mt-8">
+        <Link to="/owner" className="hover:underline">
+          Platform owner
+        </Link>
+      </p>
     </div>
   );
 }

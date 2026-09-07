@@ -3,3 +3,5 @@ pages_build_output_dir = "dist"
 
 [vars]
 # Live URL: https://thetruth.currentflowconsulting.org
+PLATFORM_OWNER_EMAIL = "owner@thetruth.currentflowconsulting.org"
+# Set PLATFORM_OWNER_PASSWORD as a Cloudflare Pages secret (not here).

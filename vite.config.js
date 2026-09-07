@@ -5,6 +5,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
 import { completeChat } from "./scripts/openaiProxy.js";
 import { exchangeGoogleCode } from "./scripts/googleToken.js";
+import { installsDevPlugin } from "./scripts/installsDevPlugin.js";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -187,6 +188,8 @@ export default defineConfig(({ mode }) => {
   if (env.VITE_GOOGLE_CLIENT_ID) process.env.VITE_GOOGLE_CLIENT_ID = env.VITE_GOOGLE_CLIENT_ID;
   if (env.GOOGLE_CLIENT_ID) process.env.GOOGLE_CLIENT_ID = env.GOOGLE_CLIENT_ID;
   if (env.GOOGLE_CLIENT_SECRET) process.env.GOOGLE_CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET;
+  if (env.PLATFORM_OWNER_EMAIL) process.env.PLATFORM_OWNER_EMAIL = env.PLATFORM_OWNER_EMAIL;
+  if (env.PLATFORM_OWNER_PASSWORD) process.env.PLATFORM_OWNER_PASSWORD = env.PLATFORM_OWNER_PASSWORD;
 
   const truthBuildId = new Date().toISOString();
   const pagesRepo = process.env.GITHUB_REPOSITORY || "frey2535/The-Truth";
@@ -198,7 +201,7 @@ export default defineConfig(({ mode }) => {
     define: {
       "import.meta.env.VITE_TRUTH_BUILD": JSON.stringify(truthBuildId),
     },
-    plugins: [react(), truthVersionPlugin(truthBuildId), lanInfoPlugin(), openaiProxyPlugin(), googleTokenPlugin()],
+    plugins: [react(), truthVersionPlugin(truthBuildId), lanInfoPlugin(), openaiProxyPlugin(), googleTokenPlugin(), installsDevPlugin(rootDir)],
     resolve: {
       alias: {
         "@": path.resolve(rootDir, "./src"),

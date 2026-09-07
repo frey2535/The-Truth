@@ -4,6 +4,7 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import { OwnerProvider } from '@/lib/OwnerContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import ResumePath from './components/ResumePath';
@@ -30,6 +31,8 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
+import OwnerLogin from "@/pages/OwnerLogin";
+import OwnerDownloads from "@/pages/OwnerDownloads";
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -61,6 +64,8 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/owner" element={<OwnerLogin />} />
+      <Route path="/owner/downloads" element={<OwnerDownloads />} />
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/plan/:id" element={<StudyPlanView />} />
@@ -97,14 +102,16 @@ function App() {
 
   return (
     <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router basename={routerBasename}>
-          <ScrollToTop />
-          <ResumePath />
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
+      <OwnerProvider>
+        <QueryClientProvider client={queryClientInstance}>
+          <Router basename={routerBasename}>
+            <ScrollToTop />
+            <ResumePath />
+            <AuthenticatedApp />
+          </Router>
+          <Toaster />
+        </QueryClientProvider>
+      </OwnerProvider>
     </AuthProvider>
   )
 }

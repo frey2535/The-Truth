@@ -8,7 +8,7 @@ export function urlWantsInstall(search = "", referrer = "") {
   );
 }
 
-export const AUTH_PATHS = ["/login", "/register", "/forgot-password", "/reset-password"];
+export const AUTH_PATHS = ["/login", "/register", "/forgot-password", "/reset-password", "/owner"];
 
 /** Strip Vite's GitHub Pages base so `/The-Truth/login` still counts as login. */
 export function appPathname(pathname = "", baseUrl = import.meta.env?.BASE_URL || "/") {
