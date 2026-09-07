@@ -44,6 +44,14 @@ assert.ok(scorePassage("There were giants in the earth in those days", formsFor(
 assert.ok(scorePassage("And the Watchers shall quake", formsFor("watchers")) > 0);
 assert.equal(scorePassage("There were giants in the earth in those days", formsFor("Nephilim")), 0);
 assert.equal(scorePassage("Abraham sojourned in the land of Canaan", formsFor("covenant")), 0);
+assert.equal(
+  scorePassage(
+    "Of the sons of Naphtali after their families: of Jahzeel, the family of the Jahzeelites: of Guni, the family of the Gunites:",
+    formsFor("giants")
+  ),
+  0,
+  "inflected junk must not match unrelated verses"
+);
 
 const enoch = rowsFromStoredText(
   "1 Enoch",

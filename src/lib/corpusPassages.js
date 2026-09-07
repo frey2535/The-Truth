@@ -96,11 +96,10 @@ export function scorePassage(text, { phrase, forms }) {
     }
     if (tokenSet.has(ff) || new RegExp(`\\b${escapeRe(ff)}\\b`, "i").test(folded)) {
       hits += 1;
-      continue;
     }
-    const key = consonantKey(ff);
-    if (key && tokenKeys.has(key)) hits += 1;
   }
+  const phraseKey = consonantKey(phrase);
+  if (phraseKey && tokenKeys.has(phraseKey)) hits += 1;
   return hits;
 }
 
@@ -224,9 +223,10 @@ export function clipAroundMatch(text, forms, windowSize = 720) {
     if (!ff) continue;
     const at = folded.search(new RegExp(`\\b${escapeRe(ff)}\\b`, "i"));
     if (at >= 0 && (idx < 0 || at < idx)) idx = at;
-    if (idx < 0) {
-      const want = consonantKey(ff);
-      if (!want) continue;
+  }
+  if (idx < 0) {
+    const want = consonantKey(forms?.[0]);
+    if (want) {
       const tokenRe = /[\p{L}\p{N}']+/gu;
       let m;
       while ((m = tokenRe.exec(folded))) {
