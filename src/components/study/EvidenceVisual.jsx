@@ -19,7 +19,7 @@ function PhotoFigure({ src, caption, overlay, onBroken, tall, contain }) {
       <div className="relative">
         <img
           src={src}
-          alt={caption || ""}
+          alt={caption || overlay || ""}
           className={`w-full ${fit} ${height}`}
           onError={onBroken}
         />
@@ -29,10 +29,12 @@ function PhotoFigure({ src, caption, overlay, onBroken, tall, contain }) {
           </p>
         ) : null}
       </div>
-      <figcaption className="px-3 py-2 text-[11px] leading-relaxed text-[#f3e9c8]/80">
-        {caption ||
-          "Public-domain photograph stored in this app, shown with the published wording below. This is not a fabricated picture of an unpublished object."}
-      </figcaption>
+      {caption === "" ? null : (
+        <figcaption className="px-3 py-2 text-[11px] leading-relaxed text-[#f3e9c8]/80">
+          {caption ||
+            "Public-domain photograph stored in this app, shown with the published wording below. This is not a fabricated picture of an unpublished object."}
+        </figcaption>
+      )}
     </figure>
   );
 }
