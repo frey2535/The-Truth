@@ -208,13 +208,36 @@ function speakersForQuestion(asked) {
   return (asked.boostWords || []).filter((w) => !SPEAKER_IGNORE.has(String(w).toLowerCase()));
 }
 
-function verseAppliesToQuestion(row, asked) {
+function questionSense(asked) {
+  const q = String(asked.question || "").toLowerCase();
+  if (/\b(to be saved|salvation|be saved)\b/.test(q) && /\b(must|how|do i|what.+do|to be)\b/.test(q)) {
+    return {
+      kind: "salvation-duty",
+      nearby: ["believe", "faith", "repent", "baptize", "confess", "jesus", "christ", "lord", "grace", "cross", "eternal", "soul", "gospel", "sin"],
+    };
+  }
+  return { kind: "topic-family", nearby: [] };
+}
+
+function verseHitsTopicFamily(row, asked) {
   const text = String(row.text || "").trim();
   if (!text) return false;
   const topic = asked.topics || asked.words || [];
   if (row.askedReference && !topic.length) return true;
   if (!topic.length) return false;
   return topic.some((w) => hitsTopicTerm(text, w));
+}
+
+function verseAnswersQuestion(row, asked) {
+  if (!verseHitsTopicFamily(row, asked)) return false;
+  const sense = questionSense(asked);
+  if (sense.kind === "topic-family") return true;
+  const text = String(row.text || "");
+  return sense.nearby.some((w) => familyHitsText(text, w) || hitsTopicTerm(text, w));
+}
+
+function verseAppliesToQuestion(row, asked) {
+  return verseHitsTopicFamily(row, asked);
 }
 
 function askSearchQueries(asked) {
@@ -251,7 +274,7 @@ function sortAskPassages(rows, asked) {
 }
 
 function selectRelevantPassages(passages, asked) {
-  return uniquePassages((passages || []).filter((p) => verseAppliesToQuestion(p, asked)));
+  return uniquePassages((passages || []).filter((p) => verseAnswersQuestion(p, asked)));
 }
 
 function understoodAs(asked) {
@@ -373,7 +396,7 @@ function quoteOnlyAnswer(question, passages, asked) {
     lines.push("### Other stored wording on this topic");
     lines.push("");
     lines.push(
-      "These stored passages were found while searching the same topic. They did not pass the direct-answer test, so they are listed here rather than treated as the answer."
+      "These stored passages use the same word family. They do not answer the question as understood, so they are listed here rather than treated as the answer. They are not omitted."
     );
     lines.push("");
     writePassageBlock(lines, related, asked);
