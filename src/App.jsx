@@ -23,6 +23,9 @@ import Customs from "@/pages/Customs";
 import Investigate from "@/pages/Investigate";
 import Learn from "@/pages/Learn";
 import Install from "@/pages/Install";
+import Privacy from "@/pages/Privacy";
+import DataSafety from "@/pages/DataSafety";
+import Account from "@/pages/Account";
 import Search from "@/pages/Search";
 import MyStudy from "@/pages/MyStudy";
 import MapExplore from "@/pages/MapExplore";
@@ -89,6 +92,9 @@ const AuthenticatedApp = () => {
         <Route path="/investigate" element={<Investigate />} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/install" element={<Install />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/data-safety" element={<DataSafety />} />
+        <Route path="/account" element={<Account />} />
         </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>

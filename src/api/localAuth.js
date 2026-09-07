@@ -1,4 +1,5 @@
 import {
+  emptyStudyEntities,
   getSessionToken,
   httpError,
   loadDb,
@@ -202,6 +203,23 @@ export const localAuth = {
 
   setToken(token) {
     setSessionToken(token);
+  },
+
+  async deleteLocalAccount({ wipeStudyData = true } = {}) {
+    const db = loadDb();
+    const user = currentUserFromDb(db);
+    if (!user || user.is_guest || user.email === GUEST_EMAIL) {
+      throw httpError("There is no named account on this device.");
+    }
+    db.users = db.users.filter((entry) => entry.id !== user.id);
+    if (wipeStudyData) {
+      db.entities = emptyStudyEntities();
+      db.files = {};
+    }
+    saveDb(db);
+    setSessionToken(null);
+    ensureGuest();
+    return { ok: true };
   },
 
   logout(redirectUrl) {

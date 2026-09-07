@@ -15,7 +15,7 @@
   "orientation": "any",
   "theme_color": "#2b2620",
   "background_color": "#faf6ef",
-  "categories": ["education", "reference"],
+  "categories": ["education", "reference", "books"],
   "icons": [
     {
       "src": "/icon-192.png?v=6",
@@ -30,7 +30,7 @@
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png?v=6",
+      "src": "/icon-maskable-512.png?v=6",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -65,5 +65,35 @@
       "icons": [{ "src": "/icon-192.png?v=6", "sizes": "192x192" }]
     }
   ],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=org.currentflowconsulting.thetruth",
+      "id": "org.currentflowconsulting.thetruth"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/phone-read.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Read Scripture stored in the app"
+    },
+    {
+      "src": "/screenshots/phone-investigate.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Investigate a claim against stored texts"
+    },
+    {
+      "src": "/screenshots/phone-learn.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Learn with guided study paths"
+    }
+  ]
 }

@@ -115,6 +115,10 @@ export default function Login() {
           <Link to="/owner" className="text-primary font-medium hover:underline">
             Platform owner
           </Link>
+          {" · "}
+          <Link to="/privacy" className="text-primary font-medium hover:underline">
+            Privacy
+          </Link>
         </>
       }
     >

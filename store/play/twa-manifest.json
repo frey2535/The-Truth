@@ -1,0 +1,29 @@
+{
+  "packageId": "org.currentflowconsulting.thetruth",
+  "host": "thetruth.currentflowconsulting.org",
+  "name": "The Truth",
+  "launcherName": "The Truth",
+  "display": "standalone",
+  "themeColor": "#2B2620",
+  "themeColorDark": "#120C08",
+  "navigationColor": "#2B2620",
+  "navigationColorDark": "#120C08",
+  "backgroundColor": "#FAF6EF",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://thetruth.currentflowconsulting.org/icon-512.png",
+  "maskableIconUrl": "https://thetruth.currentflowconsulting.org/icon-maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "../android/upload.keystore",
+    "alias": "thetruth"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "generatorApp": "the-truth",
+  "webManifestUrl": "https://thetruth.currentflowconsulting.org/manifest.json",
+  "fallbackType": "customtabs",
+  "orientation": "any",
+  "isChromeOSOnly": false
+}

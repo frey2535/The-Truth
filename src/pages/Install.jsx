@@ -49,8 +49,10 @@ export default function Install() {
       <h1 className="font-display text-4xl text-[#2b2620] mb-3">Install this app</h1>
       <p className="text-[#5b5142] leading-relaxed mb-6">
         Post the link below on Facebook. Friends see the app icon, tap it, and The Truth opens —
-        then it asks them to install on their phone. There is no store download. If Facebook’s
-        own browser opens the page, they tap <strong>Open in Safari</strong> or{" "}
+        then it asks them to install on their phone. A Google Play listing is prepared from this
+        same public site. That listing is free — no paid download and no in-app purchases. Until
+        it is live, install from Chrome or this page. If
+        Facebook’s own browser opens the page, they tap <strong>Open in Safari</strong> or{" "}
         <strong>Open in Chrome</strong> first.
       </p>
 
@@ -147,7 +149,13 @@ export default function Install() {
         </p>
       </section>
 
-      <p className="text-center text-[11px] text-[#8a7f6f] mt-8">
+      <p className="text-center text-[11px] text-[#8a7f6f] mt-8 flex flex-wrap justify-center gap-x-3 gap-y-1">
+        <Link to="/privacy" className="hover:underline">
+          Privacy
+        </Link>
+        <Link to="/account" className="hover:underline">
+          Delete account
+        </Link>
         <Link to="/owner" className="hover:underline">
           Platform owner
         </Link>

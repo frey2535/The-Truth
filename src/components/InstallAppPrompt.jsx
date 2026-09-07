@@ -4,6 +4,7 @@ import { Download, Share, PlusSquare, MoreVertical, X, ExternalLink, LogIn } fro
 import { Button } from "@/components/ui/button";
 import { PUBLISHED_APP_URL } from "@/lib/appOrigin";
 import { publicUrl } from "@/lib/publicUrl";
+import { isLegalPath } from "@/lib/playStore";
 import { isAuthPath } from "@/lib/shareInstall";
 import {
   arrivedFromShare,
@@ -48,7 +49,11 @@ export default function InstallAppPrompt() {
   const platform = getInstallPlatform();
   const inApp = isInAppBrowser();
   const fromShare = arrivedFromShare();
-  const onAuth = isAuthPath(pathname) || isAuthPath(windowPath);
+  const onAuth =
+    isAuthPath(pathname) ||
+    isAuthPath(windowPath) ||
+    isLegalPath(pathname) ||
+    isLegalPath(windowPath);
 
   useEffect(() => {
     return onDeferredInstallChange((event) => setCanPrompt(Boolean(event)));
@@ -62,12 +67,20 @@ export default function InstallAppPrompt() {
 
     const shouldForce = fromShare || inApp;
     const onForceShow = () => {
-      if (!isAuthPath(window.location.pathname)) setOpen(true);
+      if (!isAuthPath(window.location.pathname) && !isLegalPath(window.location.pathname)) {
+        setOpen(true);
+      }
     };
     window.addEventListener("truth-show-install", onForceShow);
 
     const timer = window.setTimeout(() => {
-      if (isStandaloneDisplay() || isAuthPath(window.location.pathname)) return;
+      if (
+        isStandaloneDisplay() ||
+        isAuthPath(window.location.pathname) ||
+        isLegalPath(window.location.pathname)
+      ) {
+        return;
+      }
       if (shouldForce || (platform.isMobile && !wasDismissedRecently())) {
         setOpen(true);
       }
@@ -160,7 +173,7 @@ export default function InstallAppPrompt() {
           <p className="text-sm text-[#f3e9c8]/80 mt-3 leading-relaxed">
             {inApp
               ? "Facebook opened this inside its own browser. Install only works in Chrome or Safari."
-              : "Add The Truth to your home screen. It opens like an app — no store listing."}
+              : "Add The Truth to your home screen. It opens like an app. Google Play uses this same public site."}
           </p>
         </div>
 
