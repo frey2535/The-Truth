@@ -34,3 +34,6 @@ base44/.app.jsonc
 
 # Local Netlify folder
 .netlify
+
+# Local install-count ledger for npm run dev
+.data

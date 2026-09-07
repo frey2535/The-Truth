@@ -198,6 +198,9 @@ export async function promptAppInstall() {
     await event.prompt();
     const result = await event.userChoice;
     setDeferredInstall(null);
+    if (result?.outcome === "accepted") {
+      window.dispatchEvent(new Event("truth-app-installed"));
+    }
     return { outcome: result?.outcome || "dismissed" };
   } catch {
     return { outcome: "unavailable" };

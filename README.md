@@ -34,6 +34,17 @@ iPhone install works best in Safari. For people not on your Wi‑Fi, use the pub
 
 To post it on Facebook, share **https://thetruth.currentflowconsulting.org/?install=1** (or use **Install this app → Post on Facebook**). The post shows the app icon. Friends tap it, the site opens, and it asks them to install. After a deploy, refresh Facebook’s preview at [developers.facebook.com/tools/debug](https://developers.facebook.com/tools/debug/).
 
+### Platform owner — download count
+
+Each home-screen install is recorded once per device. Sign in at **/owner** to see the full list.
+
+- **Local:** [http://truth.localhost:5174/owner](http://truth.localhost:5174/owner)  
+  Email `owner@thetruth.currentflowconsulting.org`  
+  Password `owner-local` (used when `PLATFORM_OWNER_PASSWORD` is not set)
+- **Live site:** add `PLATFORM_OWNER_EMAIL` and `PLATFORM_OWNER_PASSWORD` in Cloudflare Pages → Settings → Environment variables (Production). Then open `https://thetruth.currentflowconsulting.org/owner`.
+
+There is a quiet **Platform owner** link at the bottom of the Install page. The live count is stored on the Cloudflare site, so GitHub Pages installs report there too.
+
 ## Publish
 
 Live app: [https://thetruth.currentflowconsulting.org](https://thetruth.currentflowconsulting.org)

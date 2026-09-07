@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
+import { useOwner } from "@/lib/OwnerContext";
 import { publicUrl } from "@/lib/publicUrl";
 import { GUEST_EMAIL } from "@/api/localAuth";
 import HeavenBackdrop from "@/components/HeavenBackdrop";
@@ -51,6 +52,7 @@ function navActive(pathname, to, matchEvidence) {
 export default function Layout() {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
+  const { isOwner } = useOwner();
   const isGuest = !user || user.email === GUEST_EMAIL || user.is_guest;
   const isHome = pathname === "/";
   const usePapyrus = !isHome;
@@ -120,6 +122,16 @@ export default function Layout() {
               <Sparkles className="w-4 h-4" />
               Truth Assistant
             </Link>
+            {isOwner ? (
+              <Link
+                to="/owner/downloads"
+                className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${
+                  usePapyrus ? "text-[#3a3328] hover:bg-[#2b2620]/8" : "text-[#e8c97a] hover:bg-white/10"
+                }`}
+              >
+                Downloads
+              </Link>
+            ) : null}
             {isGuest ? (
               <Link
                 to="/login"

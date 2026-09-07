@@ -18,6 +18,8 @@ assert.match(intent, /package=com\.android\.chrome/);
 assert.equal(isAuthPath("/login"), true);
 assert.equal(isAuthPath("/register"), true);
 assert.equal(isAuthPath("/forgot-password"), true);
+assert.equal(isAuthPath("/owner"), true);
+assert.equal(isAuthPath("/owner/downloads"), true);
 assert.equal(isAuthPath("/library"), false);
 assert.equal(isAuthPath("/"), false);
 assert.equal(isAuthPath("/The-Truth/login", "/The-Truth/"), true);
