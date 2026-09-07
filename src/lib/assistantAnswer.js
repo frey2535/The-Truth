@@ -1,4 +1,13 @@
 import { familyHitsText } from "./wordFamilies.js";
+import {
+  baptismTiedToSalvation,
+  hasBaptism,
+  writeDetailedAnswer,
+  writeUnderstanding,
+  yesNoOpening,
+} from "./literatureMeaning.js";
+
+export { baptismTiedToSalvation, hasBaptism, yesNoOpening };
 
 export const SALVATION_RELATED_SEARCHES = [
   "saved",
@@ -11,6 +20,7 @@ export const SALVATION_RELATED_SEARCHES = [
   "call on the name",
   "call upon the name",
   "born again",
+  "born of water",
   "everlasting life",
   "eternal life",
   "shall be saved",
@@ -20,6 +30,11 @@ export const SALVATION_RELATED_SEARCHES = [
   "obey not the gospel",
   "obey the gospel",
   "baptized into",
+  "wash away thy sins",
+  "by grace are ye saved",
+  "confess with thy mouth",
+  "washing of regeneration",
+  "put on Christ",
 ];
 
 const SOURCE_LABEL = {
@@ -64,18 +79,6 @@ export function extraSearchesForKind(kind) {
 export function looksMilitaryDeliverance(text) {
   return /\b(philistine|philistines|slew|smote|battle|war against|the army|enemies|host of|great deliverance)\b/i.test(
     String(text || "")
-  );
-}
-
-function hasBaptism(text) {
-  return familyHitsText(text, "baptism") || familyHitsText(text, "baptize");
-}
-
-function baptismTiedToSalvation(text) {
-  const t = String(text || "");
-  if (!hasBaptism(t)) return false;
-  return /\b(save[dth]*|salvation|remission|justif|eternal|everlasting|into jesus|into christ|into his death|born of water|wash away thy sins)\b/i.test(
-    t
   );
 }
 
@@ -237,51 +240,6 @@ function writePassageBlock(lines, rows) {
   }
 }
 
-export function yesNoOpening(asked, passages) {
-  if (!asked?.yesNo) return "";
-  const rows = passages || [];
-  if (!rows.length) {
-    return "**No.** After searching the stored texts, no wording that belongs to this question was found. Nothing was invented.";
-  }
-  if (asked.kind === "baptism-salvation") {
-    const withBaptism = rows.filter((row) => baptismTiedToSalvation(row.text));
-    const without = rows.filter((row) => !hasBaptism(row.text) && salvationDutyHit(row.text));
-    if (withBaptism.length && without.length) {
-      return "**The stored texts do not speak with one wording.** After reading every stored passage that belongs to this question, some name baptism with being saved, and some name believing, calling on the Lord, or doing the Father’s will without naming baptism in that verse. The list below is taken from those texts.";
-    }
-    if (withBaptism.length) {
-      return "**Yes.** Stored texts name baptism together with being saved. Those texts, and every other stored passage that belongs to this question, are listed below.";
-    }
-    return "**No.** Stored texts that speak of being saved in this set do not name baptism in those verses. Every stored passage that belongs to this question is listed below.";
-  }
-  return "**Yes.** Stored texts that belong to this question were found. The list below is taken from them.";
-}
-
-function writeDetailedList(lines, passages, asked) {
-  const groups = clusterPassages(passages);
-  if (!groups.length) return;
-  if (asked?.kind === "salvation-duty" || asked?.kind === "baptism-salvation") {
-    lines.push("The stored texts that belong to this question name the following. The wording is theirs, not an added rule.");
-    lines.push("");
-  } else {
-    lines.push("The stored texts that belong to this question say:");
-    lines.push("");
-  }
-  let n = 1;
-  for (const group of groups) {
-    if (group.id === "other" && groups.length > 1) continue;
-    lines.push(`${n}. **${group.heading}** — ${group.references.join("; ")}`);
-    n += 1;
-  }
-  const other = groups.find((g) => g.id === "other");
-  if (other && groups.length > 1) {
-    lines.push(`${n}. **${other.heading}** — ${other.references.join("; ")}`);
-  }
-  lines.push("");
-  lines.push("Every stored passage used for this answer is quoted below.");
-  lines.push("");
-}
-
 export function writeAssistantAnswer(question, passages, asked) {
   const related = sortPassages((passages || []).filter((row) => verseRelatedToQuestion(row, asked)));
   const lines = [];
@@ -293,20 +251,23 @@ export function writeAssistantAnswer(question, passages, asked) {
     lines.push(opening);
     lines.push("");
   }
-  lines.push("### Answer");
-  lines.push("");
   if (!related.length) {
+    lines.push("### Answer");
+    lines.push("");
     lines.push("No stored passage in this app uses wording that belongs to this question.");
     lines.push("");
-  } else {
-    writeDetailedList(lines, related, asked);
-    lines.push("### All stored wording");
-    lines.push("");
-    lines.push(
-      `${related.length} stored passage${related.length === 1 ? "" : "s"} belong to this question. Read them yourself.`
-    );
-    lines.push("");
-    writePassageBlock(lines, related);
+    return lines.join("\n");
   }
+  writeUnderstanding(lines, related, asked);
+  lines.push("### Answer");
+  lines.push("");
+  writeDetailedAnswer(lines, related, asked);
+  lines.push("### All stored wording");
+  lines.push("");
+  lines.push(
+    `${related.length} stored passage${related.length === 1 ? "" : "s"} were read for this understanding. Their wording is below.`
+  );
+  lines.push("");
+  writePassageBlock(lines, related);
   return lines.join("\n");
 }
