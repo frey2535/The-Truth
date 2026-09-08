@@ -7,6 +7,5 @@ PLATFORM_OWNER_EMAIL = "owner@thetruth.currentflowconsulting.org"
 # Set PLATFORM_OWNER_PASSWORD, GOOGLE_CLIENT_ID, and GOOGLE_CLIENT_SECRET
 # as Cloudflare Pages secrets (not here). Text dashboard vars are ignored.
 #
-# Bind a KV namespace named INSTALLS on the Pages project (Settings → Functions)
-# so download counts survive across data centers. Without it, the function falls
-# back to Cache storage, which can drop installs.
+# GitHub Actions binds a KV namespace named INSTALLS so download counts survive
+# across data centers. Without it, the function falls back to Cache storage.

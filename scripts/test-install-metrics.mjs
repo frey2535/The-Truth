@@ -10,8 +10,8 @@ import {
   displayLooksInstalled,
   launchedFromAndroidApp,
 } from "../src/lib/installDisplay.js";
-import { persistRecordedDevice } from "../src/lib/installsApi.js";
-import { emptyLedger } from "../src/lib/installLedger.js";
+import { handleInstallHit, handleOwnerLogin, persistRecordedDevice } from "../src/lib/installsApi.js";
+import { emptyLedger, OWNER_EMAIL_DEFAULT } from "../src/lib/installLedger.js";
 import { loadInstallLedger, saveInstallLedger } from "../src/lib/installStore.js";
 
 assert.equal(isLoopbackInstallOrigin("truth.localhost"), true);
@@ -109,5 +109,24 @@ assert.equal(loaded.devices["device-kv-1111"].source, "play");
 env.INSTALLS.map.delete("ledger");
 const recovered = await loadInstallLedger(env);
 assert.equal(recovered.devices["device-kv-1111"].platform, "android");
+
+const login = await handleOwnerLogin({
+  body: { email: OWNER_EMAIL_DEFAULT, password: "owner-secret" },
+  credentials: { configured: true, email: OWNER_EMAIL_DEFAULT, password: "owner-secret" },
+});
+assert.equal(login.status, 200);
+assert.ok(login.body.token.startsWith("own2."));
+
+const hitStore = { ledger: emptyLedger() };
+const hit = await handleInstallHit({
+  query: { device: "device-hit-9999", platform: "ios", source: "appinstalled", standalone: "1" },
+  load: async () => hitStore.ledger,
+  save: async (ledger) => {
+    hitStore.ledger = ledger;
+  },
+});
+assert.equal(hit.status, 200);
+assert.equal(hit.body.recorded, true);
+assert.equal(Boolean(hitStore.ledger.devices["device-hit-9999"]), true);
 
 console.log("install metrics ok");

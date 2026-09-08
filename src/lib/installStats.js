@@ -64,10 +64,42 @@ function installLooksPresent() {
 
 export { detectInstallSource } from "@/lib/installDisplay";
 
+function installHitUrl(origin, payload) {
+  const params = new URLSearchParams({
+    device: payload.device || "",
+    platform: payload.platform || "",
+    source: payload.source || "",
+    standalone: payload.standalone ? "1" : "0",
+    at: payload.at || new Date().toISOString(),
+  });
+  return `${origin}/api/install-hit?${params}`;
+}
+
+function beaconPixel(url) {
+  return new Promise((resolve) => {
+    try {
+      const img = new Image();
+      const done = (ok) => {
+        img.onload = null;
+        img.onerror = null;
+        resolve(ok);
+      };
+      img.onload = () => done(true);
+      img.onerror = () => done(false);
+      img.src = url;
+      window.setTimeout(() => done(true), 2000);
+    } catch {
+      resolve(false);
+    }
+  });
+}
+
 async function postInstall(payload) {
   const origin = installMetricsOrigin();
   const url = `${origin}/api/installs`;
+  const hit = installHitUrl(origin, payload);
   const body = JSON.stringify(payload);
+  const pixel = beaconPixel(hit);
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -75,19 +107,31 @@ async function postInstall(payload) {
       body,
       keepalive: true,
     });
-    if (!res.ok) return false;
-    await res.json().catch(() => ({}));
-    return true;
-  } catch {
-    try {
-      if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-        return navigator.sendBeacon(url, new Blob([body], { type: "application/json" }));
-      }
-    } catch {
-      /* ignore */
+    if (res.ok) {
+      await res.json().catch(() => ({}));
+      await pixel;
+      return true;
     }
-    return false;
+  } catch {
+    /* try GET / pixel */
   }
+  try {
+    const getRes = await fetch(hit, { method: "GET", keepalive: true, cache: "no-store" });
+    if (getRes.ok) {
+      await pixel;
+      return true;
+    }
+  } catch {
+    /* pixel may still land */
+  }
+  try {
+    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+      navigator.sendBeacon(url, new Blob([body], { type: "application/json" }));
+    }
+  } catch {
+    /* ignore */
+  }
+  return pixel;
 }
 
 function markReported() {
