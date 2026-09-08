@@ -365,48 +365,59 @@ export const SEARCH_CORPORA = [
 
 const JESUS_NAMES = new Set(["jesus", "christ", "messiah", "yeshua"]);
 const GOSPEL_BOOKS = new Set(["Matthew", "Mark", "Luke", "John"]);
+const SCAN_YIELD_EVERY = 200;
 
-export async function searchCorpus(topic, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll } = {}) {
-  const q = String(topic || "").trim();
-  if (!q) return { query: q, forms: [], matches: [] };
+/** Let the browser paint and take clicks so a long stored-text scan cannot freeze the page. */
+export function yieldToBrowser() {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+function prepareQuery(item) {
+  const q = String(item?.q || item || "").trim();
+  if (!q) return null;
   const forms = expandSearchForms(q);
-  if (!forms.forms.length && !forms.phrase) return { query: q, forms: [], matches: [] };
-  const must = (contentWords || []).filter(Boolean);
-  const boost = (boostWords || []).filter(Boolean);
-  const foldedPhrase = foldMarks(forms.phrase).toLowerCase();
+  if (!forms.forms.length && !forms.phrase) return null;
+  return {
+    q,
+    forms,
+    requirePhrase: Boolean(item?.requirePhrase),
+    foldedPhrase: foldMarks(forms.phrase).toLowerCase(),
+    needles: (forms.forms || []).map((f) => foldMarks(f).toLowerCase()).filter((f) => f.length >= 3),
+  };
+}
 
-  const corpus = await loadCorpus();
-  const allow = Array.isArray(sources) && sources.length ? new Set(sources) : null;
-  const scored = [];
-  for (const row of corpus) {
-    if (allow && !allow.has(row.source)) continue;
-    if (requirePhrase && foldedPhrase && !foldMarks(row.text).toLowerCase().includes(foldedPhrase)) continue;
-    const units = hitsFromRow(row, forms);
-    for (const unit of units) {
-      if (requirePhrase && foldedPhrase && !foldMarks(unit.text).toLowerCase().includes(foldedPhrase)) continue;
-      let score = unit.score;
-      if (must.length) {
-        const hits = must.filter((w) => wordHitsText(unit.text, w)).length;
-        if (mustHitAll) {
-          if (hits < must.length) continue;
-        } else if (hits < 1 && score < 10) {
-          continue;
-        }
-        score += hits * 4;
-      }
-      if (boost.length) {
-        score += boost.filter((w) => wordHitsText(unit.text, w)).length * 6;
-        if (boost.some((w) => JESUS_NAMES.has(w)) && GOSPEL_BOOKS.has(unit.book)) score += 8;
-      }
-      if (preferSpeech) {
-        if (/\b(saith|said|verily|commandment|command)\b/i.test(unit.text)) score += 5;
-        if (/\b(thou shalt|ye shall|love one another|love thy|love your)\b/i.test(unit.text)) score += 8;
-      }
-      if (preferCanon && unit.source === "canon") score += 3;
-      scored.push({ ...unit, score });
-    }
+function cheapRowHit(folded, pq) {
+  if (!folded) return false;
+  if (pq.requirePhrase) {
+    return Boolean(pq.foldedPhrase && folded.includes(pq.foldedPhrase));
   }
-  const unique = uniqueMatches(scored);
+  return pq.needles.some((n) => folded.includes(n));
+}
+
+function decorateHit(unit, { must, mustHitAll, boost, preferSpeech, preferCanon }) {
+  let score = unit.score;
+  if (must.length) {
+    const hits = must.filter((w) => wordHitsText(unit.text, w)).length;
+    if (mustHitAll) {
+      if (hits < must.length) return null;
+    } else if (hits < 1 && score < 10) {
+      return null;
+    }
+    score += hits * 4;
+  }
+  if (boost.length) {
+    score += boost.filter((w) => wordHitsText(unit.text, w)).length * 6;
+    if (boost.some((w) => JESUS_NAMES.has(w)) && GOSPEL_BOOKS.has(unit.book)) score += 8;
+  }
+  if (preferSpeech) {
+    if (/\b(saith|said|verily|commandment|command)\b/i.test(unit.text)) score += 5;
+    if (/\b(thou shalt|ye shall|love one another|love thy|love your)\b/i.test(unit.text)) score += 8;
+  }
+  if (preferCanon && unit.source === "canon") score += 3;
+  return { ...unit, score };
+}
+
+function sortScored(unique, preferCanon) {
   unique.sort((a, b) => {
     if (preferCanon) {
       const ac = a.source === "canon" ? 0 : 1;
@@ -422,12 +433,79 @@ export async function searchCorpus(topic, { limit = Infinity, sources, contentWo
       b.score - a.score
     );
   });
+  return unique;
+}
+
+/**
+ * One pass over the stored corpus for many queries. Used by Assistant so it does not
+ * freeze the page by scanning every book once per related word.
+ */
+export async function searchCorpusMany(queries, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, mustHitAll, clipLong = true } = {}) {
+  const prepared = [];
+  const seenQ = new Set();
+  for (const item of queries || []) {
+    const pq = prepareQuery(item);
+    if (!pq || seenQ.has(pq.q)) continue;
+    seenQ.add(pq.q);
+    prepared.push(pq);
+  }
+  if (!prepared.length) return { query: "", forms: [], matches: [], total: 0 };
+
+  const must = (contentWords || []).filter(Boolean);
+  const boost = (boostWords || []).filter(Boolean);
+  const extras = { must, mustHitAll, boost, preferSpeech, preferCanon };
+  const corpus = await loadCorpus();
+  const allow = Array.isArray(sources) && sources.length ? new Set(sources) : null;
+  const scored = [];
+  let n = 0;
+  for (const row of corpus) {
+    n += 1;
+    if (n % SCAN_YIELD_EVERY === 0) await yieldToBrowser();
+    if (allow && !allow.has(row.source)) continue;
+    const folded = foldMarks(row.text).toLowerCase();
+    for (const pq of prepared) {
+      if (!cheapRowHit(folded, pq)) continue;
+      const units = clipLong
+        ? hitsFromRow(row, pq.forms)
+        : (() => {
+            const score = scoreText(row.text, pq.forms);
+            return score > 0 ? [{ ...row, score }] : [];
+          })();
+      if (!units.length) continue;
+      let added = false;
+      for (const unit of units) {
+        if (pq.requirePhrase && pq.foldedPhrase && !foldMarks(unit.text).toLowerCase().includes(pq.foldedPhrase)) {
+          continue;
+        }
+        const decorated = decorateHit(unit, extras);
+        if (decorated) {
+          scored.push(decorated);
+          added = true;
+        }
+      }
+      if (added) break;
+    }
+  }
+  const unique = sortScored(uniqueMatches(scored), preferCanon);
+  const forms = [...new Set(prepared.flatMap((pq) => pq.forms.forms))];
   return {
-    query: q,
-    forms: forms.forms,
+    query: prepared.map((pq) => pq.q).join(" | "),
+    forms,
     total: unique.length,
     matches: Number.isFinite(limit) && limit > 0 ? unique.slice(0, limit) : unique,
   };
+}
+
+export async function searchCorpus(topic, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll } = {}) {
+  return searchCorpusMany([{ q: topic, requirePhrase }], {
+    limit,
+    sources,
+    contentWords,
+    boostWords,
+    preferSpeech,
+    preferCanon,
+    mustHitAll,
+  });
 }
 
 export async function findReferencedPassages(question) {
@@ -435,8 +513,11 @@ export async function findReferencedPassages(question) {
   if (!refs.length) return [];
   const corpus = await loadCorpus();
   const found = [];
+  let n = 0;
   for (const ref of refs) {
     for (const row of corpus) {
+      n += 1;
+      if (n % SCAN_YIELD_EVERY === 0) await yieldToBrowser();
       const parsed = String(row.reference || "").match(
         /^((?:\d+\s+)?[A-Za-z][A-Za-z'.]+(?:\s+(?:of\s+)?[A-Za-z][A-Za-z'.]+){0,3})\s+(\d+)(?::(\d+))?/
       );

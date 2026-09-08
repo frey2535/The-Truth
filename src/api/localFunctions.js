@@ -8,10 +8,12 @@ import {
   matchesToResearchVerses,
   partitionMatches,
   searchCorpus,
+  searchCorpusMany,
   SEARCH_CORPORA,
 } from "@/lib/localCorpusSearch";
 import { recordAssistantLearning } from "@/lib/assistantLearn";
-import { writeAssistantAnswer } from "@/lib/assistantAnswer";
+import { buildAssistantAnswer, slimPassage } from "@/lib/assistantAnswer";
+import { askHistory } from "@/lib/assistantSafety";
 import { understandQuestion } from "@/lib/questionUnderstand";
 import { ARCHIVE_NOTICE, searchArchive } from "@/data/inAppArchive";
 import { lookupLexicon } from "@/data/strongsLexicon";
@@ -219,26 +221,25 @@ function sortAskPassages(rows, asked) {
 }
 
 function quoteOnlyAnswer(question, passages, asked) {
-  const body = writeAssistantAnswer(question, uniquePassages(passages || []), asked);
-  return `${body}\n---\n**Completeness attestation:** ${LOCAL_ASSISTANT_ATTESTATION} ${ARCHIVE_NOTICE}`;
+  const { markdown, related } = buildAssistantAnswer(question, uniquePassages(passages || []), asked);
+  return {
+    answer: `${markdown}\n---\n**Completeness attestation:** ${LOCAL_ASSISTANT_ATTESTATION} ${ARCHIVE_NOTICE}`,
+    passages: related.map(slimPassage),
+  };
 }
 
 async function searchAskSources(asked, sources) {
-  const matches = [];
-  for (const { q, requirePhrase } of askSearchQueries(asked)) {
-    const found = await searchCorpus(q, {
-      limit: Infinity,
-      sources,
-      contentWords: [],
-      boostWords: asked.boostWords,
-      preferSpeech: asked.preferSpeech,
-      preferCanon: sources.includes("canon"),
-      requirePhrase,
-      mustHitAll: false,
-    });
-    matches.push(...found.matches);
-  }
-  return matches;
+  const found = await searchCorpusMany(askSearchQueries(asked), {
+    limit: Infinity,
+    sources,
+    contentWords: [],
+    boostWords: asked.boostWords,
+    preferSpeech: asked.preferSpeech,
+    preferCanon: sources.includes("canon"),
+    mustHitAll: false,
+    clipLong: true,
+  });
+  return found.matches;
 }
 
 const ASK_ALL_SOURCES = ASK_SCRIPTURE_SOURCES.concat([
@@ -265,7 +266,7 @@ async function study_assistant({ question, history, corpus }) {
   requireUser();
   const q = String(question || "").trim();
   if (!q) return fail("A question is required.");
-  const asked = understandQuestion(q, { history, corpus });
+  const asked = understandQuestion(q, { history: askHistory(history), corpus });
   let coverage;
   try {
     coverage = await corpusCoverage();
@@ -283,9 +284,13 @@ async function study_assistant({ question, history, corpus }) {
   } catch (error) {
     return fail(error.message);
   }
-  recordAssistantLearning({ topics: asked.topics || asked.words, passages });
-
-  return { answer: quoteOnlyAnswer(asked.question, passages, asked) };
+  const slim = passages.map(slimPassage);
+  recordAssistantLearning({ topics: asked.topics || asked.words, passages: slim });
+  try {
+    return quoteOnlyAnswer(asked.question, slim, asked);
+  } catch (error) {
+    return fail(error.message || "The Assistant could not finish that answer.");
+  }
 }
 
 async function define_word({ word, reference }) {

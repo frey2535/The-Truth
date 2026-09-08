@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  buildAssistantAnswer,
   extraSearchesForKind,
   isYesNoQuestion,
   questionKind,
@@ -8,6 +9,8 @@ import {
   yesNoOpening,
 } from "../src/lib/assistantAnswer.js";
 import { understandLiterature } from "../src/lib/literatureMeaning.js";
+import { slimPassage } from "../src/lib/assistantAnswer.js";
+import { askHistory, clipPassageText, persistableMessages } from "../src/lib/assistantSafety.js";
 import { familyHitsText, familyOf } from "../src/lib/wordFamilies.js";
 import { learningCannotManipulate, recordAssistantLearning } from "../src/lib/assistantLearn.js";
 import { topicTermsFrom } from "../src/lib/questionTopics.js";
@@ -138,5 +141,35 @@ const learned = recordAssistantLearning({
 });
 assert.equal(learned.learnedOnlyExpandsRecall, true);
 assert.equal(learned.recorded, true);
+
+const built = buildAssistantAnswer("What must I do to be saved?", samples, savedAsk);
+assert.match(built.markdown, /Understanding of the literature/);
+assert.ok(built.related.some((row) => row.reference === "John 3:16"));
+assert.doesNotMatch(built.markdown, /baptism doth also now save us/);
+assert.match(writeAssistantAnswer("What must I do to be saved?", samples, savedAsk), /baptism doth also now save us/);
+
+assert.ok(clipPassageText("a".repeat(2000)).endsWith("…"));
+assert.ok(clipPassageText("a".repeat(2000)).length < 910);
+assert.ok(slimPassage({ source: "canon", reference: "John 3:16", text: "x".repeat(2000) }).text.length < 910);
+
+const hugeHistory = [
+  { role: "user", content: "what must I do to be saved?" },
+  {
+    role: "assistant",
+    content: `${"Understanding\n".repeat(20)}### All stored wording\n${"quote\n".repeat(8000)}`,
+    passages: Array.from({ length: 200 }, (_, i) => ({
+      source: "canon",
+      reference: `John 3:${i + 1}`,
+      text: "x".repeat(2000),
+    })),
+  },
+];
+const forAsk = askHistory(hugeHistory);
+assert.equal(forAsk.every((row) => row.content.length <= 4000), true);
+assert.equal(forAsk.every((row) => !row.passages), true);
+const saved = persistableMessages(hugeHistory);
+assert.ok(saved[1].passages.length <= 40);
+assert.ok(saved[1].content.length < hugeHistory[1].content.length);
+assert.doesNotMatch(saved[1].content, /quote\nquote\nquote/);
 
 console.log("assistant understanding ok");

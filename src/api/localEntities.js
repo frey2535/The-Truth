@@ -1,6 +1,13 @@
+import { persistableMessages } from "@/lib/assistantSafety";
 import { requireUser } from "./localAuth";
 import { httpError, loadDb, newId, publicUser, saveDb } from "./localDb";
 import { LEARN_SEED } from "@/data/seedLearn";
+
+function sanitizeEntityData(name, data) {
+  if (name !== "Conversation" || !data || typeof data !== "object") return data;
+  if (!Object.prototype.hasOwnProperty.call(data, "messages")) return data;
+  return { ...data, messages: persistableMessages(data.messages) };
+}
 
 const ENTITY_NAMES = [
   "Evidence",
@@ -78,6 +85,9 @@ function createEntityApi(name) {
       records = records.filter((r) => matchesQuery(r, query));
       records = sortRecords(records, sort || "-created_date");
       if (typeof limit === "number") records = records.slice(0, limit);
+      if (name === "Conversation") {
+        records = records.map((row) => ({ ...row, messages: persistableMessages(row.messages) }));
+      }
       return records;
     },
 
@@ -90,6 +100,9 @@ function createEntityApi(name) {
       const records = scopedList(db, user, name, getCollection(db, name));
       const found = records.find((r) => r.id === id);
       if (!found) throw httpError(`${name} not found`, 404);
+      if (name === "Conversation") {
+        return { ...found, messages: persistableMessages(found.messages) };
+      }
       return found;
     },
 
@@ -98,7 +111,7 @@ function createEntityApi(name) {
       if (name === "User") throw httpError("Create users through registration");
       const now = new Date().toISOString();
       const record = {
-        ...data,
+        ...sanitizeEntityData(name, data),
         id: newId(name.toLowerCase()),
         created_date: now,
         updated_date: now,
@@ -133,7 +146,7 @@ function createEntityApi(name) {
       }
       const updated = {
         ...existing,
-        ...patch,
+        ...sanitizeEntityData(name, patch),
         id: existing.id,
         created_date: existing.created_date,
         created_by_id: existing.created_by_id,

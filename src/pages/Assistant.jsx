@@ -5,7 +5,69 @@ import { Input } from "@/components/ui/input";
 import { Send, Loader2, ShieldCheck, Square, History, PlusCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import HistoryDialog from "@/components/assistant/HistoryDialog";
-import { SEARCH_CORPORA } from "@/lib/localCorpusSearch";
+import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
+import { askHistory, loadableMessages, persistableMessages } from "@/lib/assistantSafety";
+
+const QUOTE_BATCH = 24;
+
+class AssistantTurnBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { failed: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  render() {
+    if (this.state.failed) {
+      return (
+        <p className="text-[#7a2e2e]">
+          That answer was too large to show in this window. Ask the question again.
+        </p>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function StoredWording({ passages }) {
+  const rows = Array.isArray(passages) ? passages : [];
+  const [shown, setShown] = useState(Math.min(QUOTE_BATCH, rows.length));
+
+  useEffect(() => {
+    setShown(Math.min(QUOTE_BATCH, rows.length));
+  }, [passages, rows.length]);
+
+  if (!rows.length) return null;
+  let lastGroup = "";
+  return (
+    <div className="mt-4 space-y-3">
+      {rows.slice(0, shown).map((p, i) => {
+        const group = SOURCE_LABEL[p.source] || p.source || "stored text";
+        const heading = group !== lastGroup;
+        lastGroup = group;
+        return (
+          <div key={`${p.source}|${p.reference}|${i}`}>
+            {heading ? <h4 className="font-display text-lg text-[#7a2e2e] mt-4 mb-2">{group}</h4> : null}
+            <p className="font-medium text-[#2b2620]">{p.reference}</p>
+            <blockquote className="border-l-2 border-[#c4b59a] pl-3 my-1 text-[#3a3328]">{p.text}</blockquote>
+          </div>
+        );
+      })}
+      {shown < rows.length ? (
+        <button
+          type="button"
+          onClick={() => setShown((n) => Math.min(n + QUOTE_BATCH, rows.length))}
+          className="text-sm text-[#7a2e2e] underline"
+        >
+          Show more stored wording ({shown} of {rows.length})
+        </button>
+      ) : null}
+    </div>
+  );
+}
 
 export default function Assistant() {
   const [messages, setMessages] = useState([]);
@@ -53,11 +115,12 @@ export default function Assistant() {
   async function persist(finalMessages, id) {
     const title = titleFromMessages(finalMessages);
     try {
+      const saved = persistableMessages(finalMessages);
       if (id) {
-        await base44.entities.Conversation.update(id, { messages: finalMessages, title });
+        await base44.entities.Conversation.update(id, { messages: saved, title });
         return id;
       }
-      const c = await base44.entities.Conversation.create({ title, messages: finalMessages });
+      const c = await base44.entities.Conversation.create({ title, messages: saved });
       return c.id;
     } catch {
       return id;
@@ -76,12 +139,19 @@ export default function Assistant() {
     try {
       const res = await base44.functions.invoke("study_assistant", {
         question: q,
-        history: messages,
+        history: askHistory(messages),
         corpus,
       });
       if (reqId.current !== myId) return;
       if (res.data?.error) throw new Error(res.data.error);
-      const final = [...next, { role: "assistant", content: res.data.answer }];
+      const final = [
+        ...next,
+        {
+          role: "assistant",
+          content: res.data.answer,
+          passages: Array.isArray(res.data.passages) ? res.data.passages : [],
+        },
+      ];
       setMessages(final);
       const newId = await persist(final, conversationId);
       if (reqId.current === myId) setConversationId(newId);
@@ -115,7 +185,7 @@ export default function Assistant() {
 
   function loadConversation(conv) {
     setConversationId(conv.id);
-    setMessages(conv.messages || []);
+    setMessages(loadableMessages(conv.messages));
     setHistoryOpen(false);
   }
 
@@ -193,9 +263,12 @@ export default function Assistant() {
                 }`}
               >
                 {m.role === "assistant" ? (
-                  <div className="text-[#3a3328] leading-relaxed space-y-2 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-[#2b2620] [&_h2]:mt-0 [&_h3]:font-display [&_h3]:text-xl [&_h3]:text-[#2b2620] [&_h4]:font-display [&_h4]:text-lg [&_h4]:text-[#7a2e2e] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_a]:text-[#7a2e2e] [&_a]:underline">
-                    <ReactMarkdown>{m.content}</ReactMarkdown>
-                  </div>
+                  <AssistantTurnBoundary>
+                    <div className="text-[#3a3328] leading-relaxed space-y-2 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-[#2b2620] [&_h2]:mt-0 [&_h3]:font-display [&_h3]:text-xl [&_h3]:text-[#2b2620] [&_h4]:font-display [&_h4]:text-lg [&_h4]:text-[#7a2e2e] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_a]:text-[#7a2e2e] [&_a]:underline">
+                      <ReactMarkdown>{m.content}</ReactMarkdown>
+                      <StoredWording passages={m.passages} />
+                    </div>
+                  </AssistantTurnBoundary>
                 ) : (
                   <p className="leading-relaxed">{m.content}</p>
                 )}
@@ -206,7 +279,7 @@ export default function Assistant() {
         {loading && (
           <div className="flex justify-start">
             <div className="bg-[#f0e6d2] rounded-2xl px-4 py-3 inline-flex items-center gap-2 text-[#8a7f6f]">
-              <Loader2 className="w-4 h-4 animate-spin" /> Researching…
+              <Loader2 className="w-4 h-4 animate-spin" /> Reading stored writings. The page stays usable…
             </div>
           </div>
         )}
@@ -234,7 +307,6 @@ export default function Assistant() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about any passage, topic, or word…"
           className="flex-1 h-12 bg-white border-[#e8ddc7]"
-          disabled={loading}
         />
         {loading ? (
           <Button type="button" onClick={stop} className="h-12 px-5 bg-[#7a2e2e] hover:bg-[#6a2424] text-[#f3e9c8]">

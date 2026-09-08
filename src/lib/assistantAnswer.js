@@ -1,3 +1,4 @@
+import { clipPassageText } from "./assistantSafety.js";
 import { familyHitsText } from "./wordFamilies.js";
 import {
   baptismTiedToSalvation,
@@ -240,8 +241,19 @@ function writePassageBlock(lines, rows) {
   }
 }
 
-export function writeAssistantAnswer(question, passages, asked) {
-  const related = sortPassages((passages || []).filter((row) => verseRelatedToQuestion(row, asked)));
+export function slimPassage(row) {
+  return {
+    source: row.source || "",
+    reference: String(row.reference || "").trim(),
+    text: clipPassageText(row.text),
+    book: row.book || "",
+    chapter: row.chapter,
+    verse: row.verse,
+  };
+}
+
+export function buildAssistantAnswer(question, passages, asked) {
+  const related = sortPassages((passages || []).filter((row) => verseRelatedToQuestion(row, asked))).map(slimPassage);
   const lines = [];
   lines.push("### Your question");
   lines.push(String(question || asked?.question || "").split("\n")[0]);
@@ -256,7 +268,7 @@ export function writeAssistantAnswer(question, passages, asked) {
     lines.push("");
     lines.push("No stored passage in this app uses wording that belongs to this question.");
     lines.push("");
-    return lines.join("\n");
+    return { markdown: lines.join("\n"), related: [] };
   }
   writeUnderstanding(lines, related, asked);
   lines.push("### Answer");
@@ -268,6 +280,15 @@ export function writeAssistantAnswer(question, passages, asked) {
     `${related.length} stored passage${related.length === 1 ? "" : "s"} were read for this understanding. Their wording is below.`
   );
   lines.push("");
+  return { markdown: lines.join("\n"), related };
+}
+
+export function writeAssistantAnswer(question, passages, asked) {
+  const { markdown, related } = buildAssistantAnswer(question, passages, asked);
+  if (!related.length) return markdown;
+  const lines = [markdown];
   writePassageBlock(lines, related);
   return lines.join("\n");
 }
+
+export { SOURCE_LABEL };
