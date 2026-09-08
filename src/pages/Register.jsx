@@ -191,8 +191,8 @@ export default function Register() {
       </Button>
       {googleReady ? null : (
         <p className="text-xs text-muted-foreground -mt-4 mb-6">
-          Google is not connected on this site yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET as
-          Secrets on the Cloudflare Pages project thetruth, then redeploy.
+          Google is not connected on this copy yet. The live site reads GOOGLE_CLIENT_ID from the
+          thetruth Pages environment.
         </p>
       )}
 

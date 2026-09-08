@@ -136,7 +136,7 @@ export async function requestGoogleProfile() {
   const clientId = await resolveGoogleClientId();
   if (!clientId) {
     throw new Error(
-      "Google sign-in is not configured. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET as Secrets on the Cloudflare Pages project thetruth (or VITE_GOOGLE_CLIENT_ID in .env.local), then redeploy."
+      "Google sign-in is not connected on this copy. On the live site the function reads GOOGLE_CLIENT_ID from the thetruth Pages environment. Locally set VITE_GOOGLE_CLIENT_ID in .env.local."
     );
   }
   const google = await loadGis();

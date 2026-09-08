@@ -70,9 +70,11 @@ export default function Login() {
         } catch (readerErr) {
           if (normalizeEmail(email) === OWNER_EMAIL_DEFAULT) {
             throw new Error(
-              /cannot see PLATFORM_OWNER_PASSWORD|not configured/i.test(ownerErr.message || "")
-                ? "This is the platform owner email. Add PLATFORM_OWNER_PASSWORD as a Secret on the Cloudflare Pages project named thetruth, then retry the latest deploy."
-                : "This is the platform owner email. Use the password you saved in Cloudflare, or open Platform owner sign-in."
+              /did not receive PLATFORM_OWNER_PASSWORD|cannot see PLATFORM_OWNER_PASSWORD|not configured|wrangler\.toml/i.test(
+                ownerErr.message || ""
+              )
+                ? "This is the platform owner email. The password is already in Cloudflare — this deploy did not receive it. Open Platform owner sign-in after the next deploy."
+                : "This is the platform owner email. Use the password saved in Cloudflare, or open Platform owner sign-in."
             );
           }
           throw readerErr;
@@ -138,8 +140,8 @@ export default function Login() {
       </Button>
       {googleReady ? null : (
         <p className="text-xs text-muted-foreground -mt-4 mb-6">
-          Google is not connected on this site yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET as
-          Secrets on the Cloudflare Pages project thetruth, then redeploy.
+          Google is not connected on this copy yet. The live site reads GOOGLE_CLIENT_ID from the
+          thetruth Pages environment.
         </p>
       )}
 

@@ -37,7 +37,7 @@ export async function handleOwnerLogin({ body, credentials }) {
       status: 503,
       body: {
         error:
-          "The live site still cannot see PLATFORM_OWNER_PASSWORD. Add it as a Secret on the Cloudflare Pages project named thetruth, then retry the latest deploy.",
+          "This deploy did not receive PLATFORM_OWNER_PASSWORD from the Pages environment.",
       },
     };
   }
@@ -102,7 +102,7 @@ export async function handleInstallsRequest({ method, body, authorization, crede
       status: 503,
       body: {
         error:
-          "The live site still cannot see PLATFORM_OWNER_PASSWORD. Add it as a Secret on the Cloudflare Pages project named thetruth, then retry the latest deploy.",
+          "This deploy did not receive PLATFORM_OWNER_PASSWORD from the Pages environment.",
       },
     };
   }

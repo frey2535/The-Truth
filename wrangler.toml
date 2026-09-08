@@ -1,11 +1,7 @@
 name = "thetruth"
 pages_build_output_dir = "dist"
 
-[vars]
-# Live URL: https://thetruth.currentflowconsulting.org
-PLATFORM_OWNER_EMAIL = "owner@thetruth.currentflowconsulting.org"
-# Set PLATFORM_OWNER_PASSWORD, GOOGLE_CLIENT_ID, and GOOGLE_CLIENT_SECRET
-# as Cloudflare Pages secrets (not here). Text dashboard vars are ignored.
-#
-# GitHub Actions binds a KV namespace named INSTALLS so download counts survive
-# across data centers. Without it, the function falls back to Cache storage.
+# Do not add a [vars] block. Cloudflare Pages then ignores dashboard Text
+# environment variables, so PLATFORM_OWNER_PASSWORD and Google values that
+# already show in the thetruth project never reach the live functions.
+# Deploy with `node scripts/pages-deploy.mjs` so this file is not applied.
