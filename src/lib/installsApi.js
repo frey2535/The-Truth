@@ -1,6 +1,5 @@
 import { PRIOR_INSTALLS } from "../data/priorInstalls.js";
 import {
-  createOwnerSession,
   emptyLedger,
   mergeDevices,
   normalizeEmail,
@@ -10,6 +9,8 @@ import {
   passwordsMatch,
   pruneSessions,
   recordDevice,
+  signOwnerToken,
+  verifyOwnerToken,
 } from "./installLedger.js";
 
 async function loadMerged(load, save) {
@@ -30,7 +31,7 @@ function bearerToken(authorization) {
   return match ? match[1].trim() : "";
 }
 
-export async function handleOwnerLogin({ body, credentials, load, save }) {
+export async function handleOwnerLogin({ body, credentials }) {
   if (!credentials.configured) {
     return {
       status: 503,
@@ -45,17 +46,21 @@ export async function handleOwnerLogin({ body, credentials, load, save }) {
   if (email !== credentials.email || !passwordsMatch(password, credentials.password)) {
     return { status: 401, body: { error: "Invalid owner email or password" } };
   }
-  const ledger = pruneSessions(await loadMerged(load, save));
-  const session = createOwnerSession(ledger, email);
-  await save(session.ledger);
+  const session = await signOwnerToken(email, credentials.password);
   return {
     status: 200,
-    body: {
-      token: session.token,
-      email,
-      exp: session.exp,
-    },
+    body: session,
   };
+}
+
+export async function resolveOwnerSession({ authorization, credentials, load, save }) {
+  const token = bearerToken(authorization);
+  if (!token) return null;
+  const signed = await verifyOwnerToken(token, credentials.password, Date.now(), credentials.email);
+  if (signed) return signed;
+  if (!load) return null;
+  const ledger = pruneSessions(await loadMerged(load, save));
+  return ownerSession(ledger, token);
 }
 
 export async function handleInstallsRequest({ method, body, authorization, credentials, load, save }) {
@@ -67,11 +72,11 @@ export async function handleInstallsRequest({ method, body, authorization, crede
           body: { error: "Platform owner sign-in is required to record past installs." },
         };
       }
-      const ledger = pruneSessions(await loadMerged(load, save));
-      const session = ownerSession(ledger, bearerToken(authorization));
+      const session = await resolveOwnerSession({ authorization, credentials, load, save });
       if (!session) {
         return { status: 401, body: { error: "Platform owner sign-in is required" } };
       }
+      const ledger = pruneSessions(await loadMerged(load, save));
       const rows = Array.isArray(body.downloads) ? body.downloads : [body];
       const extras = rows.map((row) => ({
         device: String(row.device || "").trim() || newPriorDeviceId(),
@@ -102,12 +107,26 @@ export async function handleInstallsRequest({ method, body, authorization, crede
     };
   }
 
-  const ledger = pruneSessions(await loadMerged(load, save));
-  const session = ownerSession(ledger, bearerToken(authorization));
+  const session = await resolveOwnerSession({ authorization, credentials, load, save });
   if (!session) {
     return { status: 401, body: { error: "Platform owner sign-in is required" } };
   }
+  const ledger = pruneSessions(await loadMerged(load, save));
   return { status: 200, body: { email: session.email, ...ownerStats(ledger) } };
+}
+
+export async function handleInstallHit({ query, load, save }) {
+  return persistRecordedDevice({
+    body: {
+      device: query.device,
+      platform: query.platform,
+      source: query.source,
+      standalone: query.standalone === "1" || query.standalone === "true",
+      at: query.at,
+    },
+    load,
+    save,
+  });
 }
 
 export async function persistRecordedDevice({ body, load, save, attempts = 5 }) {

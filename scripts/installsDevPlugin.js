@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { emptyLedger } from "../src/lib/installLedger.js";
-import { handleInstallsRequest, handleOwnerLogin, readOwnerCredentials } from "../src/lib/installsApi.js";
+import { handleInstallHit, handleInstallsRequest, handleOwnerLogin, readOwnerCredentials } from "../src/lib/installsApi.js";
 
 function send(res, status, body) {
   res.statusCode = status;
@@ -47,7 +47,7 @@ export function installsDevPlugin(rootDir) {
 
   const handle = async (req, res, next) => {
     const url = (req.url || "").split("?")[0];
-    if (url !== "/api/installs" && url !== "/api/owner-login") {
+    if (url !== "/api/installs" && url !== "/api/owner-login" && url !== "/api/install-hit") {
       next();
       return;
     }
@@ -65,6 +65,15 @@ export function installsDevPlugin(rootDir) {
       }
     }
     try {
+      if (url === "/api/install-hit") {
+        const query = Object.fromEntries(new URL(req.url, "http://localhost").searchParams.entries());
+        await handleInstallHit({ query, load, save });
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "image/gif");
+        res.setHeader("Cache-Control", "no-store");
+        res.end(Buffer.from("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7", "base64"));
+        return;
+      }
       const result =
         url === "/api/owner-login"
           ? await handleOwnerLogin({

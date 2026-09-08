@@ -10,9 +10,9 @@ import {
   displayLooksInstalled,
   launchedFromAndroidApp,
 } from "../src/lib/installDisplay.js";
-import { persistRecordedDevice } from "../src/lib/installsApi.js";
-import { emptyLedger } from "../src/lib/installLedger.js";
-import { loadInstallLedger, saveInstallLedger } from "../src/lib/installStore.js";
+import { handleInstallHit, handleOwnerLogin, persistRecordedDevice } from "../src/lib/installsApi.js";
+import { emptyLedger, OWNER_EMAIL_DEFAULT } from "../src/lib/installLedger.js";
+import { INSTALL_LEDGER_CACHE_URL, loadInstallLedger, saveInstallLedger } from "../src/lib/installStore.js";
 
 assert.equal(isLoopbackInstallOrigin("truth.localhost"), true);
 assert.equal(isLoopbackInstallOrigin("192.168.1.20"), false);
@@ -109,5 +109,55 @@ assert.equal(loaded.devices["device-kv-1111"].source, "play");
 env.INSTALLS.map.delete("ledger");
 const recovered = await loadInstallLedger(env);
 assert.equal(recovered.devices["device-kv-1111"].platform, "android");
+
+const login = await handleOwnerLogin({
+  body: { email: OWNER_EMAIL_DEFAULT, password: "owner-secret" },
+  credentials: { configured: true, email: OWNER_EMAIL_DEFAULT, password: "owner-secret" },
+});
+assert.equal(login.status, 200);
+assert.ok(login.body.token.startsWith("own2."));
+
+const hitStore = { ledger: emptyLedger() };
+const hit = await handleInstallHit({
+  query: { device: "device-hit-9999", platform: "ios", source: "appinstalled", standalone: "1" },
+  load: async () => hitStore.ledger,
+  save: async (ledger) => {
+    hitStore.ledger = ledger;
+  },
+});
+assert.equal(hit.status, 200);
+assert.equal(hit.body.recorded, true);
+assert.equal(Boolean(hitStore.ledger.devices["device-hit-9999"]), true);
+
+const cacheMap = new Map();
+globalThis.caches = {
+  default: {
+    async match(url) {
+      const raw = cacheMap.get(String(url));
+      return raw ? new Response(raw, { headers: { "Content-Type": "application/json" } }) : undefined;
+    },
+    async put(url, res) {
+      cacheMap.set(String(url), await res.clone().text());
+    },
+  },
+};
+cacheMap.set(
+  INSTALL_LEDGER_CACHE_URL,
+  JSON.stringify({
+    devices: {
+      "live-four-aaaa": { at: "2026-09-08T18:00:00.000Z", platform: "ios", source: "standalone" },
+      "live-four-bbbb": { at: "2026-09-08T18:01:00.000Z", platform: "android", source: "appinstalled" },
+      "live-four-cccc": { at: "2026-09-08T18:02:00.000Z", platform: "android", source: "prompt" },
+      "live-four-dddd": { at: "2026-09-08T18:03:00.000Z", platform: "desktop", source: "homescreen" },
+    },
+    sessions: {},
+  })
+);
+const emptyKv = { INSTALLS: new MemoryKV() };
+const hydrated = await loadInstallLedger(emptyKv);
+assert.equal(Object.keys(hydrated.devices).length, 4);
+await saveInstallLedger(emptyKv, { devices: {}, sessions: {} });
+assert.equal(Object.keys(JSON.parse(emptyKv.INSTALLS.map.get("ledger")).devices).length, 4);
+assert.equal(Boolean(emptyKv.INSTALLS.map.get("device:live-four-dddd")), true);
 
 console.log("install metrics ok");

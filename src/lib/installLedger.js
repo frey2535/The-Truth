@@ -73,6 +73,39 @@ export function ownerSession(ledger, token, now = Date.now()) {
   return row;
 }
 
+async function hmacHex(secret, text) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(String(secret)),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(String(text)));
+  return Array.from(new Uint8Array(sig), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/** Signed owner token — does not write the download ledger. */
+export async function signOwnerToken(email, secret, now = Date.now()) {
+  const normalized = normalizeEmail(email);
+  const exp = now + OWNER_SESSION_MS;
+  const payload = `${normalized}|${exp}`;
+  const sig = await hmacHex(secret, payload);
+  return { token: `own2.${exp}.${sig}`, email: normalized, exp };
+}
+
+export async function verifyOwnerToken(token, secret, now = Date.now(), email = OWNER_EMAIL_DEFAULT) {
+  const raw = String(token || "");
+  const parts = raw.split(".");
+  if (parts[0] !== "own2" || parts.length !== 3 || !secret) return null;
+  const exp = Number(parts[1]);
+  if (!exp || exp < now) return null;
+  const normalized = normalizeEmail(email);
+  const expected = await hmacHex(secret, `${normalized}|${exp}`);
+  if (!passwordsMatch(parts[2], expected)) return null;
+  return { email: normalized, exp };
+}
+
 export function recordDevice(ledger, event) {
   const device = String(event?.device || "").trim();
   if (!device || device.length < 8) {

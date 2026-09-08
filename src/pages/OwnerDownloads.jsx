@@ -45,18 +45,24 @@ export default function OwnerDownloads() {
   useEffect(() => {
     if (!isOwner) return undefined;
     let cancelled = false;
-    (async () => {
+    async function refresh() {
       try {
         const data = await base44.owner.downloads();
-        if (!cancelled) setStats(data);
+        if (!cancelled) {
+          setStats(data);
+          setError("");
+        }
       } catch (err) {
         if (!cancelled) setError(err.message || "Could not load downloads");
       } finally {
         if (!cancelled) setLoading(false);
       }
-    })();
+    }
+    refresh();
+    const timer = window.setInterval(refresh, 8000);
     return () => {
       cancelled = true;
+      window.clearInterval(timer);
     };
   }, [isOwner]);
 
@@ -138,11 +144,10 @@ export default function OwnerDownloads() {
         <div className="rounded-2xl border border-[#e8c97a]/35 bg-[#faf6ef]/92 backdrop-blur-md p-6 mb-5">
           <h2 className="font-display text-xl text-[#2b2620] mb-2">Add a past install</h2>
           <p className="text-sm text-[#5b5142] mb-4">
-            A download is counted when Chrome finishes Install, when Google Play opens this site, or
-            the first time a home-screen icon opens. iPhone Add to Home Screen has no browser event —
-            it registers when they tap the icon. Reports go to the public site, including phones that
-            first opened a Wi‑Fi link. Installs from before 7 September 2026 were not stored; add them
-            here if that device never opens again.
+            This number is devices stored on this site — not Google Play’s store total. A download is
+            counted when Chrome finishes Install, when Play opens this site, or the first time a
+            home-screen icon opens. iPhone Add to Home Screen registers when they tap the icon.
+            Earlier installs that never open again can be added here so they stay in the list.
           </p>
           {formError ? <p className="mb-3 text-sm text-[#7a2e2e]">{formError}</p> : null}
           <form onSubmit={addPastInstall} className="grid gap-3 sm:grid-cols-2">

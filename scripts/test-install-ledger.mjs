@@ -9,6 +9,8 @@ import {
   ownerStats,
   passwordsMatch,
   recordDevice,
+  signOwnerToken,
+  verifyOwnerToken,
 } from "../src/lib/installLedger.js";
 
 assert.equal(passwordsMatch("owner-local", "owner-local"), true);
@@ -82,5 +84,11 @@ const session = createOwnerSession(ledger, OWNER_EMAIL_DEFAULT, 1_000);
 assert.ok(session.token.startsWith("own_"));
 assert.ok(ownerSession(session.ledger, session.token, 1_000));
 assert.equal(ownerSession(session.ledger, session.token, session.exp + 1), null);
+
+const signed = await signOwnerToken(OWNER_EMAIL_DEFAULT, "owner-secret", 1_000);
+assert.ok(signed.token.startsWith("own2."));
+assert.equal((await verifyOwnerToken(signed.token, "owner-secret", 1_000)).email, OWNER_EMAIL_DEFAULT);
+assert.equal(await verifyOwnerToken(signed.token, "wrong-secret", 1_000), null);
+assert.equal(await verifyOwnerToken(signed.token, "owner-secret", signed.exp + 1), null);
 
 console.log("install ledger ok");
