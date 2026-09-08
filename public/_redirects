@@ -1,4 +1,15 @@
 /.well-known/*  /.well-known/:splat  200
+/login  /index.html  200
+/register  /index.html  200
+/forgot-password  /index.html  200
+/reset-password  /index.html  200
+/owner  /index.html  200
+/owner/*  /index.html  200
+/privacy  /index.html  200
+/data-safety  /index.html  200
+/account  /index.html  200
+/install  /index.html  200
+/library  /index.html  200
 /corpus/*  /404.html  404
 /dss/*  /404.html  404
 /*    /index.html   200
