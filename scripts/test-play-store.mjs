@@ -38,8 +38,9 @@ const manifest = JSON.parse(readFileSync("public/manifest.json", "utf8"));
 assert.equal(manifest.related_applications?.[0]?.id, PLAY_PACKAGE_ID);
 assert.equal(manifest.related_applications?.[1]?.platform, "webapp");
 assert.equal(manifest.prefer_related_applications, false);
-const routes = JSON.parse(readFileSync("public/_routes.json", "utf8"));
-assert.ok(routes.include?.includes("/api/*"));
+const redirects = readFileSync("public/_redirects", "utf8");
+assert.match(redirects, /^\/login\s+\/index\.html\s+200/m);
+assert.match(redirects, /^\/owner\s+\/index\.html\s+200/m);
 assert.ok(manifest.screenshots?.length >= 2);
 assert.ok(manifest.icons.some((icon) => icon.purpose === "maskable"));
 
@@ -58,7 +59,6 @@ const manifestXml = readFileSync("android/app/src/main/AndroidManifest.xml", "ut
 assert.equal(/<uses-permission[^>]*BILLING/i.test(manifestXml), false);
 assert.match(readFileSync("store/play/listing.md", "utf8"), /Pricing[\s\S]*Free/i);
 
-const redirects = readFileSync("public/_redirects", "utf8");
 assert.match(redirects, /\.well-known/);
 
 for (const file of [

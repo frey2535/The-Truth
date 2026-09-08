@@ -1,15 +1,14 @@
 /**
- * Create the thetruth-installs KV namespace if needed and bind it as INSTALLS
- * on the Cloudflare Pages project. Safe to run on every deploy.
+ * Create the thetruth-installs KV namespace if needed.
+ * Does not PATCH the Pages project — rewriting deployment_configs strips
+ * Secrets (PLATFORM_OWNER_PASSWORD, Google) and breaks sign-in.
  */
 const ACCOUNT = String(process.env.CLOUDFLARE_ACCOUNT_ID || "").trim();
 const TOKEN = String(process.env.CLOUDFLARE_API_TOKEN || "").trim();
-const PROJECT = "thetruth";
 const TITLE = "thetruth-installs";
-const BINDING = "INSTALLS";
 
 if (!ACCOUNT || !TOKEN) {
-  console.log("No Cloudflare credentials; skip INSTALLS KV bind.");
+  console.log("No Cloudflare credentials; skip INSTALLS KV ensure.");
   process.exit(0);
 }
 
@@ -37,27 +36,6 @@ if (!ns) {
 } else {
   console.log(`Using KV namespace ${TITLE} (${ns.id})`);
 }
-
-const project = await cf(`/pages/projects/${PROJECT}`);
-const configs = project.deployment_configs || {};
-const patchEnv = (envName) => {
-  const current = configs[envName] || {};
-  const kv = { ...(current.kv_namespaces || {}) };
-  if (kv[BINDING]?.namespace_id === ns.id) return current;
-  kv[BINDING] = { namespace_id: ns.id };
-  return { ...current, kv_namespaces: kv };
-};
-const production = patchEnv("production");
-const preview = patchEnv("preview");
-
-await cf(`/pages/projects/${PROJECT}`, {
-  method: "PATCH",
-  body: {
-    deployment_configs: {
-      ...configs,
-      production,
-      preview,
-    },
-  },
-});
-console.log(`Bound ${BINDING} on Pages project ${PROJECT}`);
+console.log(
+  "Bind it as INSTALLS on Pages project thetruth in the dashboard if it is not already bound. Do not PATCH deployment_configs from CI."
+);

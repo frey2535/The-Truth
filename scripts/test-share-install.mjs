@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   facebookShareUrl,
   isLoopbackInstallOrigin,
@@ -29,6 +30,10 @@ assert.equal(isAuthPath("/forgot-password"), true);
 assert.equal(isAuthPath("/owner"), true);
 assert.equal(isAuthPath("/owner/downloads"), true);
 assert.equal(isAuthPath("/library"), false);
+
+const redirects = readFileSync("public/_redirects", "utf8");
+assert.match(redirects, /^\/login\s+\/index\.html\s+200/m);
+assert.match(redirects, /^\/owner\s+\/index\.html\s+200/m);
 assert.equal(isAuthPath("/"), false);
 assert.equal(isAuthPath("/The-Truth/login", "/The-Truth/"), true);
 assert.equal(isAuthPath("/The-Truth/library", "/The-Truth/"), false);
