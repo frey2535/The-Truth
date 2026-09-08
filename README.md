@@ -46,7 +46,7 @@ To post it on Facebook, share **https://thetruth.currentflowconsulting.org/?inst
 
 Each install is recorded once per device when Chrome finishes **Install**, when Google Play opens this site, or the first time a home-screen icon opens. iPhone **Add to Home Screen** has no browser event — it counts when they tap the icon. Phones that first open a Wi‑Fi / LAN copy still report to the public Cloudflare counter. Sign in at **/owner** to see the full list. Installs from before 7 September 2026 were not stored; add them on that page, or they appear when that home-screen app opens again.
 
-On the Cloudflare Pages project **thetruth**, bind a KV namespace named **INSTALLS** (Settings → Functions → KV namespace bindings). Without that binding the live counter can forget installs. Then retry the latest deploy.
+GitHub Actions creates and binds a KV namespace named **INSTALLS** on the Cloudflare Pages project **thetruth** during deploy. That store is what keeps every phone’s report in one place. If you publish by hand, run `node scripts/ensure-installs-kv.mjs` with `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` first.
 
 - **Local:** [http://truth.localhost:5174/owner](http://truth.localhost:5174/owner)  
   Email `owner@thetruth.currentflowconsulting.org`  

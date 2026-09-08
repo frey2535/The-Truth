@@ -45,18 +45,24 @@ export default function OwnerDownloads() {
   useEffect(() => {
     if (!isOwner) return undefined;
     let cancelled = false;
-    (async () => {
+    async function refresh() {
       try {
         const data = await base44.owner.downloads();
-        if (!cancelled) setStats(data);
+        if (!cancelled) {
+          setStats(data);
+          setError("");
+        }
       } catch (err) {
         if (!cancelled) setError(err.message || "Could not load downloads");
       } finally {
         if (!cancelled) setLoading(false);
       }
-    })();
+    }
+    refresh();
+    const timer = window.setInterval(refresh, 8000);
     return () => {
       cancelled = true;
+      window.clearInterval(timer);
     };
   }, [isOwner]);
 
