@@ -23,6 +23,10 @@ function asLedger(value) {
   };
 }
 
+export function deviceRows(ledger) {
+  return Object.entries(asLedger(ledger).devices).map(([device, row]) => ({ device, ...row }));
+}
+
 async function loadDeviceKeys(env) {
   if (!env?.INSTALLS?.list) return [];
   try {
@@ -40,37 +44,49 @@ async function loadDeviceKeys(env) {
   }
 }
 
-export async function loadInstallLedger(env) {
-  if (env?.INSTALLS) {
-    const blob = asLedger(await env.INSTALLS.get(INSTALL_LEDGER_KEY, { type: "json" }));
-    const extras = await loadDeviceKeys(env);
-    if (!extras.length) return blob;
-    return mergeDevices(blob, extras).ledger;
-  }
+async function loadCacheLedger() {
   const cache = globalThis.caches?.default;
   if (!cache) return emptyLedger();
   const hit = await cache.match(INSTALL_LEDGER_CACHE_URL);
   return hit ? asLedger(await hit.json()) : emptyLedger();
 }
 
-export async function saveInstallLedger(env, ledger) {
-  const next = asLedger(ledger);
-  const raw = JSON.stringify(next);
-  if (env?.INSTALLS) {
-    await env.INSTALLS.put(INSTALL_LEDGER_KEY, raw);
-    await Promise.all(
-      Object.entries(next.devices).map(([device, row]) =>
-        env.INSTALLS.put(`device:${device}`, JSON.stringify(row))
-      )
-    );
-    return;
-  }
+async function saveCacheLedger(ledger) {
   const cache = globalThis.caches?.default;
   if (!cache) return;
+  const next = asLedger(ledger);
   await cache.put(INSTALL_LEDGER_CACHE_URL, jsonResponse(next));
   await Promise.all(
     Object.entries(next.devices).map(([device, row]) =>
       cache.put(`${INSTALL_DEVICE_CACHE_PREFIX}${encodeURIComponent(device)}`, jsonResponse(row))
     )
   );
+}
+
+/** Union of KV (when bound) and Cache so a new KV bind cannot drop the live count. */
+export async function loadInstallLedger(env) {
+  const cached = await loadCacheLedger();
+  if (!env?.INSTALLS) return cached;
+
+  const blob = asLedger(await env.INSTALLS.get(INSTALL_LEDGER_KEY, { type: "json" }));
+  const extras = await loadDeviceKeys(env);
+  const fromKv = extras.length ? mergeDevices(blob, extras).ledger : blob;
+  return mergeDevices(fromKv, deviceRows(cached)).ledger;
+}
+
+export async function saveInstallLedger(env, ledger) {
+  const incoming = asLedger(ledger);
+  const current = await loadInstallLedger(env);
+  const next = mergeDevices(current, deviceRows(incoming)).ledger;
+  next.sessions = { ...current.sessions, ...incoming.sessions };
+
+  if (env?.INSTALLS) {
+    await env.INSTALLS.put(INSTALL_LEDGER_KEY, JSON.stringify(next));
+    await Promise.all(
+      Object.entries(next.devices).map(([device, row]) =>
+        env.INSTALLS.put(`device:${device}`, JSON.stringify(row))
+      )
+    );
+  }
+  await saveCacheLedger(next);
 }
