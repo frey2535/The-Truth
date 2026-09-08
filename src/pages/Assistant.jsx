@@ -6,6 +6,7 @@ import { Send, Loader2, ShieldCheck, Square, History, PlusCircle } from "lucide-
 import ReactMarkdown from "react-markdown";
 import HistoryDialog from "@/components/assistant/HistoryDialog";
 import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
+import { shouldStartNewChat } from "@/lib/assistantChat";
 import { askHistory, loadableMessages, persistableMessages } from "@/lib/assistantSafety";
 
 const QUOTE_BATCH = 24;
@@ -131,7 +132,14 @@ export default function Assistant() {
     e.preventDefault();
     const q = input.trim();
     if (!q || loading) return;
-    const next = [...messages, { role: "user", content: q }];
+    const newTopic = shouldStartNewChat(q, messages);
+    if (newTopic && messages.length) {
+      await persist(messages, conversationId);
+    }
+    const prior = newTopic ? [] : messages;
+    const threadId = newTopic ? null : conversationId;
+    if (newTopic) setConversationId(null);
+    const next = [...prior, { role: "user", content: q }];
     setMessages(next);
     setInput("");
     setLoading(true);
@@ -139,7 +147,7 @@ export default function Assistant() {
     try {
       const res = await base44.functions.invoke("study_assistant", {
         question: q,
-        history: askHistory(messages),
+        history: askHistory(prior),
         corpus,
       });
       if (reqId.current !== myId) return;
@@ -153,7 +161,7 @@ export default function Assistant() {
         },
       ];
       setMessages(final);
-      const newId = await persist(final, conversationId);
+      const newId = await persist(final, threadId);
       if (reqId.current === myId) setConversationId(newId);
     } catch (err) {
       if (reqId.current !== myId) return;
@@ -241,9 +249,9 @@ export default function Assistant() {
             <p>
               Yes or No is used only when you ask a yes-or-no question. The Assistant reads the meaning
               of every stored writing that belongs to the question, answers from that whole-literature
-              understanding, then quotes the passages. King James, Apocrypha, Enoch, Scrolls, fathers,
-              Josephus, and the other writings in this app are searched. Nothing is invented or taken
-              from the internet.
+              understanding, then quotes the passages. A new chat starts when you change the topic.
+              Documents you store in the Library vault are searched with the other writings. Nothing is
+              invented or taken from the internet.
             </p>
           </div>
         )}

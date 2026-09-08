@@ -9,6 +9,7 @@ import BibleReader from "@/components/library/BibleReader";
 import ManuscriptReader from "@/components/library/ManuscriptReader";
 import ApocryphaLibrary from "@/components/library/ApocryphaLibrary";
 import CatalogBrowser from "@/components/library/CatalogBrowser";
+import YourDocuments from "@/components/library/YourDocuments";
 import WorkRecord from "@/components/library/WorkRecord";
 import { getCatalogWork, libraryReadHref } from "@/data/textCatalog";
 
@@ -138,6 +139,7 @@ export default function Library() {
 
   return (
     <div>
+      <YourDocuments />
       <CatalogBrowser
         onOpenWork={(id) => {
           const record = getCatalogWork(id);

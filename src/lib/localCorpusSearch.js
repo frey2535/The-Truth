@@ -13,6 +13,7 @@ import {
   uniqueMatches,
 } from "./corpusPassages.js";
 import { familyHitsText, familyOf } from "./wordFamilies.js";
+import { loadUserDocumentRows } from "./userDocuments.js";
 
 const STOP = new Set([
   "the", "and", "of", "to", "a", "in", "that", "is", "was", "for", "it", "with", "as",
@@ -340,13 +341,23 @@ async function loadCorpus() {
       } catch {
         manuscripts = [];
       }
-      return [...scripture, ...manuscripts, ...loadDssInlineRows(), ...loadArchiveRows()];
+      let uploaded = [];
+      try {
+        uploaded = await loadUserDocumentRows();
+      } catch {
+        uploaded = [];
+      }
+      return [...scripture, ...manuscripts, ...loadDssInlineRows(), ...loadArchiveRows(), ...uploaded];
     })().catch((error) => {
       corpusPromise = null;
       throw error;
     });
   }
   return corpusPromise;
+}
+
+export function resetCorpusCache() {
+  corpusPromise = null;
 }
 
 export const SEARCH_CORPORA = [
@@ -358,6 +369,7 @@ export const SEARCH_CORPORA = [
   { id: "fathers", label: "Early Christian writings", sources: ["fathers"] },
   { id: "josephus", label: "Josephus", sources: ["josephus"] },
   { id: "other", label: "Other manuscripts & codices", sources: ["other"] },
+  { id: "user", label: "Your documents", sources: ["user"] },
   { id: "archaeology", label: "Archaeological records", sources: ["archaeology"] },
   { id: "science", label: "Scientific records", sources: ["science"] },
   { id: "government", label: "Dated public records", sources: ["government", "vatican", "modern"] },
@@ -547,6 +559,7 @@ export const SOURCE_LABEL = {
   government: "government document stored in this app",
   vatican: "catalogued manuscript stored in this app",
   modern: "dated public record stored in this app",
+  user: "document you stored in this app",
 };
 
 export function matchesToResearchVerses(matches) {

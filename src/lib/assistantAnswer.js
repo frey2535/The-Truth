@@ -51,6 +51,7 @@ const SOURCE_LABEL = {
   government: "government document stored in this app",
   vatican: "catalogued manuscript stored in this app",
   modern: "dated public record stored in this app",
+  user: "document you stored in this app",
 };
 
 export function isYesNoQuestion(question) {
