@@ -16,6 +16,9 @@ function sourceLabel(source) {
   if (source === "prior") return "Recorded from before the counter";
   if (source === "appinstalled") return "Browser install";
   if (source === "prompt") return "Install prompt";
+  if (source === "play") return "Google Play";
+  if (source === "related") return "Installed app on this device";
+  if (source === "homescreen") return "Home screen";
   return "Opened as installed app";
 }
 
@@ -135,8 +138,11 @@ export default function OwnerDownloads() {
         <div className="rounded-2xl border border-[#e8c97a]/35 bg-[#faf6ef]/92 backdrop-blur-md p-6 mb-5">
           <h2 className="font-display text-xl text-[#2b2620] mb-2">Add a past install</h2>
           <p className="text-sm text-[#5b5142] mb-4">
-            The live counter started on 7 September 2026. Installs from before that were not stored.
-            Record them here, or they appear automatically the next time that home-screen app opens.
+            A download is counted when Chrome finishes Install, when Google Play opens this site, or
+            the first time a home-screen icon opens. iPhone Add to Home Screen has no browser event —
+            it registers when they tap the icon. Reports go to the public site, including phones that
+            first opened a Wi‑Fi link. Installs from before 7 September 2026 were not stored; add them
+            here if that device never opens again.
           </p>
           {formError ? <p className="mb-3 text-sm text-[#7a2e2e]">{formError}</p> : null}
           <form onSubmit={addPastInstall} className="grid gap-3 sm:grid-cols-2">
@@ -181,7 +187,8 @@ export default function OwnerDownloads() {
           <h2 className="font-display text-xl text-[#2b2620] mb-4">Every download</h2>
           {!loading && !error && stats?.downloads?.length === 0 ? (
             <p className="text-sm text-[#5b5142]">
-              No installs recorded yet. Add past installs above, or wait until a home-screen app opens again.
+              No installs recorded yet. Add past installs above, or wait until someone opens the
+              installed app or finishes Install in Chrome.
             </p>
           ) : null}
           <ul className="space-y-3">

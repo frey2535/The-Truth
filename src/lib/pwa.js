@@ -1,4 +1,5 @@
 import { isLocalInstallOrigin, isPublishedOrigin } from "@/lib/appOrigin";
+import { displayLooksInstalled, launchedFromAndroidApp } from "@/lib/installDisplay";
 import { publicUrl } from "@/lib/publicUrl";
 import { chromeIntentUrl, urlWantsInstall } from "@/lib/shareInstall";
 
@@ -99,13 +100,12 @@ export function registerServiceWorker() {
   });
 }
 
+export { displayLooksInstalled, launchedFromAndroidApp } from "@/lib/installDisplay";
+
 export function isStandaloneDisplay() {
   if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    window.matchMedia("(display-mode: fullscreen)").matches ||
-    window.navigator.standalone === true
-  );
+  const referrer = typeof document !== "undefined" ? document.referrer : "";
+  return displayLooksInstalled() || launchedFromAndroidApp(referrer);
 }
 
 export function getInstallKind() {

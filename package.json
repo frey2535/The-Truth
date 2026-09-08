@@ -16,7 +16,7 @@
     "test:catalog": "node scripts/audit-stored-texts.mjs",
     "test:reading": "node scripts/test-reading-layout.mjs",
     "test:share": "node scripts/test-share-install.mjs",
-    "test:installs": "node scripts/test-install-ledger.mjs",
+    "test:installs": "node scripts/test-install-ledger.mjs && node scripts/test-install-metrics.mjs",
     "test:play": "node scripts/test-play-store.mjs",
     "test:assistant": "node scripts/test-assistant-understand.mjs",
     "test:storage": "node scripts/test-storage-chat.mjs",

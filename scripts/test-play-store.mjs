@@ -36,7 +36,10 @@ assert.equal(isLegalPath("/The-Truth/privacy", "/The-Truth/"), true);
 
 const manifest = JSON.parse(readFileSync("public/manifest.json", "utf8"));
 assert.equal(manifest.related_applications?.[0]?.id, PLAY_PACKAGE_ID);
+assert.equal(manifest.related_applications?.[1]?.platform, "webapp");
 assert.equal(manifest.prefer_related_applications, false);
+const routes = JSON.parse(readFileSync("public/_routes.json", "utf8"));
+assert.ok(routes.include?.includes("/api/*"));
 assert.ok(manifest.screenshots?.length >= 2);
 assert.ok(manifest.icons.some((icon) => icon.purpose === "maskable"));
 

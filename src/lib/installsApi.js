@@ -85,11 +85,7 @@ export async function handleInstallsRequest({ method, body, authorization, crede
       if (merged.added) await save(merged.ledger);
       return { status: 200, body: { recorded: merged.added, ...ownerStats(merged.ledger) } };
     }
-    const ledger = await loadMerged(load, save);
-    const result = recordDevice(ledger, body || {});
-    if (result.error) return { status: 400, body: { error: result.error } };
-    if (result.added) await save(result.ledger);
-    return { status: 200, body: { recorded: result.added } };
+    return persistRecordedDevice({ body, load, save });
   }
 
   if (method !== "GET") {
@@ -112,6 +108,28 @@ export async function handleInstallsRequest({ method, body, authorization, crede
     return { status: 401, body: { error: "Platform owner sign-in is required" } };
   }
   return { status: 200, body: { email: session.email, ...ownerStats(ledger) } };
+}
+
+export async function persistRecordedDevice({ body, load, save, attempts = 5 }) {
+  const device = String(body?.device || "").trim();
+  for (let i = 0; i < attempts; i += 1) {
+    const ledger = await loadMerged(load, save);
+    const result = recordDevice(ledger, body || {});
+    if (result.error) return { status: 400, body: { error: result.error } };
+    if (!result.added) return { status: 200, body: { recorded: false } };
+    await save(result.ledger);
+    const verify = asLedger(await load());
+    if (verify.devices?.[device]) return { status: 200, body: { recorded: true } };
+  }
+  return { status: 503, body: { error: "Install was not saved. Try again." } };
+}
+
+function asLedger(value) {
+  if (!value || typeof value !== "object") return { devices: {}, sessions: {} };
+  return {
+    devices: value.devices && typeof value.devices === "object" ? value.devices : {},
+    sessions: value.sessions && typeof value.sessions === "object" ? value.sessions : {},
+  };
 }
 
 export function readOwnerCredentials(env, allowLocalFallback) {

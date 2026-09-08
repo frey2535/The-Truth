@@ -1,8 +1,16 @@
 import assert from "node:assert/strict";
-import { facebookShareUrl, PUBLISHED_APP_URL, SHARE_INSTALL_URL } from "../src/lib/appOrigin.js";
+import {
+  facebookShareUrl,
+  isLoopbackInstallOrigin,
+  metricsApiOrigin,
+  PUBLISHED_APP_URL,
+  SHARE_INSTALL_URL,
+} from "../src/lib/appOrigin.js";
 import { chromeIntentUrl, isAuthPath, urlWantsInstall } from "../src/lib/shareInstall.js";
 
 assert.equal(SHARE_INSTALL_URL, `${PUBLISHED_APP_URL}/?install=1`);
+assert.equal(isLoopbackInstallOrigin("truth.localhost"), true);
+assert.equal(metricsApiOrigin("192.168.0.12"), PUBLISHED_APP_URL);
 assert.ok(facebookShareUrl().includes(encodeURIComponent(SHARE_INSTALL_URL)));
 assert.equal(urlWantsInstall("?install=1"), true);
 assert.equal(urlWantsInstall("?install=true"), true);
