@@ -45,6 +45,10 @@ export default function Privacy() {
         </li>
         <li>Notes, highlights, favorites, study plans, and conversations you create on this device.</li>
         <li>
+          Documents you upload into the on-device vault (up to 1 TB). Those files stay on this device
+          and can be searched with the stored writings.
+        </li>
+        <li>
           A random install device id used only to count home-screen or Play installs once per device.
         </li>
       </LegalList>

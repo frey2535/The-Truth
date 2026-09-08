@@ -155,6 +155,7 @@ const ASK_SCRIPTURE_SOURCES = [
   "fathers",
   "josephus",
   "other",
+  "user",
 ];
 
 const SOURCE_ORDER = [
@@ -165,6 +166,7 @@ const SOURCE_ORDER = [
   "fathers",
   "josephus",
   "other",
+  "user",
   "archaeology",
   "science",
   "government",
