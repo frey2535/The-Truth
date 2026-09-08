@@ -1,3 +1,4 @@
+import { clipPassageText } from "./assistantSafety.js";
 import { familyHitsText } from "./wordFamilies.js";
 import {
   baptismTiedToSalvation,
@@ -244,7 +245,7 @@ export function slimPassage(row) {
   return {
     source: row.source || "",
     reference: String(row.reference || "").trim(),
-    text: String(row.text || "").trim(),
+    text: clipPassageText(row.text),
     book: row.book || "",
     chapter: row.chapter,
     verse: row.verse,

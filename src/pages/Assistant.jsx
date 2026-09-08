@@ -6,8 +6,31 @@ import { Send, Loader2, ShieldCheck, Square, History, PlusCircle } from "lucide-
 import ReactMarkdown from "react-markdown";
 import HistoryDialog from "@/components/assistant/HistoryDialog";
 import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
+import { askHistory, loadableMessages, persistableMessages } from "@/lib/assistantSafety";
 
-const QUOTE_BATCH = 40;
+const QUOTE_BATCH = 24;
+
+class AssistantTurnBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { failed: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  render() {
+    if (this.state.failed) {
+      return (
+        <p className="text-[#7a2e2e]">
+          That answer was too large to show in this window. Ask the question again.
+        </p>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function StoredWording({ passages }) {
   const rows = Array.isArray(passages) ? passages : [];
@@ -16,12 +39,6 @@ function StoredWording({ passages }) {
   useEffect(() => {
     setShown(Math.min(QUOTE_BATCH, rows.length));
   }, [passages, rows.length]);
-
-  useEffect(() => {
-    if (shown >= rows.length) return undefined;
-    const id = window.setTimeout(() => setShown((n) => Math.min(n + QUOTE_BATCH, rows.length)), 0);
-    return () => window.clearTimeout(id);
-  }, [shown, rows.length]);
 
   if (!rows.length) return null;
   let lastGroup = "";
@@ -40,9 +57,13 @@ function StoredWording({ passages }) {
         );
       })}
       {shown < rows.length ? (
-        <p className="text-sm text-[#8a7f6f]">
-          Showing {shown} of {rows.length} stored passages…
-        </p>
+        <button
+          type="button"
+          onClick={() => setShown((n) => Math.min(n + QUOTE_BATCH, rows.length))}
+          className="text-sm text-[#7a2e2e] underline"
+        >
+          Show more stored wording ({shown} of {rows.length})
+        </button>
       ) : null}
     </div>
   );
@@ -94,11 +115,12 @@ export default function Assistant() {
   async function persist(finalMessages, id) {
     const title = titleFromMessages(finalMessages);
     try {
+      const saved = persistableMessages(finalMessages);
       if (id) {
-        await base44.entities.Conversation.update(id, { messages: finalMessages, title });
+        await base44.entities.Conversation.update(id, { messages: saved, title });
         return id;
       }
-      const c = await base44.entities.Conversation.create({ title, messages: finalMessages });
+      const c = await base44.entities.Conversation.create({ title, messages: saved });
       return c.id;
     } catch {
       return id;
@@ -117,7 +139,7 @@ export default function Assistant() {
     try {
       const res = await base44.functions.invoke("study_assistant", {
         question: q,
-        history: messages,
+        history: askHistory(messages),
         corpus,
       });
       if (reqId.current !== myId) return;
@@ -163,7 +185,7 @@ export default function Assistant() {
 
   function loadConversation(conv) {
     setConversationId(conv.id);
-    setMessages(conv.messages || []);
+    setMessages(loadableMessages(conv.messages));
     setHistoryOpen(false);
   }
 
@@ -241,10 +263,12 @@ export default function Assistant() {
                 }`}
               >
                 {m.role === "assistant" ? (
-                  <div className="text-[#3a3328] leading-relaxed space-y-2 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-[#2b2620] [&_h2]:mt-0 [&_h3]:font-display [&_h3]:text-xl [&_h3]:text-[#2b2620] [&_h4]:font-display [&_h4]:text-lg [&_h4]:text-[#7a2e2e] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_a]:text-[#7a2e2e] [&_a]:underline">
-                    <ReactMarkdown>{m.content}</ReactMarkdown>
-                    <StoredWording passages={m.passages} />
-                  </div>
+                  <AssistantTurnBoundary>
+                    <div className="text-[#3a3328] leading-relaxed space-y-2 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-[#2b2620] [&_h2]:mt-0 [&_h3]:font-display [&_h3]:text-xl [&_h3]:text-[#2b2620] [&_h4]:font-display [&_h4]:text-lg [&_h4]:text-[#7a2e2e] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_a]:text-[#7a2e2e] [&_a]:underline">
+                      <ReactMarkdown>{m.content}</ReactMarkdown>
+                      <StoredWording passages={m.passages} />
+                    </div>
+                  </AssistantTurnBoundary>
                 ) : (
                   <p className="leading-relaxed">{m.content}</p>
                 )}

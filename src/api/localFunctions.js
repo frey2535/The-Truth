@@ -13,6 +13,7 @@ import {
 } from "@/lib/localCorpusSearch";
 import { recordAssistantLearning } from "@/lib/assistantLearn";
 import { buildAssistantAnswer, slimPassage } from "@/lib/assistantAnswer";
+import { askHistory } from "@/lib/assistantSafety";
 import { understandQuestion } from "@/lib/questionUnderstand";
 import { ARCHIVE_NOTICE, searchArchive } from "@/data/inAppArchive";
 import { lookupLexicon } from "@/data/strongsLexicon";
@@ -236,7 +237,7 @@ async function searchAskSources(asked, sources) {
     preferSpeech: asked.preferSpeech,
     preferCanon: sources.includes("canon"),
     mustHitAll: false,
-    clipLong: false,
+    clipLong: true,
   });
   return found.matches;
 }
@@ -265,7 +266,7 @@ async function study_assistant({ question, history, corpus }) {
   requireUser();
   const q = String(question || "").trim();
   if (!q) return fail("A question is required.");
-  const asked = understandQuestion(q, { history, corpus });
+  const asked = understandQuestion(q, { history: askHistory(history), corpus });
   let coverage;
   try {
     coverage = await corpusCoverage();
@@ -283,9 +284,13 @@ async function study_assistant({ question, history, corpus }) {
   } catch (error) {
     return fail(error.message);
   }
-  recordAssistantLearning({ topics: asked.topics || asked.words, passages });
-
-  return quoteOnlyAnswer(asked.question, passages, asked);
+  const slim = passages.map(slimPassage);
+  recordAssistantLearning({ topics: asked.topics || asked.words, passages: slim });
+  try {
+    return quoteOnlyAnswer(asked.question, slim, asked);
+  } catch (error) {
+    return fail(error.message || "The Assistant could not finish that answer.");
+  }
 }
 
 async function define_word({ word, reference }) {
