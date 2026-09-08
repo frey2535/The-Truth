@@ -83,7 +83,15 @@ export function recordDevice(ledger, event) {
   }
   const at = event.at || new Date().toISOString();
   const platform = ["ios", "android", "desktop"].includes(event.platform) ? event.platform : "desktop";
-  const source = ["appinstalled", "standalone", "prompt", "prior"].includes(event.source)
+  const source = [
+    "appinstalled",
+    "standalone",
+    "prompt",
+    "prior",
+    "play",
+    "related",
+    "homescreen",
+  ].includes(event.source)
     ? event.source
     : "standalone";
   const note = String(event.note || "").trim();

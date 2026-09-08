@@ -16,11 +16,13 @@ export function isPublishedOrigin(origin = window.location.origin) {
   }
 }
 
+export function isLoopbackInstallOrigin(hostname = window.location.hostname) {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "truth.localhost";
+}
+
 export function isLocalInstallOrigin(hostname = window.location.hostname) {
   if (!hostname) return false;
-  if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "truth.localhost") {
-    return true;
-  }
+  if (isLoopbackInstallOrigin(hostname)) return true;
   return /^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(hostname);
 }
 
@@ -28,5 +30,11 @@ export function isLocalInstallOrigin(hostname = window.location.hostname) {
 export function publishedApiOrigin() {
   if (typeof window === "undefined") return "";
   if (isLocalInstallOrigin() || isPublishedOrigin()) return "";
+  return PUBLISHED_APP_URL;
+}
+
+/** Loopback Vite uses this computer. Everyone else reports to the live counter. */
+export function metricsApiOrigin(hostname) {
+  if (isLoopbackInstallOrigin(hostname || "")) return "";
   return PUBLISHED_APP_URL;
 }

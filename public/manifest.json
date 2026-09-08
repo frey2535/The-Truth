@@ -71,6 +71,10 @@
       "platform": "play",
       "url": "https://play.google.com/store/apps/details?id=org.currentflowconsulting.thetruth",
       "id": "org.currentflowconsulting.thetruth"
+    },
+    {
+      "platform": "webapp",
+      "url": "https://thetruth.currentflowconsulting.org/manifest.json"
     }
   ],
   "screenshots": [

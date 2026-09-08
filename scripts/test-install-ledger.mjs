@@ -46,11 +46,21 @@ const second = recordDevice(ledger, {
 assert.equal(second.added, true);
 ledger = second.ledger;
 
+const play = recordDevice(ledger, {
+  device: "device-play-3333",
+  platform: "android",
+  source: "play",
+  at: "2026-09-08T14:00:00.000Z",
+});
+assert.equal(play.added, true);
+ledger = play.ledger;
+
 const stats = ownerStats(ledger);
-assert.equal(stats.total, 2);
+assert.equal(stats.total, 3);
 assert.equal(stats.byPlatform.ios, 1);
-assert.equal(stats.byPlatform.android, 1);
-assert.equal(stats.downloads[0].device, "device-b");
+assert.equal(stats.byPlatform.android, 2);
+assert.equal(stats.downloads[0].device, "device-p");
+assert.equal(stats.downloads[0].source, "play");
 
 const withPrior = mergeDevices(ledger, [
   {
@@ -64,7 +74,7 @@ const withPrior = mergeDevices(ledger, [
 ]);
 assert.equal(withPrior.added, 1);
 const priorStats = ownerStats(withPrior.ledger);
-assert.equal(priorStats.total, 3);
+assert.equal(priorStats.total, 4);
 assert.equal(priorStats.prior, 1);
 assert.equal(priorStats.downloads.find((row) => row.source === "prior").note, "Installed before the counter");
 

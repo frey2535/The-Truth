@@ -1,24 +1,24 @@
-import { PUBLISHED_APP_URL, isLocalInstallOrigin, isPublishedOrigin } from "@/lib/appOrigin";
+import { metricsApiOrigin } from "@/lib/appOrigin";
+import { detectInstallSource } from "@/lib/installDisplay";
 import { getInstallPlatform, isStandaloneDisplay } from "@/lib/pwa";
 import { readOwnerSession } from "@/lib/ownerSession";
 
 const DEVICE_KEY = "the_truth_install_device_id";
 const REPORTED_KEY = "the_truth_install_reported";
+const PENDING_KEY = "the_truth_install_pending";
 
-function isGitHubPagesOrigin(origin = window.location.origin) {
-  try {
-    return new URL(origin).host.endsWith("github.io");
-  } catch {
-    return false;
-  }
-}
-
-/** Local Vite uses this computer's API. Published and GitHub Pages report to the live site. */
-export function installMetricsOrigin() {
-  if (typeof window === "undefined") return "";
-  if (isLocalInstallOrigin()) return "";
-  if (isPublishedOrigin() || isGitHubPagesOrigin()) return PUBLISHED_APP_URL;
-  return PUBLISHED_APP_URL;
+/**
+ * Loopback Vite uses this computer's API. Phones on Wi-Fi, the live site,
+ * and GitHub Pages all report to the published Cloudflare counter.
+ */
+export function installMetricsOrigin(hostname) {
+  const host =
+    typeof hostname === "string"
+      ? hostname
+      : typeof window !== "undefined"
+        ? window.location.hostname
+        : "";
+  return metricsApiOrigin(host);
 }
 
 export function installDeviceId() {
@@ -41,56 +41,142 @@ function platformName() {
   return "desktop";
 }
 
+function readJson(key) {
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeJson(key, value) {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* ignore */
+  }
+}
+
+function installLooksPresent() {
+  return isStandaloneDisplay();
+}
+
+export { detectInstallSource } from "@/lib/installDisplay";
+
+async function postInstall(payload) {
+  const origin = installMetricsOrigin();
+  const url = `${origin}/api/installs`;
+  const body = JSON.stringify(payload);
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    });
+    if (!res.ok) return false;
+    await res.json().catch(() => ({}));
+    return true;
+  } catch {
+    try {
+      if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
+        return navigator.sendBeacon(url, new Blob([body], { type: "application/json" }));
+      }
+    } catch {
+      /* ignore */
+    }
+    return false;
+  }
+}
+
+function markReported() {
+  try {
+    window.localStorage.setItem(REPORTED_KEY, "1");
+    window.localStorage.removeItem(PENDING_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 export async function reportAppInstall(source = "standalone") {
   if (typeof window === "undefined") return { recorded: false };
   const device = installDeviceId();
   if (!device) return { recorded: false };
-  const origin = installMetricsOrigin();
-  try {
-    const res = await fetch(`${origin}/api/installs`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        device,
-        platform: platformName(),
-        source,
-        standalone: isStandaloneDisplay(),
-        at: new Date().toISOString(),
-      }),
-    });
-    if (!res.ok) return { recorded: false };
-    const data = await res.json();
-    try {
-      window.localStorage.setItem(REPORTED_KEY, "1");
-    } catch {
-      /* ignore */
-    }
-    return { recorded: Boolean(data.recorded) };
-  } catch {
-    return { recorded: false };
+  const payload = {
+    device,
+    platform: platformName(),
+    source,
+    standalone: isStandaloneDisplay(),
+    at: new Date().toISOString(),
+  };
+  writeJson(PENDING_KEY, payload);
+  const recorded = await postInstall(payload);
+  if (recorded) markReported();
+  return { recorded };
+}
+
+async function flushPendingInstall() {
+  if (typeof window === "undefined") return;
+  const pending = readJson(PENDING_KEY);
+  if (pending?.device) {
+    const recorded = await postInstall(pending);
+    if (recorded) markReported();
+    return;
+  }
+  if (installLooksPresent() && window.localStorage.getItem(REPORTED_KEY) !== "1") {
+    await reportAppInstall(
+      detectInstallSource({
+        referrer: typeof document !== "undefined" ? document.referrer : "",
+      })
+    );
   }
 }
 
 export function watchInstallMetrics() {
   if (typeof window === "undefined" || window.__truthInstallMetrics) return;
   window.__truthInstallMetrics = true;
-  window.addEventListener("appinstalled", () => {
+
+  const report = (source) => {
     try {
       window.localStorage.removeItem(REPORTED_KEY);
     } catch {
       /* ignore */
     }
-    reportAppInstall("appinstalled");
+    reportAppInstall(source);
+  };
+
+  window.addEventListener("appinstalled", () => report("appinstalled"));
+  window.addEventListener("truth-app-installed", () => report("prompt"));
+  window.addEventListener("pageshow", () => {
+    flushPendingInstall();
   });
-  window.addEventListener("truth-app-installed", () => {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") flushPendingInstall();
+  });
+
+  for (const mode of ["standalone", "fullscreen", "minimal-ui", "window-controls-overlay"]) {
     try {
-      window.localStorage.removeItem(REPORTED_KEY);
+      const media = window.matchMedia(`(display-mode: ${mode})`);
+      const onChange = (event) => {
+        if (event.matches) report(mode === "standalone" || mode === "fullscreen" ? "standalone" : "homescreen");
+      };
+      if (typeof media.addEventListener === "function") media.addEventListener("change", onChange);
+      else if (typeof media.addListener === "function") media.addListener(onChange);
     } catch {
       /* ignore */
     }
-    reportAppInstall("prompt");
-  });
-  if (isStandaloneDisplay()) reportAppInstall("standalone");
+  }
+
+  if (typeof navigator.getInstalledRelatedApps === "function") {
+    navigator.getInstalledRelatedApps()
+      .then((apps) => {
+        if (Array.isArray(apps) && apps.length) report("related");
+      })
+      .catch(() => undefined);
+  }
+
+  flushPendingInstall();
 }
 
 export async function ownerLogin(email, password) {
