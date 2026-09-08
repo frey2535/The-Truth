@@ -72,7 +72,7 @@ jobs:
             local name="$1"
             local value="$2"
             if [ -z "$value" ]; then
-              echo "No GitHub secret for $name; dashboard secret on project thetruth is used if present."
+              echo "No GitHub secret for $name; keep the value already on Pages project thetruth."
               return 0
             fi
             printf '%s' "$value" | npx wrangler pages secret put "$name" --project-name=thetruth
@@ -80,6 +80,8 @@ jobs:
           put_secret PLATFORM_OWNER_PASSWORD "$PLATFORM_OWNER_PASSWORD"
           put_secret GOOGLE_CLIENT_ID "$GOOGLE_CLIENT_ID"
           put_secret GOOGLE_CLIENT_SECRET "$GOOGLE_CLIENT_SECRET"
+      - name: Hide wrangler.toml so dashboard environment variables apply
+        run: mv wrangler.toml wrangler.toml.bak
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
