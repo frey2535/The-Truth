@@ -250,8 +250,7 @@ export default function Assistant() {
               Yes or No is used only when you ask a yes-or-no question. The Assistant reads the meaning
               of every stored writing that belongs to the question, answers from that whole-literature
               understanding, then quotes the passages. A new chat starts when you change the topic.
-              Documents you store in the Library vault are searched with the other writings. Nothing is
-              invented or taken from the internet.
+              Nothing is invented or taken from the internet.
             </p>
           </div>
         )}

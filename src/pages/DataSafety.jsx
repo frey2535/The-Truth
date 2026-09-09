@@ -55,7 +55,7 @@ export default function DataSafety() {
         <li>Financial info (the app is free; it never takes a payment)</li>
         <li>Health and fitness</li>
         <li>Messages, contacts, calendar</li>
-        <li>Files and docs as a collected type (reader uploads stay on the device if used)</li>
+        <li>Files and docs as a collected type (readers do not upload files)</li>
         <li>Audio, microphone, camera</li>
         <li>Advertising or marketing IDs</li>
       </LegalList>
