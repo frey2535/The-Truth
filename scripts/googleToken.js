@@ -1,28 +1,27 @@
+import { googleClientIdFromEnv, googleClientSecretFromEnv } from "../src/lib/googleEnv.js";
+import { loadGoogleOAuth } from "../src/lib/googleStore.js";
+
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 
-function envValue(env, ...keys) {
-  const source = env || (typeof process !== "undefined" ? process.env : {});
-  for (const key of keys) {
-    const value = String(source?.[key] || "").trim();
-    if (value) return value;
-  }
-  return "";
-}
-
 export function googleClientId(env) {
-  return envValue(env, "GOOGLE_CLIENT_ID", "VITE_GOOGLE_CLIENT_ID");
+  return googleClientIdFromEnv(env);
 }
 
 export function googleClientSecret(env) {
-  return envValue(env, "GOOGLE_CLIENT_SECRET");
+  return googleClientSecretFromEnv(env);
 }
 
-export async function exchangeGoogleCode({ code, redirectUri, codeVerifier, env }) {
-  const clientId = googleClientId(env);
-  const clientSecret = googleClientSecret(env);
+export async function exchangeGoogleCode({ code, redirectUri, codeVerifier, env, oauth }) {
+  const resolved =
+    oauth ||
+    (env
+      ? await loadGoogleOAuth(env)
+      : { clientId: googleClientIdFromEnv(env), clientSecret: googleClientSecretFromEnv(env) });
+  const clientId = resolved.clientId;
+  const clientSecret = resolved.clientSecret;
   if (!clientId) {
     const error = new Error(
-      "Google sign-in is not configured. Add VITE_GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env.local."
+      "Google sign-in is not connected on this copy. Locally set VITE_GOOGLE_CLIENT_ID in .env.local."
     );
     error.status = 503;
     throw error;

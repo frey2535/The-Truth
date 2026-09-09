@@ -146,7 +146,9 @@ export const localAuth = {
     const user = findUserByEmail(db, normalized);
     if (user) {
       if (user.auth_provider === "google" && !user.passwordSalt) {
-        throw httpError("This account uses Google. Continue with Google.");
+        throw httpError(
+          "This account was created with Google. Use Continue with Google, or set a password with Forgot password."
+        );
       }
       if (!user.passwordSalt) throw httpError("This local guest account has no password. Create an email account instead.");
       const hash = await hashPassword(password, user.passwordSalt);
@@ -155,7 +157,9 @@ export const localAuth = {
       return publicUser(user);
     }
 
-    throw httpError("No reader account for this email on this device. Create one, or use Platform owner sign-in.");
+    throw httpError(
+      "No reader account for this email on this device. Create one here — accounts stay on the device — or use Continue with Google."
+    );
   },
 
   async register({ email, password }) {
@@ -290,7 +294,8 @@ export const localAuth = {
       typeof fromUrl === "string" && fromUrl.startsWith("/") && !fromUrl.startsWith("//")
         ? fromUrl
         : "/";
-    const profile = await requestGoogleProfile();
+    const profile = await requestGoogleProfile(dest);
+    if (!profile) return;
     await this.signInWithGoogle(profile);
     window.location.assign(dest);
   },

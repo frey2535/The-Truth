@@ -111,7 +111,13 @@ function googleTokenPlugin() {
       ).trim();
       res.statusCode = 200;
       res.setHeader("Content-Type", "application/json");
-      res.end(JSON.stringify({ configured: Boolean(clientId), clientId }));
+      res.end(
+        JSON.stringify({
+          configured: Boolean(clientId),
+          clientId,
+          codeExchange: Boolean(String(process.env.GOOGLE_CLIENT_SECRET || "").trim()),
+        })
+      );
       return;
     }
     if (req.method !== "POST") {

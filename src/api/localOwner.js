@@ -1,4 +1,4 @@
-import { backfillOwnerDownloads, fetchOwnerDownloads, ownerLogin } from "@/lib/installStats";
+import { backfillOwnerDownloads, fetchOwnerDownloads, ownerLogin, saveGoogleClientId } from "@/lib/installStats";
 import { clearOwnerSession, readOwnerSession, writeOwnerSession } from "@/lib/ownerSession";
 
 export const localOwner = {
@@ -22,5 +22,9 @@ export const localOwner = {
 
   async backfill(downloads) {
     return backfillOwnerDownloads(downloads);
+  },
+
+  async connectGoogle(clientId) {
+    return saveGoogleClientId(clientId);
   },
 };

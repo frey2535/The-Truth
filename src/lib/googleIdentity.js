@@ -1,11 +1,13 @@
 import { publishedApiOrigin } from "@/lib/appOrigin";
 import { loginUrl } from "@/lib/publicUrl";
+import { isStandaloneDisplay } from "@/lib/pwa";
 
 const GIS_SRC = "https://accounts.google.com/gsi/client";
 const PKCE_KEY = "truth_google_pkce";
 const REDIRECT_KEY = "truth_google_redirect";
 
 let cachedClientId = "";
+let cachedCodeExchange = false;
 
 function normalizeClientId(value) {
   return String(value || "")
@@ -27,6 +29,7 @@ export async function resolveGoogleClientId() {
   try {
     const res = await fetch(`${publishedApiOrigin()}/api/google-token`, { cache: "no-store" });
     const data = await res.json().catch(() => ({}));
+    cachedCodeExchange = Boolean(data.codeExchange);
     const fromApi = normalizeClientId(data.clientId);
     if (fromApi) {
       cachedClientId = fromApi;
@@ -36,6 +39,65 @@ export async function resolveGoogleClientId() {
     /* live site may not have the function yet */
   }
   return "";
+}
+
+function encodeState(value) {
+  const bytes = new TextEncoder().encode(JSON.stringify(value));
+  let binary = "";
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+async function createPkce() {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  const verifier = btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
+  const challenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
+  return { verifier, challenge };
+}
+
+export async function startGoogleRedirect(returnTo = "/") {
+  const clientId = await resolveGoogleClientId();
+  if (!clientId) {
+    throw new Error(
+      "Google sign-in is not connected on this copy. Locally set VITE_GOOGLE_CLIENT_ID in .env.local."
+    );
+  }
+  const dest =
+    typeof returnTo === "string" && returnTo.startsWith("/") && !returnTo.startsWith("//")
+      ? returnTo
+      : "/";
+  const redirectUri = loginRedirectUri();
+  sessionStorage.setItem(REDIRECT_KEY, redirectUri);
+  const params = new URLSearchParams({
+    client_id: clientId,
+    redirect_uri: redirectUri,
+    scope: "openid email profile",
+    state: encodeState({ r: dest }),
+    prompt: "select_account",
+  });
+  if (cachedCodeExchange) {
+    const { verifier, challenge } = await createPkce();
+    sessionStorage.setItem(PKCE_KEY, verifier);
+    params.set("response_type", "code");
+    params.set("code_challenge", challenge);
+    params.set("code_challenge_method", "S256");
+  } else {
+    const nonce = Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) =>
+      byte.toString(16).padStart(2, "0")
+    ).join("");
+    params.set("response_type", "id_token");
+    params.set("nonce", nonce);
+  }
+  window.location.assign(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
 }
 
 export function googleSignInOriginHint() {
@@ -132,12 +194,16 @@ function loadGis() {
   });
 }
 
-export async function requestGoogleProfile() {
+export async function requestGoogleProfile(returnTo = "/") {
   const clientId = await resolveGoogleClientId();
   if (!clientId) {
     throw new Error(
-      "Google sign-in is not connected on this copy. On the live site the function reads GOOGLE_CLIENT_ID from the thetruth Pages environment. Locally set VITE_GOOGLE_CLIENT_ID in .env.local."
+      "Google sign-in is not connected on this copy. Locally set VITE_GOOGLE_CLIENT_ID in .env.local."
     );
+  }
+  if (isStandaloneDisplay()) {
+    await startGoogleRedirect(returnTo);
+    return null;
   }
   const google = await loadGis();
   return new Promise((resolve, reject) => {
@@ -145,11 +211,7 @@ export async function requestGoogleProfile() {
       const type = err?.type || "";
       const message = String(err?.message || err?.type || "");
       if (type === "popup_closed" || type === "popup_failed_to_open") {
-        reject(
-          new Error(
-            "Google sign-in popup was blocked or closed. Allow popups, or open this page in Chrome: http://127.0.0.1:5174/login"
-          )
-        );
+        startGoogleRedirect(returnTo).then(() => resolve(null)).catch(reject);
         return;
       }
       if (/origin/i.test(message) || /idpiframe/i.test(message)) {

@@ -252,6 +252,23 @@ export async function backfillOwnerDownloads(downloads) {
   return data;
 }
 
+export async function saveGoogleClientId(clientId) {
+  const session = readOwnerSession();
+  if (!session?.token) throw new Error("Platform owner sign-in is required");
+  const origin = installMetricsOrigin();
+  const res = await fetch(`${origin}/api/google-token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.token}`,
+    },
+    body: JSON.stringify({ clientId }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Could not connect Google sign-in");
+  return data;
+}
+
 export async function fetchOwnerDownloads() {
   const session = readOwnerSession();
   if (!session?.token) throw new Error("Platform owner sign-in is required");

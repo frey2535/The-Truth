@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import HeavenBackdrop from "@/components/HeavenBackdrop";
+import { publishedApiOrigin } from "@/lib/appOrigin";
 import { useOwner } from "@/lib/OwnerContext";
 import { Download, Loader2, Smartphone } from "lucide-react";
 
@@ -41,10 +42,23 @@ export default function OwnerDownloads() {
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
+  const [googleId, setGoogleId] = useState("");
+  const [googleReady, setGoogleReady] = useState(false);
+  const [googleSaving, setGoogleSaving] = useState(false);
+  const [googleError, setGoogleError] = useState("");
+  const [googleSaved, setGoogleSaved] = useState("");
 
   useEffect(() => {
     if (!isOwner) return undefined;
     let cancelled = false;
+    fetch(`${publishedApiOrigin()}/api/google-token`, { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        setGoogleReady(Boolean(data.clientId));
+        if (data.clientId) setGoogleId(data.clientId);
+      })
+      .catch(() => undefined);
     async function refresh() {
       try {
         const data = await base44.owner.downloads();
@@ -84,6 +98,22 @@ export default function OwnerDownloads() {
       setFormError(err.message || "Could not record that install");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function connectGoogle(event) {
+    event.preventDefault();
+    setGoogleError("");
+    setGoogleSaved("");
+    setGoogleSaving(true);
+    try {
+      const data = await base44.owner.connectGoogle(googleId);
+      setGoogleReady(Boolean(data.configured));
+      setGoogleSaved("Google sign-in is connected for the app.");
+    } catch (err) {
+      setGoogleError(err.message || "Could not connect Google sign-in");
+    } finally {
+      setGoogleSaving(false);
     }
   }
 
@@ -184,6 +214,33 @@ export default function OwnerDownloads() {
             </label>
             <Button type="submit" className="h-11 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8] sm:col-span-2" disabled={saving}>
               {saving ? "Saving…" : "Add to downloads"}
+            </Button>
+          </form>
+        </div>
+
+        <div className="rounded-2xl border border-[#e8c97a]/35 bg-[#faf6ef]/92 backdrop-blur-md p-6 mb-5">
+          <h2 className="font-display text-xl text-[#2b2620] mb-2">Google sign-in</h2>
+          <p className="text-sm text-[#5b5142] mb-4">
+            {googleReady
+              ? "The installed app can Continue with Google."
+              : "The dashboard value is not reaching this function. Paste the public Client ID (ends with .apps.googleusercontent.com) so readers can sign in on the app."}
+          </p>
+          {googleError ? <p className="mb-3 text-sm text-[#7a2e2e]">{googleError}</p> : null}
+          {googleSaved ? <p className="mb-3 text-sm text-[#2b2620]">{googleSaved}</p> : null}
+          <form onSubmit={connectGoogle} className="grid gap-3">
+            <label className="text-sm text-[#2b2620]">
+              Google client ID
+              <input
+                type="text"
+                value={googleId}
+                onChange={(e) => setGoogleId(e.target.value)}
+                placeholder="….apps.googleusercontent.com"
+                className="mt-1 w-full h-11 rounded-md border border-[#e8ddc7] bg-white px-3"
+                autoComplete="off"
+              />
+            </label>
+            <Button type="submit" className="h-11 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]" disabled={googleSaving}>
+              {googleSaving ? "Saving…" : googleReady ? "Update Google client ID" : "Connect Google sign-in"}
             </Button>
           </form>
         </div>
