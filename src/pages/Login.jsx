@@ -124,36 +124,6 @@ export default function Login() {
         </>
       }
     >
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full h-12 text-sm font-medium mb-6"
-        onClick={handleGoogle}
-        disabled={loading}
-      >
-        {loading ? (
-          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-        ) : (
-          <GoogleIcon className="w-5 h-5 mr-2" />
-        )}
-        Continue with Google
-      </Button>
-      {googleReady ? null : (
-        <p className="text-xs text-muted-foreground -mt-4 mb-6">
-          Google is not connected on this copy yet. The live site reads GOOGLE_CLIENT_ID from the
-          thetruth Pages environment.
-        </p>
-      )}
-
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
-        </div>
-      </div>
-
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
           {error}
@@ -210,6 +180,36 @@ export default function Login() {
           )}
         </Button>
       </form>
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-card px-3 text-muted-foreground">or</span>
+        </div>
+      </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full h-12 text-sm font-medium"
+        onClick={handleGoogle}
+        disabled={loading || !googleReady}
+      >
+        {loading ? (
+          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        ) : (
+          <GoogleIcon className="w-5 h-5 mr-2" />
+        )}
+        Continue with Google
+      </Button>
+      {googleReady ? null : (
+        <p className="text-xs text-muted-foreground mt-3">
+          Google is not connected on this copy yet. Use the email you created on this device, or
+          ask the platform owner to connect Google sign-in.
+        </p>
+      )}
     </AuthLayout>
   );
 }

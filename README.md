@@ -25,7 +25,7 @@ The app works immediately. Sign-in is optional; the first named account you crea
    - `https://thetruth.currentflowconsulting.org/login`
    - `https://frey2535.github.io/The-Truth/login`
 4. **Local:** put `VITE_GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env.local` and restart `npm run dev`. Open [http://127.0.0.1:5174/login](http://127.0.0.1:5174/login) (not `truth.localhost`).
-5. **Live site:** the Pages project **thetruth** already holds `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in the dashboard. Deploys must not use a wrangler.toml `[vars]` block, or those dashboard values never reach the function. Optional: also store `VITE_GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in GitHub Actions so the Vite build inlines the client ID.
+5. **Live site:** the function reads `GOOGLE_CLIENT_ID` from the **thetruth** Pages environment when that value is bound. If Continue with Google stays disabled, sign in at **/owner** and paste the public Client ID (it ends with `.apps.googleusercontent.com`) — that stores it for the installed app. Email/password accounts stay on the device.
 
 ## Install on a phone
 
