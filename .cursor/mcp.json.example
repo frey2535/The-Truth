@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "the-truth": {
+      "type": "http",
+      "url": "https://thetruth.currentflowconsulting.org/api/mcp",
+      "headers": {
+        "Authorization": "Bearer PASTE_CURSOR_TOKEN"
+      }
+    }
+  }
+}

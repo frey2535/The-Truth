@@ -1,0 +1,9 @@
+{
+  "mcp": {
+    "name": "the-truth",
+    "title": "The Truth",
+    "transport": "streamable-http",
+    "url": "https://thetruth.currentflowconsulting.org/api/mcp",
+    "auth": "bearer"
+  }
+}

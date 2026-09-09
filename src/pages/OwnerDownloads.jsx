@@ -131,6 +131,9 @@ export default function OwnerDownloads() {
           </div>
           <div className="flex gap-2">
             <Button asChild variant="outline" className="h-10 bg-white/90">
+              <Link to="/owner/cursor">Cursor</Link>
+            </Button>
+            <Button asChild variant="outline" className="h-10 bg-white/90">
               <Link to="/install">Install page</Link>
             </Button>
             <Button type="button" className="h-10 bg-[#7a2e2e] hover:bg-[#5e2222] text-[#f3e9c8]" onClick={logout}>

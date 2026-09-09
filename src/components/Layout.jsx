@@ -123,14 +123,30 @@ export default function Layout() {
               Truth Assistant
             </Link>
             {isOwner ? (
-              <Link
-                to="/owner/downloads"
-                className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${
-                  usePapyrus ? "text-[#3a3328] hover:bg-[#2b2620]/8" : "text-[#e8c97a] hover:bg-white/10"
-                }`}
-              >
-                Downloads
-              </Link>
+              <>
+                <Link
+                  to="/owner/downloads"
+                  className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${
+                    usePapyrus ? "text-[#3a3328] hover:bg-[#2b2620]/8" : "text-[#e8c97a] hover:bg-white/10"
+                  }`}
+                >
+                  Downloads
+                </Link>
+                <Link
+                  to="/owner/cursor"
+                  className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${
+                    pathname.startsWith("/owner/cursor")
+                      ? usePapyrus
+                        ? "bg-[#2b2620]/10 text-[#3a3328]"
+                        : "bg-white/10 text-[#e8c97a]"
+                      : usePapyrus
+                        ? "text-[#3a3328] hover:bg-[#2b2620]/8"
+                        : "text-[#e8c97a] hover:bg-white/10"
+                  }`}
+                >
+                  Cursor
+                </Link>
+              </>
             ) : null}
             {isGuest ? (
               <Link
