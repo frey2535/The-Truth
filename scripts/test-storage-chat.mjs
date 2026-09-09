@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
 import {
   APP_STORAGE_BYTES,
   APP_STORAGE_LABEL,
@@ -8,6 +9,8 @@ import {
 import { shouldStartNewChat } from "../src/lib/assistantChat.js";
 import { extractSearchableText } from "../src/lib/userDocuments.js";
 
+assert.equal(existsSync("src/components/library/YourDocuments.jsx"), false);
+assert.doesNotMatch(readFileSync("src/pages/Library.jsx", "utf8"), /YourDocuments|Upload documents/);
 assert.equal(APP_STORAGE_LABEL, "1 TB");
 assert.equal(APP_STORAGE_BYTES, 1024 * 1024 * 1024 * 1024);
 assert.equal(formatStorageBytes(APP_STORAGE_BYTES), "1.00 TB");

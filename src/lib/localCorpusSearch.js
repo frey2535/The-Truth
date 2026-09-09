@@ -369,7 +369,6 @@ export const SEARCH_CORPORA = [
   { id: "fathers", label: "Early Christian writings", sources: ["fathers"] },
   { id: "josephus", label: "Josephus", sources: ["josephus"] },
   { id: "other", label: "Other manuscripts & codices", sources: ["other"] },
-  { id: "user", label: "Your documents", sources: ["user"] },
   { id: "archaeology", label: "Archaeological records", sources: ["archaeology"] },
   { id: "science", label: "Scientific records", sources: ["science"] },
   { id: "government", label: "Dated public records", sources: ["government", "vatican", "modern"] },
