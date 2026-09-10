@@ -48,7 +48,7 @@ cd android
 
 The bundle is `android/app/build/outputs/bundle/release/app-release.aab`.
 
-Keep `android/upload.keystore` and `android/keystore.properties` **off git**. For GitHub Actions, store them as `PLAY_KEYSTORE_BASE64`, `PLAY_KEYSTORE_PASSWORD`, and `PLAY_KEY_ALIAS`, then run **Play App Bundle**.
+Keep `android/upload.keystore` and `android/keystore.properties` **off git**. For GitHub Actions, store them as `PLAY_KEYSTORE_BASE64`, `PLAY_KEYSTORE_PASSWORD`, and `PLAY_KEY_ALIAS`, then run the **Play App Bundle** workflow (Actions → Play App Bundle → Run workflow).
 
 ## Digital Asset Links (remove the Chrome URL bar)
 
