@@ -2,13 +2,6 @@ name: Play App Bundle
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "android/**"
-      - "store/play/**"
-      - "scripts/play/**"
-      - ".github/workflows/play-bundle.yml"
 
 permissions:
   contents: read
@@ -24,16 +17,17 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: android-actions/setup-android@v3
-        with:
-          packages: "platform-tools platforms;android-36 build-tools;36.0.0"
       - name: Decode upload keystore
-        if: ${{ secrets.PLAY_KEYSTORE_BASE64 != '' }}
         env:
           PLAY_KEYSTORE_BASE64: ${{ secrets.PLAY_KEYSTORE_BASE64 }}
           PLAY_KEYSTORE_PASSWORD: ${{ secrets.PLAY_KEYSTORE_PASSWORD }}
           PLAY_KEY_ALIAS: ${{ secrets.PLAY_KEY_ALIAS }}
           PLAY_KEY_PASSWORD: ${{ secrets.PLAY_KEY_PASSWORD }}
         run: |
+          if [ -z "$PLAY_KEYSTORE_BASE64" ]; then
+            echo "No PLAY_KEYSTORE_BASE64 secret. Building an unsigned bundle."
+            exit 0
+          fi
           printf '%s' "$PLAY_KEYSTORE_BASE64" | base64 -d > android/upload.keystore
           {
             echo "storeFile=upload.keystore"
