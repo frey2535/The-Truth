@@ -14,6 +14,18 @@ import {
   PLAY_TITLE,
   PRIVACY_POLICY_URL,
 } from "../src/lib/playStore.js";
+import {
+  PLAY_ADS,
+  PLAY_APP_ACCESS,
+  PLAY_CATEGORY,
+  PLAY_CONSOLE,
+  PLAY_CONTACT_EMAIL,
+  PLAY_DATA_SAFETY,
+  PLAY_FINANCIAL,
+  PLAY_GOVERNMENT,
+  PLAY_IARC,
+  PLAY_NEWS,
+} from "../src/lib/playConsole.js";
 
 assert.equal(PLAY_IS_FREE, true);
 assert.equal(PLAY_TITLE.length <= 30, true, "Play title must be 30 characters or fewer");
@@ -53,11 +65,34 @@ const gradle = readFileSync("android/app/build.gradle", "utf8");
 assert.match(gradle, /targetSdk 36/);
 assert.match(gradle, /compileSdk 36/);
 assert.match(gradle, /applicationId "org\.currentflowconsulting\.thetruth"/);
+assert.match(readFileSync("android/build.gradle", "utf8"), /8\.11\.1/);
 assert.doesNotMatch(gradle, /billingclient|play-billing|com\.android\.vending\.BILLING/i);
 
 const manifestXml = readFileSync("android/app/src/main/AndroidManifest.xml", "utf8");
 assert.equal(/<uses-permission[^>]*BILLING/i.test(manifestXml), false);
+assert.match(manifestXml, /AD_ID/);
+assert.match(manifestXml, /CustomTabsService/);
+assert.match(manifestXml, /network_security_config/);
+assert.equal(existsSync("android/app/src/main/res/xml/network_security_config.xml"), true);
 assert.match(readFileSync("store/play/listing.md", "utf8"), /Pricing[\s\S]*Free/i);
+assert.equal(PLAY_CONSOLE.free, true);
+assert.equal(PLAY_CONSOLE.packageName, PLAY_PACKAGE_ID);
+assert.equal(PLAY_ADS.containsAds, false);
+assert.equal(PLAY_NEWS.isNewsApp, false);
+assert.equal(PLAY_GOVERNMENT.isGovernmentApp, false);
+assert.equal(PLAY_FINANCIAL.hasFinancialFeatures, false);
+assert.equal(PLAY_APP_ACCESS.loginRequired, false);
+assert.equal(PLAY_DATA_SAFETY.dataSold, false);
+assert.equal(PLAY_CATEGORY.includes("Books"), true);
+assert.match(PLAY_CONTACT_EMAIL, /@/);
+assert.equal(PLAY_IARC.notDesignedForFamilies, true);
+assert.match(readFileSync("fastlane/metadata/android/en-US/title.txt", "utf8").trim(), /^The Truth$/);
+assert.equal(readFileSync("fastlane/metadata/android/en-US/short_description.txt", "utf8").trim(), PLAY_SHORT_DESCRIPTION);
+assert.match(readFileSync("store/play/console/APP_CONTENT.md", "utf8"), /Ads[\s\S]*No/);
+assert.match(readFileSync("store/play/console/DATA_SAFETY.md", "utf8"), /Advertising ID/);
+assert.match(readFileSync("store/play/console/IARC.md", "utf8"), /Teen/);
+assert.match(readFileSync("store/play/console/REVIEW_NOTES.txt", "utf8"), /without creating an account/);
+assert.match(readFileSync(".github/workflows/play-bundle.yml", "utf8"), /bundleRelease/);
 
 assert.match(redirects, /\.well-known/);
 
@@ -68,6 +103,11 @@ for (const file of [
   "public/screenshots/phone-read.png",
   "public/screenshots/phone-investigate.png",
   "public/screenshots/phone-learn.png",
+  "store/play/screenshots/seven-read.png",
+  "store/play/screenshots/ten-read.png",
+  "fastlane/metadata/android/en-US/images/icon.png",
+  "fastlane/metadata/android/en-US/images/featureGraphic.png",
+  "fastlane/metadata/android/en-US/images/phoneScreenshots/phone-read.png",
   "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
 ]) {
   const path = join(file);

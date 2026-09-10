@@ -24,6 +24,7 @@
     "test:storage": "node scripts/test-storage-chat.mjs",
     "test:search": "node scripts/test-search-all-verses.mjs",
     "play:assets": "python3 scripts/play/generate-store-assets.py",
+    "play:listing": "node scripts/play/write-listing-files.mjs",
     "play:assetlinks": "node scripts/play/write-assetlinks.mjs",
     "play:bundle": "cd android && ./gradlew bundleRelease",
     "vendor-catalog": "node scripts/vendor-catalog-texts.mjs"

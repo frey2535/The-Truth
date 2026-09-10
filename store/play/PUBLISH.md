@@ -1,75 +1,72 @@
-# Publish The Truth on Google Play
+# Send The Truth to Google Play production
 
-The Play app is a Trusted Web Activity. It opens `https://thetruth.currentflowconsulting.org` in Chrome Custom Tabs, full screen, with no browser URL bar once Digital Asset Links verify.
+The Play app is a Trusted Web Activity. It opens `https://thetruth.currentflowconsulting.org` in Chrome Custom Tabs, full screen, once Digital Asset Links verify.
 
-GitHub Pages (`frey2535.github.io`) is a mirror only. Do not point the TWA at it.
+GitHub Pages is a mirror only. Do not point the TWA at it.
 
-## What this repo already has
+This repository now contains the listing copy, graphics, Console answers, and the Android project. **Play Console still has to receive the signed `.aab` from you** — Google does not let this repo create the developer account or click Submit.
 
-- Privacy policy: `/privacy`
-- Data safety answers: `/data-safety`
-- Account deletion: `/account`
-- Digital Asset Links file: `public/.well-known/assetlinks.json`
-- Android project targeting API 36: `android/`
-- Store copy and graphics: `store/play/`
-- Package id: `org.currentflowconsulting.thetruth`
+## What is already done in the repo
 
-## You still do in Play Console
+- Privacy, data safety, account deletion: `/privacy`, `/data-safety`, `/account`
+- Digital Asset Links: `public/.well-known/assetlinks.json`
+- Android TWA, package `org.currentflowconsulting.thetruth`, target / compile SDK **36**
+- No Play Billing, no advertising ID
+- Store listing and screenshots: `store/play/` and `fastlane/metadata/android/en-US/`
+- Console paste pack: `store/play/console/`
+- Reviewer notes: `store/play/console/REVIEW_NOTES.txt`
 
-1. Pay the one-time Play developer fee and finish identity verification.
-2. Create an app named **The Truth**, package `org.currentflowconsulting.thetruth`, app type App, category Books & Reference. Set **Free** (not Paid). Do not create in-app products or subscriptions — that choice is usually permanent.
+## What you still do in Play Console
+
+1. Pay the Play developer fee and finish identity verification.
+2. Create the app:
+   - Name: **The Truth**
+   - Package: `org.currentflowconsulting.thetruth`
+   - Type: App
+   - Category: Books & Reference
+   - **Free** (not Paid). Do not add in-app products or subscriptions.
 3. Turn on **Play App Signing**.
-4. Complete Data safety using `/data-safety`, privacy URL, and account-deletion URL.
-5. Complete the IARC content rating questionnaire (expect Teen; not Designed for Families).
-6. Personal developer accounts created after 13 November 2023 need a 14-day closed test with at least 12 testers before production.
-7. Upload a signed Android App Bundle (`.aab`).
-
-This repository cannot create the Play account or upload the bundle for you.
+4. Paste listing copy from `store/play/listing.md` (or upload `fastlane/metadata/android/en-US/`).
+5. Upload graphics from `store/play/` (icon, feature graphic, phone + tablet screenshots).
+6. App content: follow `store/play/console/APP_CONTENT.md`.
+7. Data safety: `store/play/console/DATA_SAFETY.md` (same as `/data-safety`).
+8. IARC questionnaire: `store/play/console/IARC.md` (expect Teen; not Designed for Families).
+9. Review notes: `store/play/console/REVIEW_NOTES.txt`.
+10. Upload the signed Android App Bundle (`.aab`).
+11. If this is a **personal** developer account created after 13 November 2023, run a **closed test** with at least **12 testers opted in for 14 continuous days**, then apply for production access on the Dashboard. Internal testing does not count. Organization accounts can usually go to production after review.
 
 ## Build the App Bundle
 
-On a machine with Android Studio or the command-line SDK:
+On a machine with the Android SDK:
 
 ```bash
-# once
 cp android/keystore.properties.example android/keystore.properties
-bash scripts/play/create-upload-keystore.sh
-# edit android/keystore.properties with the passwords you chose
-
-# every release
+PLAY_KEYSTORE_PASSWORD='your-strong-password' bash scripts/play/create-upload-keystore.sh
 cd android
 ./gradlew bundleRelease
 ```
 
 The bundle is `android/app/build/outputs/bundle/release/app-release.aab`.
 
-Target / compile SDK is **36** (Android 16), required for new Play uploads from 31 August 2026.
+Keep `android/upload.keystore` and `android/keystore.properties` **off git**. For GitHub Actions, store them as `PLAY_KEYSTORE_BASE64`, `PLAY_KEYSTORE_PASSWORD`, and `PLAY_KEY_ALIAS`, then run **Play App Bundle**.
 
 ## Digital Asset Links (remove the Chrome URL bar)
 
-After the first upload, Play Console → Test and release → App integrity → App signing shows **App signing key certificate** SHA-256.
+After the first upload, Play Console → Test and release → App integrity → App signing shows **App signing key certificate** SHA-256. Add it (keep the upload-key fingerprint too):
 
 ```bash
-PLAY_SHA256_CERT_FINGERPRINTS='AA:BB:CC:...' npm run play:assetlinks
+PLAY_SHA256_CERT_FINGERPRINTS='UPLOAD_SHA,PLAY_APP_SIGNING_SHA' npm run play:assetlinks
 ```
 
-Commit that file, deploy the public site, then wait until
+Commit, deploy the public site, then confirm
 
 https://thetruth.currentflowconsulting.org/.well-known/assetlinks.json
 
-returns the fingerprint. Google’s tester:
+Google’s tester:
 
 https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://thetruth.currentflowconsulting.org&relation=delegate_permission/common.handle_all_urls
 
-Until the live fingerprint matches Play App Signing, Android shows the site as a Custom Tab with a URL bar. That is expected.
-
-## Review notes for Play
-
-- The app is free. There is no checkout, paid unlock, or subscription.
-- Demo: open the app; reading works without an account.
-- Sign-in is optional. Local test account: create one on the device from Create account.
-- Owner login is not for reviewers.
-- Study search does not use the internet for answers.
+Until the live file matches Play App Signing, Android may show a Custom Tab URL bar.
 
 ## After the listing is live
 
