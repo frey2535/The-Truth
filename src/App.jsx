@@ -36,6 +36,7 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
 import OwnerLogin from "@/pages/OwnerLogin";
 import OwnerDownloads from "@/pages/OwnerDownloads";
+import OwnerCursor from "@/pages/OwnerCursor";
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -69,6 +70,7 @@ const AuthenticatedApp = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/owner" element={<OwnerLogin />} />
       <Route path="/owner/downloads" element={<OwnerDownloads />} />
+      <Route path="/owner/cursor" element={<OwnerCursor />} />
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
         <Route path="/plan/:id" element={<StudyPlanView />} />

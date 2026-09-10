@@ -1,4 +1,12 @@
-import { backfillOwnerDownloads, fetchOwnerDownloads, ownerLogin, saveGoogleClientId } from "@/lib/installStats";
+import {
+  backfillOwnerDownloads,
+  createCursorToken,
+  fetchCursorTokens,
+  fetchOwnerDownloads,
+  ownerLogin,
+  revokeCursorToken,
+  saveGoogleClientId,
+} from "@/lib/installStats";
 import { clearOwnerSession, readOwnerSession, writeOwnerSession } from "@/lib/ownerSession";
 
 export const localOwner = {
@@ -26,5 +34,17 @@ export const localOwner = {
 
   async connectGoogle(clientId) {
     return saveGoogleClientId(clientId);
+  },
+
+  async cursorTokens() {
+    return fetchCursorTokens();
+  },
+
+  async createCursorToken(name) {
+    return createCursorToken(name);
+  },
+
+  async revokeCursorToken(id) {
+    return revokeCursorToken(id);
   },
 };

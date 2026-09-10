@@ -280,3 +280,49 @@ export async function fetchOwnerDownloads() {
   if (!res.ok) throw new Error(data.error || "Could not load downloads");
   return data;
 }
+
+function ownerAuthHeaders() {
+  const session = readOwnerSession();
+  if (!session?.token) throw new Error("Platform owner sign-in is required");
+  return { Authorization: `Bearer ${session.token}` };
+}
+
+export async function fetchCursorTokens() {
+  const origin = installMetricsOrigin();
+  const res = await fetch(`${origin}/api/mcp-tokens`, {
+    headers: ownerAuthHeaders(),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Could not load Cursor tokens");
+  return data;
+}
+
+export async function createCursorToken(name) {
+  const origin = installMetricsOrigin();
+  const res = await fetch(`${origin}/api/mcp-tokens`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...ownerAuthHeaders(),
+    },
+    body: JSON.stringify({ name }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Could not create a Cursor token");
+  return data;
+}
+
+export async function revokeCursorToken(id) {
+  const origin = installMetricsOrigin();
+  const res = await fetch(`${origin}/api/mcp-tokens`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...ownerAuthHeaders(),
+    },
+    body: JSON.stringify({ action: "revoke", id }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Could not revoke that Cursor token");
+  return data;
+}

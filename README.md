@@ -55,6 +55,10 @@ GitHub Actions can create a KV namespace named **thetruth-installs**. Bind it as
 
 There is a quiet **Platform owner** link at the bottom of the Install page. The live count is stored on the Cloudflare site, so GitHub Pages installs report there too.
 
+### Cursor inside the owner app
+
+Sign in at **/owner**, then open **/owner/cursor**. That page mints a hashed `mcp_` token and a Cursor MCP snippet. Paste it in **Cursor Settings → MCP** (or copy `.cursor/mcp.json.example`). Cloud agents should use `https://thetruth.currentflowconsulting.org/api/mcp`. The token is owner-level: list downloads, record a past install, and read Google / page status. It does not send study questions to the internet.
+
 Privacy policy: [https://thetruth.currentflowconsulting.org/privacy](https://thetruth.currentflowconsulting.org/privacy). Play data-safety answers and on-device account deletion: `/data-safety` and `/account`.
 
 ## Publish
