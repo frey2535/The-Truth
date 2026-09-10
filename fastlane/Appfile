@@ -1,0 +1,2 @@
+json_key_file("") # optional Play API key — leave empty and upload the AAB in Play Console
+package_name("org.currentflowconsulting.thetruth")

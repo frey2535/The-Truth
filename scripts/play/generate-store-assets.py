@@ -72,24 +72,32 @@ def maskable(icon):
     print(f"wrote {out.relative_to(ROOT)}")
 
 
-def phone_shot(icon, title, lines, out_name, dark=True):
-    w, h = 1080, 1920
+def phone_shot(icon, title, lines, out_name, dark=True, size=(1080, 1920), extra_dirs=()):
+    w, h = size
     bg = BG if dark else PAPER
     ink = CREAM if dark else INK
     sub = GOLD if dark else WINE
     canvas = Image.new("RGB", (w, h), bg)
     draw = ImageDraw.Draw(canvas)
-    draw.rounded_rectangle((48, 48, w - 48, h - 48), 48, outline=GOLD if dark else MUTED, width=3)
-    badge = rounded(icon.resize((220, 220), Image.Resampling.LANCZOS), 48)
-    canvas.paste(badge, ((w - 220) // 2, 220), badge)
-    draw.text((w // 2, 500), "The Truth", font=font(72, bold=True), fill=ink, anchor="mm")
-    draw.text((w // 2, 600), title, font=font(36), fill=sub, anchor="mm")
-    y = 760
+    inset = 48 if min(w, h) >= 1000 else 32
+    draw.rounded_rectangle((inset, inset, w - inset, h - inset), 48, outline=GOLD if dark else MUTED, width=3)
+    badge_size = 220 if h >= 1600 else 180
+    badge = rounded(icon.resize((badge_size, badge_size), Image.Resampling.LANCZOS), 48)
+    canvas.paste(badge, ((w - badge_size) // 2, int(h * 0.12)), badge)
+    title_y = int(h * 0.28)
+    draw.text((w // 2, title_y), "The Truth", font=font(72 if h >= 1600 else 56, bold=True), fill=ink, anchor="mm")
+    draw.text((w // 2, title_y + 100), title, font=font(36 if h >= 1600 else 28), fill=sub, anchor="mm")
+    y = title_y + 260
     for line in lines:
-        draw.text((w // 2, y), line, font=font(28), fill=ink, anchor="mm")
+        draw.text((w // 2, y), line, font=font(28 if h >= 1600 else 24), fill=ink, anchor="mm")
         y += 56
-    save_rgb(canvas, SHOTS / out_name)
-    save_rgb(canvas, PUBLIC_SHOTS / out_name)
+    destinations = [SHOTS / out_name]
+    if size == (1080, 1920):
+        destinations.append(PUBLIC_SHOTS / out_name)
+    for folder in extra_dirs:
+        destinations.append(Path(folder) / out_name)
+    for dest in destinations:
+        save_rgb(canvas, dest)
 
 
 def android_icons(icon):
@@ -118,12 +126,17 @@ def main():
     feature_graphic(icon)
     play_icon(icon)
     maskable(icon)
+    fastlane = ROOT / "fastlane" / "metadata" / "android" / "en-US" / "images"
+    phone_dir = fastlane / "phoneScreenshots"
+    seven_dir = fastlane / "sevenInchScreenshots"
+    ten_dir = fastlane / "tenInchScreenshots"
     phone_shot(
         icon,
         "Read",
         ["King James and stored writings", "Search only what ships in the app", "No invented verses"],
         "phone-read.png",
         dark=True,
+        extra_dirs=(phone_dir,),
     )
     phone_shot(
         icon,
@@ -131,6 +144,7 @@ def main():
         ["Build a dossier from stored texts", "Quote the wording that is here", "Primary records, not the web"],
         "phone-investigate.png",
         dark=False,
+        extra_dirs=(phone_dir,),
     )
     phone_shot(
         icon,
@@ -138,8 +152,47 @@ def main():
         ["Guided study paths", "Notes stay on this device", "Sign-in is optional"],
         "phone-learn.png",
         dark=True,
+        extra_dirs=(phone_dir,),
+    )
+    phone_shot(
+        icon,
+        "Read",
+        ["The same library on a tablet", "Search only stored texts", "Free. No in-app purchases"],
+        "seven-read.png",
+        dark=True,
+        size=(1200, 1920),
+        extra_dirs=(seven_dir, STORE / "screenshots"),
+    )
+    phone_shot(
+        icon,
+        "Investigate",
+        ["Build a dossier from stored texts", "Primary records, not the web"],
+        "seven-investigate.png",
+        dark=False,
+        size=(1200, 1920),
+        extra_dirs=(seven_dir, STORE / "screenshots"),
+    )
+    phone_shot(
+        icon,
+        "Read",
+        ["Scripture research on a large screen", "Texts stored in the app", "Sign-in is optional"],
+        "ten-read.png",
+        dark=True,
+        size=(1920, 1200),
+        extra_dirs=(ten_dir, STORE / "screenshots"),
+    )
+    phone_shot(
+        icon,
+        "Learn",
+        ["Guided study paths", "Notes stay on this device"],
+        "ten-learn.png",
+        dark=False,
+        size=(1920, 1200),
+        extra_dirs=(ten_dir, STORE / "screenshots"),
     )
     android_icons(icon)
+    save_rgb(Image.open(STORE / "icon-512.png"), fastlane / "icon.png")
+    save_rgb(Image.open(STORE / "feature-graphic.png"), fastlane / "featureGraphic.png")
 
 
 if __name__ == "__main__":

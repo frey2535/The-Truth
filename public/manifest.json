@@ -98,6 +98,20 @@
       "type": "image/png",
       "form_factor": "narrow",
       "label": "Learn with guided study paths"
+    },
+    {
+      "src": "/screenshots/phone-read.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Read Scripture stored in the app"
+    },
+    {
+      "src": "/screenshots/phone-investigate.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Investigate a claim against stored texts"
     }
   ]
 }
