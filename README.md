@@ -31,7 +31,7 @@ The app works immediately. Sign-in is optional; the first named account you crea
 
 This is a Progressive Web App. People open it once in the phone’s browser, then add it to the home screen — it launches like a native app.
 
-Google Play uses the same public site as a Trusted Web Activity (`org.currentflowconsulting.thetruth`). The Play listing is **free** — no paid download and no in-app purchases. Listing copy, graphics, Console answers, and the remaining Play Console upload steps are in [`store/play/PUBLISH.md`](store/play/PUBLISH.md). There is not yet an Apple App Store listing; iPhone install is still Safari → Add to Home Screen.
+Google Play uses the same public site as a Trusted Web Activity (`org.currentflowconsulting.thetruth`). The Play listing is **free** — no paid download and no in-app purchases. Listing copy, graphics, Console answers, and the remaining Play Console upload steps are in [`store/play/PUBLISH.md`](store/play/PUBLISH.md). Paste every Console question from [`/play-console`](https://thetruth.currentflowconsulting.org/play-console). There is not yet an Apple App Store listing; iPhone install is still Safari → Add to Home Screen.
 
 1. Run `npm run dev` (or `npm run share` for a production build on port **4174**).
 2. On the phone, open the LAN address shown as Vite’s **Network** URL, or open **Install on a phone** in the app and share/copy that link.
@@ -59,7 +59,7 @@ There is a quiet **Platform owner** link at the bottom of the Install page. The 
 
 Sign in at **/owner**, then open **/owner/cursor**. That page mints a hashed `mcp_` token and a Cursor MCP snippet. Paste it in **Cursor Settings → MCP** (or copy `.cursor/mcp.json.example`). Cloud agents should use `https://thetruth.currentflowconsulting.org/api/mcp`. The token is owner-level: list downloads, record a past install, and read Google / page status. It does not send study questions to the internet.
 
-Privacy policy: [https://thetruth.currentflowconsulting.org/privacy](https://thetruth.currentflowconsulting.org/privacy). Play data-safety answers and on-device account deletion: `/data-safety` and `/account`.
+Privacy policy: [https://thetruth.currentflowconsulting.org/privacy](https://thetruth.currentflowconsulting.org/privacy). Play data-safety answers, the full Console paste pack, and on-device account deletion: `/data-safety`, `/play-console`, and `/account`.
 
 ## Publish
 

@@ -3,6 +3,7 @@ import LegalDoc, { LegalH2, LegalList, LegalP } from "@/components/LegalDoc";
 import {
   ACCOUNT_DELETION_URL,
   DATA_SAFETY_URL,
+  PLAY_CONSOLE_ANSWERS_URL,
   PLAY_HOST,
   PRIVACY_POLICY_URL,
 } from "@/lib/playStore";
@@ -65,9 +66,8 @@ export default function Privacy() {
           receives the OAuth request. We store only the profile fields listed above, on this device.
         </li>
         <li>
-          <strong>Extra AI tools (optional).</strong> Ordinary study search stays on the device. If
-          the site operator has configured an OpenAI key, some extra tools may send a prompt to
-          OpenAI and receive a reply. Do not put secrets in those prompts.
+          <strong>Study search.</strong> Research, Investigate, the Assistant, and Word Study stay
+          on the device. They search stored texts only and do not use a paid AI API.
         </li>
         <li>
           <strong>Hosting.</strong> Cloudflare (and the GitHub Pages mirror) see ordinary web
@@ -108,7 +108,11 @@ export default function Privacy() {
         <Link className="text-[#7a2e2e] underline" to="/data-safety">
           Data safety
         </Link>{" "}
-        ({DATA_SAFETY_URL}).
+        ({DATA_SAFETY_URL}) and the full click-through pack is on{" "}
+        <Link className="text-[#7a2e2e] underline" to="/play-console">
+          Play Console answers
+        </Link>{" "}
+        ({PLAY_CONSOLE_ANSWERS_URL}).
       </LegalP>
 
       <LegalH2>Changes</LegalH2>

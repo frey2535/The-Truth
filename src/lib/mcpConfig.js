@@ -47,6 +47,7 @@ export const APP_PAGES = [
   { path: "/install", title: "Install", purpose: "Add the PWA to a phone or computer" },
   { path: "/privacy", title: "Privacy", purpose: "Privacy policy" },
   { path: "/data-safety", title: "Data safety", purpose: "Play data-safety answers" },
+  { path: "/play-console", title: "Play Console", purpose: "Every Play Console production answer" },
   { path: "/account", title: "Account", purpose: "Reader account and on-device deletion" },
   { path: "/login", title: "Sign in", purpose: "Reader email/password or Google" },
   { path: "/owner", title: "Platform owner", purpose: "Owner sign-in" },

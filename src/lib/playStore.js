@@ -5,6 +5,7 @@ export const PLAY_START_URL = "https://thetruth.currentflowconsulting.org/";
 export const PRIVACY_POLICY_URL = "https://thetruth.currentflowconsulting.org/privacy";
 export const DATA_SAFETY_URL = "https://thetruth.currentflowconsulting.org/data-safety";
 export const ACCOUNT_DELETION_URL = "https://thetruth.currentflowconsulting.org/account";
+export const PLAY_CONSOLE_ANSWERS_URL = "https://thetruth.currentflowconsulting.org/play-console";
 export const PLAY_STORE_URL = `https://play.google.com/store/apps/details?id=${PLAY_PACKAGE_ID}`;
 
 /** Play Console app name — 30 characters max. */
@@ -34,8 +35,8 @@ Research, Investigate, the Assistant, and Word Study search only texts and publi
 Optional sign-in
 Create a local account on this device, or continue with Google. That is optional. Reading works without an account.
 
-Optional extra AI
-Some extra tools may call OpenAI if the site operator has configured a key. Ordinary study search does not.
+No paid services
+Research, Investigate, the Assistant, and Word Study do not use a paid AI API. The Play listing has no ads and no in-app purchases.
 
 This listing is free. No ads. No in-app purchases or subscriptions.
 
@@ -43,7 +44,7 @@ Privacy: ${PRIVACY_POLICY_URL}
 Delete this device’s account: ${ACCOUNT_DELETION_URL}
 `;
 
-export const LEGAL_PATHS = ["/privacy", "/data-safety", "/account"];
+export const LEGAL_PATHS = ["/privacy", "/data-safety", "/account", "/play-console"];
 
 export function isLegalPath(pathname = "", baseUrl = import.meta.env?.BASE_URL || "/") {
   const raw = String(pathname || "");

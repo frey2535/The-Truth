@@ -5,6 +5,7 @@ import {
   ACCOUNT_DELETION_URL,
   DATA_SAFETY_URL,
   isLegalPath,
+  PLAY_CONSOLE_ANSWERS_URL,
   PLAY_FULL_DESCRIPTION,
   PLAY_HOST,
   PLAY_IS_FREE,
@@ -25,6 +26,7 @@ import {
   PLAY_GOVERNMENT,
   PLAY_IARC,
   PLAY_NEWS,
+  PLAY_QUESTIONNAIRE,
 } from "../src/lib/playConsole.js";
 
 assert.equal(PLAY_IS_FREE, true);
@@ -33,6 +35,8 @@ assert.equal(PLAY_SHORT_DESCRIPTION.length <= 80, true, "Play short description 
 assert.match(PLAY_SHORT_DESCRIPTION, /Free/i);
 assert.match(PLAY_FULL_DESCRIPTION, /free/i);
 assert.match(PLAY_FULL_DESCRIPTION, /no in-app purchases/i);
+assert.match(PLAY_FULL_DESCRIPTION, /do not use a paid AI API/i);
+assert.doesNotMatch(PLAY_FULL_DESCRIPTION, /OpenAI/i);
 assert.ok(PLAY_FULL_DESCRIPTION.length > 200);
 assert.ok(PLAY_FULL_DESCRIPTION.length <= 4000);
 assert.equal(PLAY_PACKAGE_ID, "org.currentflowconsulting.thetruth");
@@ -40,9 +44,11 @@ assert.match(PLAY_START_URL, /^https:\/\/thetruth\.currentflowconsulting\.org\/$
 assert.equal(PRIVACY_POLICY_URL, `https://${PLAY_HOST}/privacy`);
 assert.equal(DATA_SAFETY_URL, `https://${PLAY_HOST}/data-safety`);
 assert.equal(ACCOUNT_DELETION_URL, `https://${PLAY_HOST}/account`);
+assert.equal(PLAY_CONSOLE_ANSWERS_URL, `https://${PLAY_HOST}/play-console`);
 assert.equal(isLegalPath("/privacy"), true);
 assert.equal(isLegalPath("/data-safety"), true);
 assert.equal(isLegalPath("/account"), true);
+assert.equal(isLegalPath("/play-console"), true);
 assert.equal(isLegalPath("/library"), false);
 assert.equal(isLegalPath("/The-Truth/privacy", "/The-Truth/"), true);
 
@@ -92,6 +98,39 @@ assert.match(readFileSync("store/play/console/APP_CONTENT.md", "utf8"), /Ads[\s\
 assert.match(readFileSync("store/play/console/DATA_SAFETY.md", "utf8"), /Advertising ID/);
 assert.match(readFileSync("store/play/console/IARC.md", "utf8"), /Teen/);
 assert.match(readFileSync("store/play/console/REVIEW_NOTES.txt", "utf8"), /without creating an account/);
+assert.match(readFileSync("store/play/console/CLOSED_TESTING.md", "utf8"), /Google Group/);
+assert.match(redirects, /^\/play-console\s+\/index\.html\s+200/m);
+const questionnaireIds = PLAY_QUESTIONNAIRE.map((section) => section.id);
+for (const id of [
+  "create",
+  "pricing",
+  "privacy",
+  "ads",
+  "app-access",
+  "ads-id",
+  "news",
+  "covid",
+  "government",
+  "financial",
+  "health",
+  "ai",
+  "permissions",
+  "audience",
+  "data-safety",
+  "iarc",
+  "closed-test",
+]) {
+  assert.equal(questionnaireIds.includes(id), true, `missing Play Console section ${id}`);
+}
+assert.ok(PLAY_QUESTIONNAIRE.every((section) => section.items.length > 0));
+assert.equal(
+  PLAY_QUESTIONNAIRE.find((section) => section.id === "pricing").items[0].a,
+  "Free"
+);
+assert.match(
+  PLAY_QUESTIONNAIRE.find((section) => section.id === "ai").items[0].a,
+  /No/
+);
 assert.match(readFileSync(".github/workflows/play-bundle.yml", "utf8"), /bundleRelease/);
 
 assert.match(redirects, /\.well-known/);

@@ -1,48 +1,90 @@
 # IARC content rating answers
 
 Expected outcome: **Teen**. Not Designed for Families.
+IARC email: owner@thetruth.currentflowconsulting.org
+Category: All Other App Types (Utility / Productivity / Reference). Not a game.
 
-## App category
+## IARC email
 
-Reference / educational. Not a game.
+**owner@thetruth.currentflowconsulting.org**
 
-## Violence
+## Category
 
-Yes, infrequently. Stored Scripture and related records describe war, judgment, and death. This is text, not interactive gameplay.
+**All Other App Types (Utility / Productivity / Reference). Not a game.**
 
-## Sexual content
+## Does the app contain depictions of violence?
 
-Some biblical narrative mentions marriage, childbirth, or sexual sin. There is no pornography and no interactive sexual content.
+**Yes**
 
-## Language
+## Is the violence interactive gameplay or a combat game?
 
-Some stored texts include strong or archaic language.
+**No**
 
-## Controlled substances
+## Cartoon or fantasy violence?
 
-Some stored texts mention wine or similar. The app does not sell or promote drugs.
+**No**
 
-## Gambling
+## Realistic or graphic violence toward humans or animals?
 
-No.
+**Yes — textual accounts only, not images.**
 
-## User interaction / UGC
+## Blood, gore, or dismemberment as images or gameplay?
 
-Notes, highlights, and chats stay on this device. There is no public feed and no user-to-user chat.
+**No**
 
-## Location sharing
+## Sexual violence as interactive or illustrated content?
 
-No.
+**No**
 
-## Digital purchases
+## Sexual content or nudity images?
 
-No. The app is free and has no in-app products.
+**No**
 
-## Unrestricted internet
+## Sexual themes in text?
 
-No. The Play app is a Trusted Web Activity for thetruth.currentflowconsulting.org only.
+**Yes, infrequent biblical narrative. No pornography.**
 
-## Age
+## Profanity or crude language?
 
-Not directed at children under 13.
+**Yes — some strong or archaic wording in stored texts.**
+
+## Alcohol, tobacco, or drugs sold or promoted?
+
+**No**
+
+## References to wine or similar in stored texts?
+
+**Yes, infrequently.**
+
+## Real-money or simulated gambling?
+
+**No**
+
+## Users can interact or chat with each other?
+
+**No**
+
+## Public user-generated content / social feed?
+
+**No**
+
+## Shares the user’s location?
+
+**No**
+
+## Digital purchases or in-app products?
+
+**No**
+
+## Unrestricted internet / open web browser?
+
+**No. TWA is locked to this site.**
+
+## Primarily directed at children under 13?
+
+**No**
+
+## Expected rating
+
+**Teen. Not Designed for Families.**
 

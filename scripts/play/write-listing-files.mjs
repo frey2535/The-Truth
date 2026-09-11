@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  PLAY_CONSOLE_ANSWERS_URL,
   PLAY_FULL_DESCRIPTION,
   PLAY_SHORT_DESCRIPTION,
   PLAY_TITLE,
@@ -11,8 +12,10 @@ import {
   PLAY_CATEGORY,
   PLAY_CONSOLE,
   PLAY_CONTACT_EMAIL,
+  PLAY_DATA_SAFETY,
   PLAY_DEFAULT_LANGUAGE,
   PLAY_IARC,
+  PLAY_QUESTIONNAIRE,
   PLAY_REVIEW_NOTES,
 } from "../../src/lib/playConsole.js";
 
@@ -24,11 +27,24 @@ function write(path, text) {
   writeFileSync(path, text.endsWith("\n") ? text : `${text}\n`);
 }
 
+function renderSection(section) {
+  const items = section.items
+    .map((item) => {
+      const note = item.note ? `\n\n_${item.note}_\n` : "\n";
+      return `### ${item.q}\n\n**${item.a}**${note}`;
+    })
+    .join("\n");
+  return `## ${section.title}\n\n${items}`;
+}
+
 write(join(en, "title.txt"), PLAY_TITLE);
 write(join(en, "short_description.txt"), PLAY_SHORT_DESCRIPTION);
 write(join(en, "full_description.txt"), PLAY_FULL_DESCRIPTION);
 write(join(en, "video.txt"), "");
-write(join(root, "fastlane/metadata/android/default/changelogs/1.txt"), "First Play listing. Free Scripture research from texts stored in the app.");
+write(
+  join(root, "fastlane/metadata/android/default/changelogs/1.txt"),
+  "First Play listing. Free Scripture research from texts stored in the app."
+);
 write(
   join(root, "fastlane/Appfile"),
   `json_key_file("") # optional Play API key — leave empty and upload the AAB in Play Console
@@ -39,6 +55,8 @@ package_name("${PLAY_CONSOLE.packageName}")
 const listing = `# Google Play listing copy
 
 Paste these fields in Play Console → Grow → Store presence → Main store listing.
+
+Public click-through pack: ${PLAY_CONSOLE_ANSWERS_URL}
 
 ## App name (30)
 
@@ -75,75 +93,40 @@ Privacy policy: ${PLAY_CONSOLE.privacyPolicy}
 - \`screenshots/ten-*.png\` — 10-inch tablet, 1920×1200
 
 The same files are copied to \`fastlane/metadata/android/en-US/\`.
+Leave the Play Console “AI-generated content” box unchecked on these graphics.
 `;
 write(join(root, "store/play/listing.md"), listing);
 
-write(
-  join(root, "store/play/console/REVIEW_NOTES.txt"),
-  PLAY_REVIEW_NOTES
-);
+write(join(root, "store/play/console/REVIEW_NOTES.txt"), PLAY_REVIEW_NOTES);
 
 write(
   join(root, "store/play/console/APP_CONTENT.md"),
   `# Play Console → App content
 
-Use these exact answers.
+Public page: ${PLAY_CONSOLE_ANSWERS_URL}
 
-## Privacy policy
+Use these exact answers. The listing is free. Do not add ads or in-app products.
 
-${PLAY_CONSOLE.privacyPolicy}
-
-## Ads
-
-Does your app contain ads? **No**
-
-## App access
-
-All functionality is available without restrictions: **Yes**
-${PLAY_APP_ACCESS.notes}
-
-## News app
-
-Is this a news app? **No**
-
-## COVID-19
-
-Is this a COVID-19 app? **No**
-
-## Government
-
-Is this a government app? **No**
-
-## Financial features
-
-Does the app provide financial features? **No**
-
-## Health
-
-Does the app have health features? **No**
-
-## Data safety
-
-Open ${PLAY_CONSOLE.dataSafety} and copy those answers.
-Account deletion URL: ${PLAY_CONSOLE.accountDeletion}
-
-## Target audience
-
-Designed for children: **No**
-Designed for Families: **No**
-Age groups: 13–15, 16–17, 18+
-
-## Content rating
-
-Complete the IARC questionnaire using \`store/play/console/IARC.md\`. Expected rating: ${PLAY_IARC.expectedRating}.
-
-## Default language
-
-${PLAY_DEFAULT_LANGUAGE}
-
-## Store listing contact
-
-${PLAY_CONTACT_EMAIL}
+${PLAY_QUESTIONNAIRE.filter((section) =>
+  [
+    "privacy",
+    "ads",
+    "app-access",
+    "ads-id",
+    "news",
+    "covid",
+    "government",
+    "financial",
+    "health",
+    "ai",
+    "permissions",
+    "audience",
+    "data-safety",
+    "iarc",
+  ].includes(section.id)
+)
+  .map(renderSection)
+  .join("\n")}
 `
 );
 
@@ -152,9 +135,11 @@ write(
   `# IARC content rating answers
 
 Expected outcome: **${PLAY_IARC.expectedRating}**. Not Designed for Families.
+IARC email: ${PLAY_IARC.email}
+Category: ${PLAY_IARC.category}
 
-${Object.entries(PLAY_IARC.answers)
-  .map(([question, answer]) => `## ${question}\n\n${answer}\n`)
+${PLAY_QUESTIONNAIRE.find((section) => section.id === "iarc").items
+  .map((item) => `## ${item.q}\n\n**${item.a}**${item.note ? `\n\n${item.note}` : ""}\n`)
   .join("\n")}
 `
 );
@@ -164,8 +149,9 @@ write(
   `# Data safety form
 
 Source of truth: ${PLAY_CONSOLE.dataSafety}
+Click-through pack: ${PLAY_CONSOLE_ANSWERS_URL}
 
-- Does the app collect required user data? **No**
+- Does the app collect required user data to work? **No**
 - Encrypted in transit: **Yes**
 - Users can request deletion: **Yes** (${PLAY_CONSOLE.accountDeletion})
 - Data sold: **No**
@@ -174,20 +160,43 @@ Source of truth: ${PLAY_CONSOLE.dataSafety}
 
 ## Declare
 
-- Personal info → Email address, Name — optional, on device, App functionality
-- Photos and videos — Google profile picture URL only, optional, on device
-- App info and performance → Other app performance data — install count, Analytics
-- Device or other IDs — random install device id
+${PLAY_DATA_SAFETY.collected
+  .map(
+    (row) =>
+      `- ${row.type} — collected: ${row.collected ? "Yes" : "No"}; shared: ${row.shared ? "Yes" : "No"}; optional: ${row.optional ? "Yes" : "No"}; ephemeral: ${row.ephemeral ? "Yes" : "No"}. ${row.purpose}. ${row.stored}`
+  )
+  .join("\n")}
 
 ## Do not declare
 
-Location, financial info, health, messages, contacts, calendar, files and docs, audio, microphone, camera, advertising IDs.
+${PLAY_DATA_SAFETY.doNotDeclare.join(", ")}.
 
 ## Shared
 
-- Google — only if Continue with Google
-- OpenAI — only if an extra AI tool runs and a key is configured
-- Cloudflare — ordinary request logs
+${PLAY_DATA_SAFETY.shared.map((item) => `- ${item}`).join("\n")}
+`
+);
+
+write(
+  join(root, "store/play/console/CLOSED_TESTING.md"),
+  `# Closed testing at no cost
+
+New personal Play developer accounts created after 13 November 2023 cannot go straight to production. Organization accounts can usually apply after review.
+
+Do **not** pay testers or a testing service.
+
+1. Play Console → Test and release → Testing → Closed testing → Create a new closed test.
+2. Create a free Google Group and add at least twelve people you know.
+3. Add that group as testers. Copy the opt-in link.
+4. Each tester must open the link while signed into Play and tap **Become a tester**, then install from the Play closed-test listing.
+5. Keep twelve testers opted in for **14 continuous days**.
+6. Internal testing does not count.
+7. Dashboard → Apply for production access.
+
+Reviewers should not use /owner. Reading works without an account.
+${PLAY_APP_ACCESS.notes}
+
+Default language: ${PLAY_DEFAULT_LANGUAGE}
 `
 );
 
