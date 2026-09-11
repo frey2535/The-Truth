@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { CATALOG_TEXT_MAP } from "../src/data/catalogTextMap.js";
 import { EXTRA_DEFS } from "../src/data/textCatalogExtras.js";
 import { rowsFromStoredText } from "../src/lib/corpusPassages.js";
+import { extractCatalogSection } from "../src/lib/catalogExtract.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -90,10 +91,15 @@ const odes = readFileSync(join(root, "public/corpus/manuscripts/odes-of-solomon.
 assert.match(odes, /The Lord is upon my head like a crown/i);
 assert.match(odes, /not the Septuagint canticle list/i);
 assert.doesNotMatch(odes, /Song of Moses.*Magnificat/s);
+const odesView = extractCatalogSection(odes, null, null).text;
+assert.match(odesView.slice(0, 800), /The Lord is upon my head like a crown/i);
 
 const twoBaruch = readFileSync(join(root, "public/corpus/manuscripts/2-baruch.md"), "utf8");
 assert.match(twoBaruch, /Jeconiah/i);
 assert.match(twoBaruch, /Baruch, the son of Neriah/i);
+const twoView = extractCatalogSection(twoBaruch, null, null).text;
+assert.match(twoView.slice(0, 500), /twenty-fifth year of Jeconiah/i);
+assert.doesNotMatch(twoView.slice(0, 500), /Testaments of the Twelve Patriarchs/i);
 
 const sinodos = readFileSync(join(root, "public/corpus/manuscripts/sinodos.md"), "utf8");
 assert.match(sinodos, /This is the Sinodos of/i);
