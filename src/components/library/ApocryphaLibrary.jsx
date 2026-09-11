@@ -26,8 +26,9 @@ export default function ApocryphaLibrary({ onBack }) {
       </button>
       <h1 className="font-display text-3xl text-[#2b2620] mb-1">The Apocrypha</h1>
       <p className="text-[#8a7f6f] mb-8 max-w-2xl">
-        22 deuterocanonical and ancient books — the 1611 KJV Apocrypha plus 1 Enoch, Jubilees, the Psalms of Solomon,
-        3 &amp; 4 Maccabees, Psalm 151, the Odes, and the Additions to Esther.
+        1611 KJV Apocrypha plus 1 Enoch, Jubilees, the Odes of Solomon, 2–4 Baruch, and other stored
+        deuterocanonical and pseudepigraphal books. The Septuagint Odes remain the biblical canticles already in the
+        King James text.
       </p>
 
       <h2 className="font-display text-xl text-[#2b2620] mb-3">1611 KJV Apocrypha</h2>

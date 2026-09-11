@@ -84,25 +84,52 @@ export const EXTRA_DEFS = [
     textStatus: "not_stored",
   }),
   E("1-meqabyan", "1 Meqabyan", [5], [L.eth], {
-    background: "Ethiopian book. Not 1 Maccabees. Different work.",
+    background: "Ethiopian book. Not 1 Maccabees. Different work. No pre-1929 English translation is stored here; later printings are still in copyright.",
     canon: "Ethiopian Orthodox canon. Not the Greek Maccabees.",
+    textStatus: "not_stored",
   }),
   E("2-meqabyan", "2 Meqabyan", [5], [L.eth], {
-    background: "Ethiopian book. Not 2 Maccabees.",
+    background: "Ethiopian book. Not 2 Maccabees. No pre-1929 English translation is stored here.",
+    textStatus: "not_stored",
   }),
   E("3-meqabyan", "3 Meqabyan", [5], [L.eth], {
-    background: "Ethiopian book. Not 3 Maccabees.",
+    background: "Ethiopian book. Not 3 Maccabees. No pre-1929 English translation is stored here.",
+    textStatus: "not_stored",
   }),
-  E("sinodos", "Sinodos", [5, 19], [L.eth, L.early], { background: "Ethiopian church-order collection." }),
-  E("book-of-the-covenant-eth", "Book of the Covenant (Ethiopic)", [5], [L.eth]),
-  E("ethiopic-clement", "Ethiopic Clement", [5], [L.eth, L.dispA]),
-  E("ethiopic-didascalia", "Ethiopic Didascalia", [5, 19], [L.eth, L.early]),
+  E("sinodos", "Sinodos", [5, 19], [L.eth, L.early], {
+    stored: { kind: "md", slug: "sinodos" },
+    textStatus: "complete_stored",
+    translation: "George Horner, 1904 (public domain).",
+    background: "Ethiopian church-order collection. Stored English is Horner’s translation of the Ethiopic statutes.",
+  }),
+  E("book-of-the-covenant-eth", "Book of the Covenant (Ethiopic)", [5], [L.eth], {
+    stored: { kind: "md", slug: "book-of-the-covenant-eth" },
+    textStatus: "complete_stored",
+    translation: "Cooper and Maclean, 1902 (public domain).",
+    background: "The Ethiopian Book of the Covenant (Mäṣḥafä kidan) is the church-order received as the Testament of Our Lord. Stored English is Cooper–Maclean, 1902.",
+  }),
+  E("ethiopic-clement", "Ethiopic Clement", [5], [L.eth, L.dispA], {
+    stored: { kind: "md", slug: "book-of-the-covenant-eth" },
+    textStatus: "complete_stored",
+    translation: "Cooper and Maclean, 1902 (public domain).",
+    background: "Manuscripts title this Testament as words written in eight books by Clement. The later Geʽez Qälemənṭos romance has no pre-1929 English edition stored here.",
+  }),
+  E("ethiopic-didascalia", "Ethiopic Didascalia", [5, 19], [L.eth, L.early], {
+    stored: { kind: "md", slug: "ethiopic-didascalia" },
+    textStatus: "complete_stored",
+    translation: "J. M. Harden, 1920 (public domain).",
+    background: "Ethiopian church-order. Stored English is Harden’s 1920 translation of the Ethiopic Didascalia.",
+  }),
   E("3-enoch", "3 Enoch / Hebrew Enoch", [6], [L.pse, L.dispA], {
     alt: ["Sefer Hekhalot"],
     lang: "Hebrew",
     date: "Often placed in late antiquity. Disputed.",
     claimed: "Enoch / Rabbi Ishmael framework",
     probable: UNKNOWN_AUTHOR,
+    stored: { kind: "md", slug: "3-enoch" },
+    textStatus: "complete_stored",
+    translation: "Hugo Odeberg, 1928 (public domain).",
+    background: "Hebrew Enoch / Sefer Hekhalot. Stored English is Odeberg, 1928.",
   }),
   E("book-of-giants-aramaic", "Aramaic Book of Giants fragments", [6, 9], [L.dss, L.pse, L.frag], {
     textStatus: "quoted_only",
@@ -218,14 +245,39 @@ function pseudepigrapha() {
     ["treatise-of-shem", "Treatise of Shem", []],
     ["apocalypse-of-daniel-trad", "Apocalypse of Daniel traditions", []],
   ];
-  return titles.map(([id, title, alt]) =>
-    E(id, title, [7], [L.pse, L.dispA], {
+  const storedMd = {
+    "cave-of-treasures": ["cave-of-treasures", "E. A. Wallis Budge, 1927 (public domain)."],
+    "apocalypse-of-abraham": ["apocalypse-of-abraham", "G. H. Box, 1918 (public domain)."],
+    "joseph-and-aseneth": ["joseph-and-aseneth", "E. W. Brooks, 1918 (public domain)."],
+    "testament-job": ["testament-of-job", "Kaufmann Kohler, 1897 (public domain)."],
+    "testament-moses": ["assumption-of-moses", "R. H. Charles, 1913 (public domain)."],
+    "assumption-of-moses": ["assumption-of-moses", "R. H. Charles, 1913 (public domain)."],
+    "2-baruch": ["2-baruch", "R. H. Charles, 1913 (public domain)."],
+    "3-baruch": ["3-baruch", "H. M. Hughes in Charles, APOT 1913 (public domain)."],
+    "4-baruch": ["4-baruch", "Jacques Issaverdens, 1901, from the Armenian (public domain)."],
+    "martyrdom-ascension-isaiah": ["ascension-of-isaiah", "R. H. Charles, 1900 (public domain)."],
+    "ascension-of-isaiah": ["ascension-of-isaiah", "R. H. Charles, 1900 (public domain)."],
+    "pseudo-philo": ["pseudo-philo", "M. R. James, 1917 (public domain)."],
+    "odes-of-solomon": ["odes-of-solomon", "Harris and Mingana, 1920 (public domain)."],
+    "sibylline-oracles": ["sibylline-oracles", "Milton S. Terry, 1899 (public domain)."],
+  };
+  return titles.map(([id, title, alt]) => {
+    const hit = storedMd[id];
+    return E(id, title, [7], [L.pse, L.dispA], {
       alt,
       claimed: "The name in the title (pseudepigraphon).",
       probable: UNKNOWN_AUTHOR,
       canon: "Noncanonical in most churches.",
-    })
-  );
+      ...(hit
+        ? {
+            stored: { kind: "md", slug: hit[0] },
+            textStatus: "complete_stored",
+            translation: hit[1],
+            background: `${title} is stored in this app from a public-domain English edition.`,
+          }
+        : {}),
+    });
+  });
 }
 
 function apostolicFathers() {
