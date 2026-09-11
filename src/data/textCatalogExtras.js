@@ -1,5 +1,7 @@
 /** Works from the master list that are not auto-built from stored Bible / Apocrypha / DSS cards. */
 
+import { PHILO_EDITION, PHILO_FILE, PHILO_WORKS } from "./philoWorks.js";
+
 const UNKNOWN_AUTHOR = "UNKNOWN. Traditional ascription is not the same as academic attribution.";
 
 const L = {
@@ -748,6 +750,23 @@ function jewishGrecoInscriptions() {
     })
   );
   const greco = [
+    E("philo", "Philo of Alexandria / Philo Judaeus", [52], [L.jew, L.comp], {
+      alt: ["Philo Judaeus", "Philo of Alexandria"],
+      stored: { kind: "plain", file: PHILO_FILE, start: "ON THE CREATION" },
+      textStatus: "complete_stored",
+      translation: PHILO_EDITION,
+      canon: "Not Christian Scripture.",
+      background: "First-century Jewish philosopher of Alexandria. Stored Yonge English. This is not Pseudo-Philo.",
+    }),
+    ...PHILO_WORKS.map((work) =>
+      E(work.id, work.title, [52], [L.jew, L.comp], {
+        stored: { kind: "plain", file: PHILO_FILE, start: work.start, next: work.next },
+        textStatus: "complete_stored",
+        translation: PHILO_EDITION,
+        canon: "Not Christian Scripture.",
+        background: `${work.desc} ${PHILO_EDITION}`,
+      })
+    ),
     E("josephus-war", "Josephus — Jewish War", [52], [L.greco, L.comp], {
       stored: { kind: "plain", file: "/corpus/fathers/josephus-wars.txt" },
       textStatus: "complete_stored",

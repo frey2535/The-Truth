@@ -1,5 +1,6 @@
 import { publicUrl } from "@/lib/publicUrl";
 import { DSS_GROUP } from "./dssWorks";
+import { PHILO_EDITION, PHILO_FILE, PHILO_WORKS } from "@/data/philoWorks";
 
 // Canonical Bible — modern KJV (aruljohn/Bible-kjv). Filenames are camelCase with no spaces.
 export const CANON_BOOKS = [
@@ -327,6 +328,19 @@ export const MANUSCRIPT_GROUPS = {
         plain: true,
       },
     ],
+  },
+  philo: {
+    title: "Philo",
+    desc: `Philo of Alexandria (Philo Judaeus), first-century Jewish philosopher. ${PHILO_EDITION} Stored in this app. Not Scripture, and not Pseudo-Philo.`,
+    items: PHILO_WORKS.map((work) => ({
+      slug: work.id,
+      title: work.title.replace(/^Philo — /, ""),
+      desc: `${work.desc} English: Yonge.`,
+      file: PHILO_FILE,
+      start: work.start,
+      next: work.next,
+      plain: true,
+    })),
   },
   josephus: {
     title: "Josephus",

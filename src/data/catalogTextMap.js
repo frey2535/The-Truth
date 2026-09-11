@@ -3,7 +3,17 @@
  * Volume extracts use a start heading (and optional next heading) so the
  * reader opens at that work, not the end of a collected book.
  */
+import { PHILO_FILE, PHILO_WORKS } from "./philoWorks.js";
+
+const PHILO_MAP = Object.fromEntries(
+  PHILO_WORKS.map((work) => [work.id, { file: PHILO_FILE, start: work.start, next: work.next }])
+);
+
 export const CATALOG_TEXT_MAP = {
+  ...PHILO_MAP,
+  philo: { file: PHILO_FILE, start: "ON THE CREATION", next: null },
+  "philo-judaeus": { file: PHILO_FILE, start: "ON THE CREATION", next: null },
+  "philo-of-alexandria": { file: PHILO_FILE, start: "ON THE CREATION", next: null },
   "1-clement": { file: "/corpus/fathers/ante-nicene-vol1.txt", start: "The First Epistle of Clement to the Corinthians [2]", next: "The Epistle of Mathetes to Diognetus" },
   "ignatius-ephesians": { file: "/corpus/fathers/ante-nicene-vol1.txt", start: "THE EPISTLE OF IGNATIUS TO THE EPHESIANS", next: "THE EPISTLE OF IGNATIUS TO THE MAGNESIANS" },
   "ignatius-magnesians": { file: "/corpus/fathers/ante-nicene-vol1.txt", start: "THE EPISTLE OF IGNATIUS TO THE MAGNESIANS", next: "THE EPISTLE OF IGNATIUS TO THE TRALLIANS" },

@@ -30,6 +30,7 @@ const PREAMBLE_MARKERS = [
   "The First Book of Adam and Eve",
   "THE APOSTLES' CREED",
   "LITERALLY TRANSLATED FROM THE COPTIC BY GEORGE HORNER",
+  "ON THE CREATION",
 ];
 
 /** Drop Gutenberg/CCEL title pages so the reader opens the work, not editor notes. */
@@ -74,7 +75,7 @@ function lineAround(body, index) {
 }
 
 function looksLikeWorkOpening(body, index) {
-  return /Chapter\s+I\b|Chapter\s+1\b|Chap\.\s*i\.--|Part\s+I\b|Book\s+I\b|I\.\s*--The Testament|The Lord's Teaching|Memorials of Our Lord|It came to pass|1\s+But of the Jews|Prologue\.|Here Begins|\[Section I\]/i.test(
+  return /Chapter\s+I\b|Chapter\s+1\b|Chap\.\s*i\.--|Part\s+I\b|Book\s+I\b|I\.\s*\(\d+\)|I\.\s*--The Testament|The Lord's Teaching|Memorials of Our Lord|It came to pass|1\s+But of the Jews|Prologue\.|Here Begins|\[Section I\]/i.test(
     body.slice(index, index + 500)
   );
 }

@@ -56,6 +56,13 @@ const CORPORA = [
     group: MANUSCRIPT_GROUPS.fathers,
   },
   {
+    key: "philo",
+    title: "Philo",
+    desc: "Philo of Alexandria (Yonge). First-century Jewish philosophy stored in this app, not Scripture.",
+    kind: "manuscript",
+    group: MANUSCRIPT_GROUPS.philo,
+  },
+  {
     key: "josephus",
     title: "Josephus",
     desc: "Antiquities of the Jews (Whiston). A first-century Jewish history stored in this app, not Scripture.",

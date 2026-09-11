@@ -17,6 +17,7 @@ const ONLY_SOURCE_RE =
 const SOURCE_PATTERNS = [
   { source: "canon", re: /\b(?:king james|kjv|holy bible|old testament|new testament|gospels?)\b/i },
   { source: "josephus", re: /\b(?:josephus|antiquities of the jews)\b/i },
+  { source: "philo", re: /\b(?:philo of alexandria|philo judaeus|in philo|from philo|philo says)\b/i },
   { source: "fathers", re: /\b(?:(?:church|early|ante-?nicene)\s+fathers?|ante-?nicene)\b/i },
   { source: "dead_sea_scrolls", re: /\b(?:dead sea scrolls?|qumran scrolls?)\b/i },
   { source: "enoch", re: /\b(?:(?:1|2|book of)\s+enoch|(?:in|from)\s+enoch|enoch says)\b/i },

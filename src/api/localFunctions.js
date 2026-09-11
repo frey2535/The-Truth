@@ -154,6 +154,7 @@ const ASK_SCRIPTURE_SOURCES = [
   "dead_sea_scrolls",
   "fathers",
   "josephus",
+  "philo",
   "other",
   "user",
 ];
@@ -165,6 +166,7 @@ const SOURCE_ORDER = [
   "dead_sea_scrolls",
   "fathers",
   "josephus",
+  "philo",
   "other",
   "user",
   "archaeology",

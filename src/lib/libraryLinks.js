@@ -7,6 +7,7 @@ const CORPUS_FROM_SOURCE = {
   dead_sea_scrolls: "dss",
   fathers: "fathers",
   josephus: "josephus",
+  philo: "philo",
   other: "other",
 };
 

@@ -45,6 +45,7 @@ const SOURCE_LABEL = {
   dead_sea_scrolls: "Dead Sea Scrolls",
   fathers: "early Christian writings stored in this app",
   josephus: "Josephus",
+  philo: "Philo of Alexandria",
   other: "early manuscript stored in this app",
   archaeology: "archaeological record stored in this app",
   science: "scientific / government science record stored in this app",
@@ -214,6 +215,7 @@ function sortPassages(rows) {
     "dead_sea_scrolls",
     "fathers",
     "josephus",
+    "philo",
     "other",
   ];
   return [...(rows || [])].sort((a, b) => {

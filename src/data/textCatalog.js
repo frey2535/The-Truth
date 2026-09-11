@@ -233,6 +233,7 @@ const AUTO = [
   ...MANUSCRIPT_GROUPS.enoch.items.map((item) => manuscriptItem(item, 6, ["ETHIOPIAN CANON", "OLD TESTAMENT PSEUDEPIGRAPHA"])),
   ...MANUSCRIPT_GROUPS.other.items.map((item) => manuscriptItem(item, 7, ["OLD TESTAMENT PSEUDEPIGRAPHA"])),
   ...MANUSCRIPT_GROUPS.fathers.items.map((item) => manuscriptItem(item, 10, ["APOSTOLIC FATHER", "PATRISTIC"])),
+  ...MANUSCRIPT_GROUPS.philo.items.map((item) => manuscriptItem(item, 52, ["JEWISH COMPARATIVE SOURCE", "COMPARATIVE (NOT CHRISTIAN SCRIPTURE)"])),
   ...MANUSCRIPT_GROUPS.josephus.items.map((item) => manuscriptItem(item, 52, ["GRECO-ROMAN HISTORICAL SOURCE", "COMPARATIVE (NOT CHRISTIAN SCRIPTURE)"])),
   ...MANUSCRIPT_GROUPS.codices.items.map((item) => manuscriptItem(item, 47, ["MANUSCRIPT"])),
   ...EXTRA_DEFS.map(fromExtraDef),
