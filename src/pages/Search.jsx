@@ -73,7 +73,7 @@ export default function Search() {
         <h1 className="font-display text-4xl text-[#2b2620] mb-2">Search every stored verse</h1>
         <p className="text-[#5b5142] max-w-2xl mx-auto">
           Any word is searched in every verse and paragraph stored in this app — the King James, Apocrypha,
-          Enoch, Jubilees, the Scrolls, the fathers, Josephus, and the dated records. Every hit is listed.
+          Enoch, Jubilees, the Scrolls, the fathers, Philo, Josephus, and the dated records. Every hit is listed.
           Results quote only the wording on disk.
         </p>
       </header>

@@ -194,9 +194,10 @@ Be exhaustive and strictly truthful. Quote actual text. If no cross-references e
 
 export function normalizeSource(s: string): string {
   const v = (s || '').toLowerCase();
-  const known = ['canon', 'apocrypha', 'dead_sea_scrolls', 'enoch', 'fathers', 'josephus', 'other', 'archaeology', 'science', 'government', 'vatican', 'modern'];
+  const known = ['canon', 'apocrypha', 'dead_sea_scrolls', 'enoch', 'fathers', 'josephus', 'philo', 'other', 'archaeology', 'science', 'government', 'vatican', 'modern'];
   if (known.includes(v)) return v;
   if (v.includes('enoch')) return 'enoch';
+  if (v.includes('philo')) return 'philo';
   if (v.includes('josephus')) return 'josephus';
   if (v.includes('father') || v.includes('clement') || v.includes('ignatius')) return 'fathers';
   if (v.includes('vatican') || v.includes('papal')) return 'vatican';

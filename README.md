@@ -84,7 +84,7 @@ Research, Investigate, Word Study, and the Assistant search only what is stored 
 - King James (66 books) and the 1611 Apocrypha
 - Extra deuterocanonical books, 1–2 Enoch, Jubilees, and other early manuscripts
 - Dead Sea Scrolls English already in the Library
-- Ante-Nicene Fathers, Volume 1, and Josephus, *Antiquities*
+- Ante-Nicene Fathers, Volume 1, Philo of Alexandria (Yonge), and Josephus, *Antiquities*
 - Published inscriptions, government science notes, state papers, and published papal / conciliar decrees
 
 No account and no paid API. The first search may take a moment while the books load. Results quote stored wording only — no invented verses and no internet search for answers.
@@ -95,6 +95,7 @@ To refresh the public-domain downloads later:
 
 ```bash
 node scripts/vendor-corpus.mjs
+npm run vendor-philo
 ```
 
 ## What changed vs Base44

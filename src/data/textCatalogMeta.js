@@ -95,7 +95,7 @@ export const CATALOG_SECTIONS = [
   { id: 49, title: "Samaritan texts — comparative", blurb: "Samaritan Pentateuch and related literature. Not the Masoretic text." },
   { id: 50, title: "Targums — comparative Jewish texts", blurb: "Aramaic synagogue translations. Not Christian Scripture." },
   { id: 51, title: "Rabbinic Jewish texts", blurb: "Not Christian Scripture. Catalogued for comparative study." },
-  { id: 52, title: "Greco-Roman historical sources about Christianity", blurb: "Not Christian texts. Josephus, Tacitus, Pliny, and related witnesses." },
+  { id: 52, title: "Greco-Roman historical sources about Christianity", blurb: "Not Christian texts. Philo, Josephus, Tacitus, Pliny, and related witnesses." },
   { id: 53, title: "Early Christian inscriptions and documentary texts", blurb: "Epitaphs, graffiti, and papyri. Usually fragmentary." },
   { id: 54, title: "Early liturgical texts", blurb: "Anaphoras and church-order liturgies." },
   { id: 55, title: "Important early Christian hymns / prayers", blurb: "Odes, Phos Hilaron, and related hymns." },

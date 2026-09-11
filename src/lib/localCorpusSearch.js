@@ -384,6 +384,7 @@ export const SEARCH_CORPORA = [
   { id: "dead_sea_scrolls", label: "Dead Sea Scrolls", sources: ["dead_sea_scrolls"] },
   { id: "fathers", label: "Early Christian writings", sources: ["fathers"] },
   { id: "josephus", label: "Josephus", sources: ["josephus"] },
+  { id: "philo", label: "Philo", sources: ["philo"] },
   { id: "other", label: "Other manuscripts & codices", sources: ["other"] },
   { id: "archaeology", label: "Archaeological records", sources: ["archaeology"] },
   { id: "science", label: "Scientific records", sources: ["science"] },
@@ -568,6 +569,7 @@ export const SOURCE_LABEL = {
   dead_sea_scrolls: "Dead Sea Scrolls",
   fathers: "early Christian writings stored in this app",
   josephus: "Josephus",
+  philo: "Philo of Alexandria",
   other: "early manuscript stored in this app",
   archaeology: "archaeological record stored in this app",
   science: "scientific / government science record stored in this app",
@@ -612,7 +614,7 @@ export async function corpusCoverage() {
 
 export function partitionMatches(matches) {
   const scripture = matches.filter((m) =>
-    ["canon", "apocrypha", "enoch", "dead_sea_scrolls", "fathers", "josephus", "other"].includes(m.source)
+    ["canon", "apocrypha", "enoch", "dead_sea_scrolls", "fathers", "josephus", "philo", "other"].includes(m.source)
   );
   return {
     scripture,

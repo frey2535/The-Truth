@@ -29,7 +29,9 @@
     "play:assetlinks": "node scripts/play/write-assetlinks.mjs",
     "play:bundle": "cd android && ./gradlew bundleRelease",
     "vendor-catalog": "node scripts/vendor-catalog-texts.mjs",
-    "vendor-missing-codex": "python3 scripts/vendor-missing-codex-texts.py"
+    "vendor-missing-codex": "python3 scripts/vendor-missing-codex-texts.py",
+    "vendor-philo": "python3 scripts/vendor-philo.py",
+    "test:philo": "node scripts/test-philo.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",
