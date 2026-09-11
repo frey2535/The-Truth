@@ -24,13 +24,13 @@ const CORPORA = [
   {
     key: "apocrypha",
     title: "The Apocrypha",
-    desc: "22 deuterocanonical and ancient books — the 1611 KJV Apocrypha plus 1 Enoch, Jubilees, Psalms of Solomon, 3 & 4 Maccabees, Psalm 151, the Odes, and the Additions to Esther.",
+    desc: "1611 KJV Apocrypha plus 1 Enoch, Jubilees, the Odes of Solomon, 2–4 Baruch, and other stored deuterocanonical and pseudepigraphal books.",
     kind: "apocrypha_unified",
   },
   {
     key: "enoch",
     title: "Book of Enoch",
-    desc: "The Book of Enoch, quoted in Jude and treasured in the Ethiopic tradition.",
+    desc: "1 Enoch, 2 Enoch, and 3 Enoch (Hebrew Enoch), stored in this app.",
     kind: "manuscript",
     group: MANUSCRIPT_GROUPS.enoch,
   },
@@ -44,7 +44,7 @@ const CORPORA = [
   {
     key: "other",
     title: "Other Early Manuscripts",
-    desc: "Extra-biblical Christian and Jewish writings stored in this app.",
+    desc: "Extra-biblical Christian and Jewish writings stored in this app, including the Baruch apocalypses, Odes of Solomon, Sinodos, and related church orders.",
     kind: "manuscript",
     group: MANUSCRIPT_GROUPS.other,
   },

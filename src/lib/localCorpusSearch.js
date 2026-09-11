@@ -65,11 +65,27 @@ const bookCache = new Map();
 const MANUSCRIPT_SLUGS = [
   "1-enoch",
   "2-enoch",
+  "3-enoch",
   "psalms-of-solomon",
   "lives-of-the-prophets",
   "testament-of-zebulun",
   "ladder-of-jacob",
   "2-hermas",
+  "2-baruch",
+  "3-baruch",
+  "4-baruch",
+  "assumption-of-moses",
+  "ascension-of-isaiah",
+  "odes-of-solomon",
+  "sibylline-oracles",
+  "joseph-and-aseneth",
+  "testament-of-job",
+  "pseudo-philo",
+  "apocalypse-of-abraham",
+  "cave-of-treasures",
+  "sinodos",
+  "book-of-the-covenant-eth",
+  "ethiopic-didascalia",
 ];
 
 const LOCAL_MARKDOWN = [
@@ -262,7 +278,7 @@ async function loadManuscriptRows() {
   const remote = await mapPool(MANUSCRIPT_SLUGS, 4, async (slug) => {
     try {
       const md = await fetchText(manuscriptUrl(slug));
-      const source = slug === "1-enoch" || slug === "2-enoch" ? "enoch" : "other";
+      const source = slug === "1-enoch" || slug === "2-enoch" || slug === "3-enoch" ? "enoch" : "other";
       return rowsForLoadedText(slug.replace(/-/g, " "), md, source);
     } catch {
       return [];

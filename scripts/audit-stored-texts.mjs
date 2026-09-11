@@ -53,8 +53,12 @@ const apoc = [
   "Prayer of Manasseh", "1 Maccabees", "2 Maccabees",
 ];
 const mss = [
-  "1-enoch", "2-enoch", "psalms-of-solomon", "lives-of-the-prophets",
+  "1-enoch", "2-enoch", "3-enoch", "psalms-of-solomon", "lives-of-the-prophets",
   "testament-of-zebulun", "ladder-of-jacob", "2-hermas", "jubilees",
+  "2-baruch", "3-baruch", "4-baruch", "assumption-of-moses", "ascension-of-isaiah",
+  "odes-of-solomon", "sibylline-oracles", "joseph-and-aseneth", "testament-of-job",
+  "pseudo-philo", "apocalypse-of-abraham", "cave-of-treasures", "sinodos",
+  "book-of-the-covenant-eth", "ethiopic-didascalia",
 ];
 
 const missingFiles = [];

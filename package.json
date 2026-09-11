@@ -23,11 +23,13 @@
     "test:assistant": "node scripts/test-assistant-understand.mjs",
     "test:storage": "node scripts/test-storage-chat.mjs",
     "test:search": "node scripts/test-search-all-verses.mjs",
+    "test:missing-codex": "node scripts/test-missing-codex-texts.mjs",
     "play:assets": "python3 scripts/play/generate-store-assets.py",
     "play:listing": "node scripts/play/write-listing-files.mjs",
     "play:assetlinks": "node scripts/play/write-assetlinks.mjs",
     "play:bundle": "cd android && ./gradlew bundleRelease",
-    "vendor-catalog": "node scripts/vendor-catalog-texts.mjs"
+    "vendor-catalog": "node scripts/vendor-catalog-texts.mjs",
+    "vendor-missing-codex": "python3 scripts/vendor-missing-codex-texts.py"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",
