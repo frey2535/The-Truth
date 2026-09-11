@@ -35,6 +35,14 @@ const PREAMBLE_MARKERS = [
 /** Drop Gutenberg/CCEL title pages so the reader opens the work, not editor notes. */
 export function stripCollectedPreamble(text) {
   let body = String(text || "");
+  // Standalone stored manuscripts already open on the work. Do not jump to a
+  // later mention of an ANF title such as the Testaments of the Twelve Patriarchs.
+  if (
+    /^#\s+\S+/m.test(body.slice(0, 400)) &&
+    /public-domain english stored/i.test(body.slice(0, 1200))
+  ) {
+    return body.trim();
+  }
   const gutenberg = body.search(/\*\*\*\s*START OF (THE )?PROJECT GUTENBERG/i);
   if (gutenberg >= 0) {
     const nl = body.indexOf("\n", gutenberg);
