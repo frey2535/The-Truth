@@ -249,6 +249,7 @@ export async function requestGoogleProfile(returnTo = "/") {
             google_id: profile.sub || "",
             picture: profile.picture || "",
             email_verified: profile.email_verified !== false,
+            access_token: resp.access_token || "",
           });
         } catch (error) {
           fail(error);
@@ -332,5 +333,5 @@ export async function consumeGoogleRedirect() {
     typeof state.r === "string" && state.r.startsWith("/") && !state.r.startsWith("//")
       ? state.r
       : "/";
-  return { returnTo, profile: profileFromIdToken(token) };
+  return { returnTo, profile: profileFromIdToken(token), idToken: token };
 }

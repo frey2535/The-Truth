@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import {
   createOwnerSession,
   emptyLedger,
+  isPlatformOwnerEmail,
   mergeDevices,
   OWNER_EMAIL_DEFAULT,
   ownerCredentials,
@@ -18,9 +19,16 @@ assert.equal(passwordsMatch("owner-local", "other"), false);
 assert.equal(passwordsMatch("", ""), false);
 
 const local = ownerCredentials({}, { allowLocalFallback: true });
+assert.equal(OWNER_EMAIL_DEFAULT, "currenflowconsultingllc@gmail.com");
 assert.equal(local.email, OWNER_EMAIL_DEFAULT);
 assert.equal(local.password, "owner-local");
 assert.equal(local.configured, true);
+assert.equal(isPlatformOwnerEmail("currenflowconsultingllc@gmail.com"), true);
+assert.equal(isPlatformOwnerEmail("someone@example.com"), false);
+assert.equal(
+  isPlatformOwnerEmail("old@example.com", { email: "old@example.com" }),
+  true
+);
 
 const live = ownerCredentials({}, { allowLocalFallback: false });
 assert.equal(live.configured, false);
@@ -63,6 +71,32 @@ assert.equal(stats.byPlatform.ios, 1);
 assert.equal(stats.byPlatform.android, 2);
 assert.equal(stats.downloads[0].device, "device-p");
 assert.equal(stats.downloads[0].source, "play");
+
+const detailed = recordDevice(emptyLedger(), {
+  device: "device-detail-01",
+  platform: "android",
+  source: "appinstalled",
+  standalone: true,
+  at: "2026-09-12T12:00:00.000Z",
+  language: "en-US",
+  timezone: "America/Denver",
+  browser: "Chrome on Android",
+  share: "facebook",
+});
+assert.equal(detailed.added, true);
+const seen = recordDevice(detailed.ledger, {
+  device: "device-detail-01",
+  platform: "android",
+  lastSeen: "2026-09-12T13:00:00.000Z",
+  language: "en-US",
+});
+assert.equal(seen.added, false);
+assert.equal(seen.updated, true);
+const detailStats = ownerStats(seen.ledger);
+assert.equal(detailStats.downloads[0].share, "facebook");
+assert.equal(detailStats.downloads[0].browser, "Chrome on Android");
+assert.equal(detailStats.downloads[0].lastSeen, "2026-09-12T13:00:00.000Z");
+assert.equal(detailStats.downloads[0].at, "2026-09-12T12:00:00.000Z");
 
 const withPrior = mergeDevices(ledger, [
   {

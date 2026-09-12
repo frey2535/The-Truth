@@ -49,8 +49,8 @@ Each install is recorded once per device when Chrome finishes **Install**, when 
 GitHub Actions can create a KV namespace named **thetruth-installs**. Bind it as **INSTALLS** on the Pages project **thetruth** in the dashboard (do not rewrite the project’s environment from a script). `PLATFORM_OWNER_PASSWORD`, `GOOGLE_CLIENT_ID`, and `GOOGLE_CLIENT_SECRET` already live on that project — leave them there. A wrangler.toml `[vars]` block makes Cloudflare ignore those dashboard values.
 
 - **Local:** [http://truth.localhost:5174/owner](http://truth.localhost:5174/owner)  
-  Email `owner@thetruth.currentflowconsulting.org`  
-  Password `owner-local` (used when `PLATFORM_OWNER_PASSWORD` is not set)
+  Email `currenflowconsultingllc@gmail.com`  
+  Password `owner-local` (used when `PLATFORM_OWNER_PASSWORD` is not set). Continue with Google as that address also opens the owner tools.
 - **Live site:** open `https://thetruth.currentflowconsulting.org/owner` and use the `PLATFORM_OWNER_PASSWORD` already stored on the **thetruth** Pages project. If sign-in says the deploy did not receive it, the last upload used wrangler.toml `[vars]` and ignored the dashboard. Redeploy with `node scripts/pages-deploy.mjs` (or merge a commit that does).
 
 There is a quiet **Platform owner** link at the bottom of the Install page. The live count is stored on the Cloudflare site, so GitHub Pages installs report there too.

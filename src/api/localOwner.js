@@ -4,6 +4,7 @@ import {
   fetchCursorTokens,
   fetchOwnerDownloads,
   ownerLogin,
+  ownerLoginWithGoogle,
   revokeCursorToken,
   saveGoogleClientId,
 } from "@/lib/installStats";
@@ -16,6 +17,12 @@ export const localOwner = {
 
   async login(email, password) {
     const session = await ownerLogin(email, password);
+    writeOwnerSession(session);
+    return session;
+  },
+
+  async loginWithGoogle(tokens) {
+    const session = await ownerLoginWithGoogle(tokens);
     writeOwnerSession(session);
     return session;
   },

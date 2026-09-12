@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { emptyLedger } from "../src/lib/installLedger.js";
-import { handleInstallHit, handleInstallsRequest, handleOwnerLogin, readOwnerCredentials } from "../src/lib/installsApi.js";
+import { handleInstallHit, handleInstallsRequest, handleOwnerLogin, ownerLoginStatus, readOwnerCredentials } from "../src/lib/installsApi.js";
 import { handleMcpHttp, handleMcpTokensRequest } from "../src/lib/mcpApi.js";
 import { emptyMcpTokenStore } from "../src/lib/mcpStore.js";
 
@@ -100,12 +100,14 @@ export function installsDevPlugin(rootDir) {
       const origin = `http://${req.headers.host || "truth.localhost:5174"}`;
       const result =
         url === "/api/owner-login"
-          ? await handleOwnerLogin({
-              body,
-              credentials: creds,
-              load,
-              save,
-            })
+          ? req.method === "GET"
+            ? { status: 200, body: ownerLoginStatus(creds) }
+            : await handleOwnerLogin({
+                body,
+                credentials: creds,
+                load,
+                save,
+              })
           : url === "/api/mcp"
             ? await handleMcpHttp({
                 method: req.method,
