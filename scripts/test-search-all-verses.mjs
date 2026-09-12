@@ -7,6 +7,7 @@ import {
   rowsFromStoredText,
   scorePassage,
 } from "../src/lib/corpusPassages.js";
+import { highlightTerms, splitHighlightedText } from "../src/lib/searchHighlight.js";
 import { familyOf } from "../src/lib/wordFamilies.js";
 
 function formsFor(word) {
@@ -115,6 +116,8 @@ assert.doesNotMatch(searchFn, /limit:\s*120/);
 
 const searchLib = readFileSync("src/lib/localCorpusSearch.js", "utf8");
 assert.match(searchLib, /limit = Infinity/);
+assert.match(searchLib, /exact = false/);
+assert.match(searchFn, /exact: onlyWord/);
 assert.doesNotMatch(searchLib, /nephilim:\s*\[/);
 assert.doesNotMatch(searchLib, /SEARCH_TOPIC_ALIASES/);
 
@@ -124,6 +127,24 @@ assert.doesNotMatch(passages, /SEARCH_TOPIC_ALIASES/);
 
 const searchPage = readFileSync("src/pages/Search.jsx", "utf8");
 assert.match(searchPage, /params.get\("corpus"\) \|\| "all"/);
+assert.match(searchPage, /This word only/);
+assert.match(searchPage, /This word and its forms/);
+assert.match(searchPage, /HighlightedText/);
+
+const familyLove = { phrase: "love", forms: familyOf("love") };
+const exactLove = { phrase: "love", forms: ["love"], exact: true };
+assert.ok(familyLove.forms.includes("loved") || familyLove.forms.includes("loveth"));
+assert.ok(scorePassage("For God so loved the world", familyLove) > 0);
+assert.equal(scorePassage("For God so loved the world", exactLove), 0);
+assert.ok(scorePassage("God is love", exactLove) > 0);
+
+const parts = splitHighlightedText("And ye shall know the truth, and the truth shall make you free.", highlightTerms("truth"));
+assert.ok(parts.some((part) => part.hit && /truth/i.test(part.text)));
+assert.equal(parts.filter((part) => part.hit).length, 2);
+const exactParts = splitHighlightedText("For God so loved the world", highlightTerms("love", [], { exact: true }));
+assert.ok(!exactParts.some((part) => part.hit));
+const familyParts = splitHighlightedText("For God so loved the world", highlightTerms("love", familyLove.forms));
+assert.ok(familyParts.some((part) => part.hit && /loved/i.test(part.text)));
 
 console.log(
   `search all verses ok — Enoch watchers ${hitsInRows(enoch, "watchers").length}, Genesis covenant ${hitsInRows(genesis, "covenant").length}, Psalms mercy ${hitsInRows(psalms, "mercy").length}, ANF2 nephilim ${hitsInRows(vol2, "nephilim").length}`

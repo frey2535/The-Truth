@@ -31,7 +31,7 @@ export function cursorMcpSnippet(url, token) {
 export const APP_PAGES = [
   { path: "/", title: "Home", purpose: "Install and welcome" },
   { path: "/library", title: "Read", purpose: "Catalog of stored texts — listen, or read on the page" },
-  { path: "/search", title: "Search", purpose: "Search stored King James, Apocrypha, DSS, Enoch, fathers, Philo, Josephus" },
+  { path: "/search", title: "Search", purpose: "Search stored texts by the typed word or by that word and its forms" },
   { path: "/assistant", title: "Assistant", purpose: "Study questions against in-app texts only" },
   { path: "/word-study", title: "Word Study", purpose: "Define words from stored texts" },
   { path: "/investigate", title: "Investigate", purpose: "Claims checked against stored records" },

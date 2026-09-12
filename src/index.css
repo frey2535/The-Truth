@@ -253,6 +253,15 @@
   color: #c41e3a;
 }
 
+.search-hit {
+  background: #f3e9c8;
+  color: #7a2e2e;
+  font-weight: 600;
+  padding: 0 0.15em;
+  border-radius: 0.2em;
+  box-decoration-break: clone;
+}
+
 .truth-btn-sm {
   @apply inline-flex items-center h-8 px-3 rounded-full bg-[#2b2620] text-[#f3e9c8] text-xs;
 }
