@@ -1,6 +1,7 @@
 import React from "react";
 import { Pause, Play, Square, Volume2 } from "lucide-react";
 import useAudibleReader from "@/hooks/useAudibleReader";
+import ListenSettings from "@/components/ListenSettings";
 import { pauseAudible, resumeAudible, stopAudible } from "@/lib/audibleReader";
 
 export default function AudibleBar() {
@@ -17,6 +18,7 @@ export default function AudibleBar() {
           <span className="truncate">{status === "paused" ? "Paused" : "Listening"}: {title}</span>
         </p>
         <div className="flex items-center gap-2 shrink-0">
+          <ListenSettings compact />
           <button
             type="button"
             className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full border border-[#e8ddc7] bg-white"

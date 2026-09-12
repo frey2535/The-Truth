@@ -1,6 +1,7 @@
 import React from "react";
 import { Printer } from "lucide-react";
 import ListenControl from "@/components/ListenControl";
+import ListenSettings from "@/components/ListenSettings";
 import ReportIssue from "@/components/ReportIssue";
 import { pageReadingText } from "@/lib/audibleReader";
 import { printCurrentPage } from "@/lib/notebookExport";
@@ -18,6 +19,7 @@ export default function PageTools({ dark = false, pageTitle }) {
         text={() => pageReadingText()}
         className={tone}
       />
+      <ListenSettings dark={dark} className={tone} />
       <button type="button" onClick={printCurrentPage} className={tone} title="Print this page">
         <Printer className="w-3.5 h-3.5" />
         Print

@@ -71,8 +71,9 @@ export default function Privacy() {
           on the device. They search stored texts only and do not use a paid AI API.
         </li>
         <li>
-          <strong>Listen.</strong> Read-aloud uses this device’s speech voices. The wording is not
-          sent to the internet to be read.
+          <strong>Listen.</strong> Read-aloud uses this device’s speech voices. You choose the voice
+          and reading speed; that choice stays on the device. The wording is not sent to the
+          internet to be read.
         </li>
         <li>
           <strong>Hosting.</strong> Cloudflare (and the GitHub Pages mirror) see ordinary web

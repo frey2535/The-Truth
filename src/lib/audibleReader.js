@@ -69,26 +69,111 @@ export function pageReadingText(root) {
   return spokenText(clone.innerText || clone.textContent || "");
 }
 
+export const LISTEN_PREFS_KEY = "searchingfortruth_listen_v1";
+
+export const RATE_PRESETS = [
+  { value: 0.7, label: "Slow" },
+  { value: 0.85, label: "Gentle" },
+  { value: 1, label: "Normal" },
+  { value: 1.2, label: "Brisk" },
+  { value: 1.4, label: "Fast" },
+];
+
+export const RATE_MIN = 0.6;
+export const RATE_MAX = 1.6;
+
+export function normalizeRate(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return 1;
+  return Math.min(RATE_MAX, Math.max(RATE_MIN, Math.round(n * 20) / 20));
+}
+
+export function ratePresetLabel(rate) {
+  const normalized = normalizeRate(rate);
+  const hit = RATE_PRESETS.find((preset) => preset.value === normalized);
+  return hit ? hit.label : `${normalized}×`;
+}
+
+export function listVoiceChoices(voices = []) {
+  return [...voices]
+    .map((voice) => ({
+      uri: String(voice.voiceURI || voice.name || ""),
+      name: String(voice.name || "Voice"),
+      lang: String(voice.lang || ""),
+    }))
+    .filter((voice) => voice.uri)
+    .sort((a, b) => {
+      const ae = /^en/i.test(a.lang) ? 0 : 1;
+      const be = /^en/i.test(b.lang) ? 0 : 1;
+      if (ae !== be) return ae - be;
+      return a.name.localeCompare(b.name);
+    });
+}
+
+export function defaultListenPrefs() {
+  return { voiceURI: "", rate: 1 };
+}
+
+export function loadListenPrefs(storage) {
+  const fallback = defaultListenPrefs();
+  try {
+    const raw = storage?.getItem?.(LISTEN_PREFS_KEY);
+    if (!raw) return fallback;
+    const parsed = JSON.parse(raw);
+    return {
+      voiceURI: String(parsed.voiceURI || ""),
+      rate: normalizeRate(parsed.rate),
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+export function saveListenPrefs(prefs, storage) {
+  const next = {
+    voiceURI: String(prefs?.voiceURI || ""),
+    rate: normalizeRate(prefs?.rate),
+  };
+  try {
+    storage?.setItem?.(LISTEN_PREFS_KEY, JSON.stringify(next));
+  } catch {
+    /* ignore quota */
+  }
+  return next;
+}
+
 const idleState = () => ({ status: "idle", id: "", title: "" });
 
+let prefs = defaultListenPrefs();
+let cachedVoices = [];
+let pendingRestart = false;
 let state = idleState();
 const listeners = new Set();
 let queue = [];
 let index = 0;
 let token = 0;
 
+function snapshot() {
+  return {
+    ...state,
+    rate: prefs.rate,
+    voiceURI: prefs.voiceURI,
+    voices: cachedVoices,
+  };
+}
+
 function emit() {
-  const snap = { ...state };
+  const snap = snapshot();
   for (const fn of listeners) fn(snap);
 }
 
 export function getAudibleState() {
-  return { ...state };
+  return snapshot();
 }
 
 export function subscribeAudible(fn) {
   listeners.add(fn);
-  fn({ ...state });
+  fn(snapshot());
   return () => listeners.delete(fn);
 }
 
@@ -100,16 +185,41 @@ function synth() {
   return isSpeechSupported() ? window.speechSynthesis : null;
 }
 
+function refreshVoices(speech) {
+  cachedVoices = listVoiceChoices(speech?.getVoices?.() || []);
+  return cachedVoices;
+}
+
 function pickVoice(speech) {
   const voices = speech.getVoices?.() || [];
+  if (prefs.voiceURI) {
+    const chosen = voices.find((voice) => (voice.voiceURI || voice.name) === prefs.voiceURI);
+    if (chosen) return chosen;
+  }
   return (
     voices.find((voice) => /^en-GB/i.test(voice.lang) && /United Kingdom|English \(UK\)/i.test(voice.name)) ||
     voices.find((voice) => /^en/i.test(voice.lang) && /natural|premium|enhanced|neural/i.test(voice.name)) ||
     voices.find((voice) => voice.lang === "en-US") ||
     voices.find((voice) => /^en/i.test(voice.lang)) ||
+    voices[0] ||
     null
   );
 }
+
+function loadPrefsFromWindow() {
+  if (typeof window === "undefined") return;
+  prefs = loadListenPrefs(window.localStorage);
+  const speech = synth();
+  if (speech) {
+    refreshVoices(speech);
+    speech.addEventListener("voiceschanged", () => {
+      refreshVoices(speech);
+      emit();
+    });
+  }
+}
+
+if (typeof window !== "undefined") loadPrefsFromWindow();
 
 function speakNext(myToken) {
   const speech = synth();
@@ -123,7 +233,7 @@ function speakNext(myToken) {
   const voice = pickVoice(speech);
   if (voice) utterance.voice = voice;
   utterance.lang = voice?.lang || "en-US";
-  utterance.rate = 0.95;
+  utterance.rate = prefs.rate;
   utterance.onend = () => {
     if (myToken !== token) return;
     index += 1;
@@ -174,6 +284,14 @@ export function pauseAudible() {
 export function resumeAudible() {
   const speech = synth();
   if (!speech || state.status !== "paused") return;
+  if (pendingRestart || !speech.speaking) {
+    pendingRestart = false;
+    token += 1;
+    state = { ...state, status: "speaking" };
+    emit();
+    speakNext(token);
+    return;
+  }
   speech.resume();
   state = { ...state, status: "speaking" };
   emit();
@@ -181,12 +299,50 @@ export function resumeAudible() {
 
 export function stopAudible() {
   token += 1;
+  pendingRestart = false;
   const speech = synth();
   if (speech) speech.cancel();
   queue = [];
   index = 0;
   state = idleState();
   emit();
+}
+
+function persistPrefs(next) {
+  prefs = saveListenPrefs({ ...prefs, ...next }, typeof window !== "undefined" ? window.localStorage : null);
+  emit();
+}
+
+function applyLiveSettings() {
+  if (state.status === "idle") return;
+  const speech = synth();
+  const wasPaused = state.status === "paused";
+  token += 1;
+  if (speech) speech.cancel();
+  if (wasPaused) {
+    pendingRestart = true;
+    state = { ...state, status: "paused" };
+    emit();
+    return;
+  }
+  speakNext(token);
+}
+
+export function setAudibleRate(rate) {
+  persistPrefs({ rate: normalizeRate(rate) });
+  applyLiveSettings();
+}
+
+export function setAudibleVoice(voiceURI) {
+  persistPrefs({ voiceURI: String(voiceURI || "") });
+  applyLiveSettings();
+}
+
+export function previewAudibleVoice() {
+  speakText("And ye shall know the truth, and the truth shall make you free.", {
+    id: "listen-preview",
+    title: "Voice preview",
+  });
 }
 
 export function toggleAudible(text, opts = {}) {
