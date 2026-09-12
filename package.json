@@ -32,7 +32,8 @@
     "vendor-missing-codex": "python3 scripts/vendor-missing-codex-texts.py",
     "vendor-philo": "python3 scripts/vendor-philo.py",
     "test:philo": "node scripts/test-philo.mjs",
-    "test:notebook": "node scripts/test-notebook-print.mjs"
+    "test:notebook": "node scripts/test-notebook-print.mjs",
+    "test:audible": "node scripts/test-audible-reader.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

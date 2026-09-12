@@ -1,4 +1,5 @@
 import React from "react";
+import ListenControl from "@/components/ListenControl";
 import SourceBadge from "./SourceBadge";
 import EvidenceModal from "./EvidenceModal";
 import CrossReferenceModal from "./CrossReferenceModal";
@@ -22,6 +23,13 @@ export default function VerseCard({ verse, index, topic }) {
         </p>
       )}
       <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
+        <ListenControl
+          variant="verse"
+          id={`plan-verse:${verse.reference}`}
+          title={verse.reference}
+          label="Listen"
+          text={`${verse.reference}. ${verse.text || ""}`}
+        />
         <EvidenceModal reference={verse.reference} topic={topic} />
         <CrossReferenceModal reference={verse.reference} topic={topic} />
         <ModernFulfillmentModal reference={verse.reference} topic={topic} />

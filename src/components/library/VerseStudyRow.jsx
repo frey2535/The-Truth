@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Highlighter, Star, StickyNote, Link2, Languages, ChevronDown } from "lucide-react";
+import { Highlighter, Star, StickyNote, Link2, Languages, ChevronDown, Volume2 } from "lucide-react";
+import { speakText } from "@/lib/audibleReader";
 import VerseEvidenceBadge from "./VerseEvidenceBadge";
 import { chapterCrossRefs, significantWords } from "@/lib/crossRefs";
 import { findRelatedVerses } from "@/lib/localCorpusSearch";
@@ -164,6 +165,12 @@ export default function VerseStudyRow({
             <DropdownMenuItem disabled={busy} onSelect={() => void toggleFavorite()}>
               <Star className={favored ? "fill-[#b08d3c] text-[#b08d3c]" : ""} />
               {favored ? "Remove favorite" : "Favorite"}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={() => speakText(`${ref}. ${text}`, { id: `verse:${ref}`, title: ref })}
+            >
+              <Volume2 />
+              Listen
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setOpen(open === "note" ? "" : "note")}>
               <StickyNote />

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Loader2, ShieldCheck, Square, History, PlusCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import ListenControl from "@/components/ListenControl";
 import HistoryDialog from "@/components/assistant/HistoryDialog";
 import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
 import { shouldStartNewChat } from "@/lib/assistantChat";
@@ -272,6 +273,18 @@ export default function Assistant() {
                 {m.role === "assistant" ? (
                   <AssistantTurnBoundary>
                     <div className="text-[#3a3328] leading-relaxed space-y-2 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-[#2b2620] [&_h2]:mt-0 [&_h3]:font-display [&_h3]:text-xl [&_h3]:text-[#2b2620] [&_h4]:font-display [&_h4]:text-lg [&_h4]:text-[#7a2e2e] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_a]:text-[#7a2e2e] [&_a]:underline">
+                      <div className="flex justify-end">
+                        <ListenControl
+                          variant="verse"
+                          id={`assistant:${i}`}
+                          title="Assistant answer"
+                          label="Listen"
+                          text={[
+                            m.content,
+                            ...(Array.isArray(m.passages) ? m.passages.map((p) => `${p.reference}. ${p.text || ""}`) : []),
+                          ].join(" ")}
+                        />
+                      </div>
                       <ReactMarkdown>{m.content}</ReactMarkdown>
                       <StoredWording passages={m.passages} />
                     </div>

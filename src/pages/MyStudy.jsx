@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import ListenControl from "@/components/ListenControl";
 import NotebookItemActions from "@/components/NotebookItemActions";
 import PlanCard from "@/components/study/PlanCard";
 import { BookMarked, Highlighter, Star, StickyNote } from "lucide-react";
@@ -124,6 +125,13 @@ export default function MyStudy() {
         >
           Print this list
         </button>
+        <ListenControl
+          variant="chapter"
+          id={`notebook-list:${tab}`}
+          title={TABS.find((entry) => entry.id === tab)?.label || "Notebook"}
+          label="Listen to this list"
+          text={() => exportTab().text}
+        />
       </div>
 
       {(tab === "notes" || tab === "favorites") && topics.length > 0 && (

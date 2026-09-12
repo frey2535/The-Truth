@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
+import ListenControl from "@/components/ListenControl";
 import VerseStudyRow from "./VerseStudyRow";
 import { useStudyMarks } from "@/hooks/useStudyMarks";
+import { chapterReadingText, stopAudible } from "@/lib/audibleReader";
 import { itemsForVerse, useChapterEvidence } from "./useChapterEvidence";
 
 const PAGE_SIZE = 80;
@@ -28,10 +30,25 @@ export default function ReadingVerseList({
     setShown(PAGE_SIZE);
   }, [book, chapter, verses]);
 
+  useEffect(() => {
+    stopAudible();
+  }, [book, chapter]);
+
   const visible = verses.length > shown ? verses.slice(0, shown) : verses;
 
   return (
     <div className="py-1">
+      {verses.length ? (
+        <div className="mb-4">
+          <ListenControl
+            variant="chapter"
+            id={`chapter:${book}:${chapter}`}
+            title={`${book}${chapter ? ` ${chapter}` : ""}`}
+            label="Listen to this chapter"
+            text={() => chapterReadingText(book, chapter, verses)}
+          />
+        </div>
+      ) : null}
       {visible.map((v) => {
         const verseItems = showEvidence
           ? [
