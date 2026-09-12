@@ -3,7 +3,9 @@ import {
   LISTEN_PREFS_KEY,
   chapterReadingText,
   chunkSpokenText,
+  defaultListenPrefs,
   listVoiceChoices,
+  listenVoiceOptions,
   loadListenPrefs,
   normalizeRate,
   pageReadingText,
@@ -11,6 +13,8 @@ import {
   saveListenPrefs,
   spokenText,
 } from "../src/lib/audibleReader.js";
+import { isRoboticVoiceName, scoreDeviceVoice } from "../src/lib/voiceQuality.js";
+import { HUMAN_VOICES, isHumanVoice } from "../src/lib/humanTts.js";
 
 assert.equal(spokenText("  And ye shall <b>know</b> the truth.  "), "And ye shall know the truth.");
 assert.equal(spokenText("**Yes.** [John 8:32]"), "Yes. John 8:32");
@@ -54,17 +58,27 @@ const memory = {
   getItem: (key) => (store.has(key) ? store.get(key) : null),
   setItem: (key, value) => store.set(key, String(value)),
 };
-assert.deepEqual(loadListenPrefs(memory), { voiceURI: "", rate: 1 });
-const saved = saveListenPrefs({ voiceURI: "en-GB-Daniel", rate: 0.85 }, memory);
+assert.equal(defaultListenPrefs().voiceURI, HUMAN_VOICES[0].uri);
+assert.ok(isHumanVoice(defaultListenPrefs().voiceURI));
+assert.deepEqual(loadListenPrefs(memory), defaultListenPrefs());
+const saved = saveListenPrefs({ voiceURI: "human:am_michael", rate: 0.85 }, memory);
 assert.equal(saved.rate, 0.85);
-assert.equal(loadListenPrefs(memory).voiceURI, "en-GB-Daniel");
-assert.match(memory.getItem(LISTEN_PREFS_KEY), /en-GB-Daniel/);
+assert.equal(loadListenPrefs(memory).voiceURI, "human:am_michael");
+assert.match(memory.getItem(LISTEN_PREFS_KEY), /am_michael/);
+
+assert.ok(isRoboticVoiceName("eSpeak NG", "en"));
+assert.ok(scoreDeviceVoice({ name: "Google US English", lang: "en-US", localService: false }) > scoreDeviceVoice({ name: "eSpeak NG", lang: "en-GB" }));
 
 const voices = listVoiceChoices([
   { voiceURI: "fr", name: "French", lang: "fr-FR" },
-  { voiceURI: "en", name: "Daniel", lang: "en-GB" },
+  { voiceURI: "en", name: "Google US English", lang: "en-US", localService: false },
+  { voiceURI: "robot", name: "eSpeak NG", lang: "en-GB" },
 ]);
-assert.equal(voices[0].name, "Daniel");
-assert.equal(voices[1].name, "French");
+assert.equal(voices[0].name, "Google US English");
+assert.match(voices.at(-1).name, /eSpeak|mechanical/i);
+
+const options = listenVoiceOptions([]);
+assert.equal(options[0].uri, HUMAN_VOICES[0].uri);
+assert.match(options[0].group, /person/i);
 
 console.log("audible reader ok");

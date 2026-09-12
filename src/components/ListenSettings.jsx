@@ -51,7 +51,8 @@ export default function ListenSettings({ dark = false, compact = false, classNam
                   Voice and speed
                 </h2>
                 <p className="text-sm text-[#5b5142] mt-1">
-                  Uses this device’s voices. The wording is not sent to the internet. The choice stays on this device.
+                  Spoken English voices sound like a person and run on this device. The first use may download a
+                  voice model onto this device. Scripture is not uploaded.
                 </p>
               </div>
               <button type="button" onClick={() => setOpen(false)} className="text-[#8a7f6f]" aria-label="Close">
@@ -65,13 +66,20 @@ export default function ListenSettings({ dark = false, compact = false, classNam
                 onChange={(event) => setAudibleVoice(event.target.value)}
                 className="mt-1 w-full h-10 rounded-lg border border-[#e8ddc7] bg-white px-3 text-sm"
               >
-                <option value="">Default English voice</option>
-                {voices.map((voice) => (
-                  <option key={voice.uri} value={voice.uri}>
-                    {voice.name}
-                    {voice.lang ? ` (${voice.lang})` : ""}
-                  </option>
-                ))}
+                {["Spoken English — sounds like a person", "This device", "Mechanical system voices"].map((group) => {
+                  const rows = voices.filter((voice) => (voice.group || "This device") === group);
+                  if (!rows.length) return null;
+                  return (
+                    <optgroup key={group} label={group}>
+                      {rows.map((voice) => (
+                        <option key={voice.uri} value={voice.uri}>
+                          {voice.name}
+                          {voice.lang && !voice.uri.startsWith("human:") ? ` (${voice.lang})` : ""}
+                        </option>
+                      ))}
+                    </optgroup>
+                  );
+                })}
               </select>
             </label>
             <p className="text-sm text-[#2b2620] mt-4 mb-2">Reading speed · {ratePresetLabel(rate)}</p>
