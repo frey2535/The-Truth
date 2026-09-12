@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ListenControl from "@/components/ListenControl";
+import ListenSettings from "@/components/ListenSettings";
 import VerseStudyRow from "./VerseStudyRow";
 import { useStudyMarks } from "@/hooks/useStudyMarks";
 import { chapterReadingText, stopAudible } from "@/lib/audibleReader";
@@ -39,7 +40,7 @@ export default function ReadingVerseList({
   return (
     <div className="py-1">
       {verses.length ? (
-        <div className="mb-4">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           <ListenControl
             variant="chapter"
             id={`chapter:${book}:${chapter}`}
@@ -47,6 +48,7 @@ export default function ReadingVerseList({
             label="Listen to this chapter"
             text={() => chapterReadingText(book, chapter, verses)}
           />
+          <ListenSettings compact />
         </div>
       ) : null}
       {visible.map((v) => {
