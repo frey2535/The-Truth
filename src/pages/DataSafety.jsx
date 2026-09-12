@@ -40,8 +40,9 @@ export default function DataSafety() {
         </li>
         <li>
           <strong>App info and performance → Other app performance data</strong> — optional install
-          event (random device id, platform, source, timestamp) sent to this site so the operator
-          can count installs. Purpose: Analytics. Not linked to the reader’s name or email.
+          event (random device id, platform, source, timestamp, browser label, language, timezone,
+          and share channel) sent to this site so the operator can count installs. Purpose:
+          Analytics. Not linked to the reader’s name or email.
         </li>
         <li>
           <strong>Device or other IDs</strong> — the random install device id above, and ordinary

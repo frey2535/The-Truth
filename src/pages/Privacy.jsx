@@ -9,7 +9,7 @@ import {
 
 export default function Privacy() {
   return (
-    <LegalDoc kicker="Legal" title="Privacy policy" updated="Effective 7 September 2026">
+    <LegalDoc kicker="Legal" title="Privacy policy" updated="Effective 12 September 2026">
       <LegalP>
         This policy is for <strong>The Truth</strong>, the Scripture research app at{" "}
         <a className="text-[#7a2e2e] underline" href={PRIVACY_POLICY_URL}>
@@ -20,8 +20,8 @@ export default function Privacy() {
       </LegalP>
       <LegalP>
         Current Flow Consulting operates the public site. Contact:{" "}
-        <a className="text-[#7a2e2e] underline" href="mailto:owner@thetruth.currentflowconsulting.org">
-          owner@thetruth.currentflowconsulting.org
+        <a className="text-[#7a2e2e] underline" href="mailto:currenflowconsultingllc@gmail.com">
+          currenflowconsultingllc@gmail.com
         </a>
         .
       </LegalP>
@@ -57,8 +57,9 @@ export default function Privacy() {
       <LegalList>
         <li>
           <strong>Install count.</strong> When you install the app, this site may receive a random
-          device id, platform (iOS, Android, or desktop), install source, and a timestamp. No name
-          or email is sent with that report. The platform owner can see the list.
+          device id, platform (iOS, Android, or desktop), install source, timestamp, browser label,
+          language, timezone, and whether the open came from Facebook, Play, or the install link.
+          No name or email is sent with that report. The platform owner can see the list.
         </li>
         <li>
           <strong>Google sign-in (optional).</strong> If you tap Continue with Google, Google

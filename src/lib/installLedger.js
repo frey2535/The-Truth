@@ -1,8 +1,10 @@
 /** Shared install ledger — used by the Cloudflare function and local Vite API. */
 
-export const OWNER_EMAIL_DEFAULT = "owner@thetruth.currentflowconsulting.org";
+export const OWNER_EMAIL_DEFAULT = "currenflowconsultingllc@gmail.com";
 export const LOCAL_OWNER_PASSWORD = "owner-local";
 export const OWNER_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
+
+const SHARE_VALUES = new Set(["facebook", "play", "link", "direct"]);
 
 export function emptyLedger() {
   return { devices: {}, sessions: {} };
@@ -21,15 +23,31 @@ function envValue(env, names) {
   return "";
 }
 
+export function ownerEmailList(source = {}) {
+  const extra = [];
+  if (Array.isArray(source.emails)) extra.push(...source.emails);
+  if (source.email) extra.push(source.email);
+  extra.push(OWNER_EMAIL_DEFAULT);
+  extra.push(envValue(source, ["PLATFORM_OWNER_EMAIL"]));
+  return [...new Set(extra.map((value) => normalizeEmail(value)).filter(Boolean))];
+}
+
+export function isPlatformOwnerEmail(email, source = {}) {
+  return ownerEmailList(source).includes(normalizeEmail(email));
+}
+
 export function ownerCredentials(env = {}, { allowLocalFallback = false } = {}) {
-  const email = normalizeEmail(envValue(env, ["PLATFORM_OWNER_EMAIL"]) || OWNER_EMAIL_DEFAULT);
+  const emails = ownerEmailList(env);
+  const email = emails[0] || OWNER_EMAIL_DEFAULT;
   const configured = envValue(env, ["PLATFORM_OWNER_PASSWORD", "PLATFORM_OWNER_PASS"]);
   const password = configured || (allowLocalFallback ? LOCAL_OWNER_PASSWORD : "");
   return {
     email,
+    emails,
     password,
     configured: Boolean(password),
     usingLocalFallback: Boolean(allowLocalFallback && !configured),
+    googleClientId: envValue(env, ["GOOGLE_CLIENT_ID", "VITE_GOOGLE_CLIENT_ID"]),
   };
 }
 
@@ -106,13 +124,69 @@ export async function verifyOwnerToken(token, secret, now = Date.now(), email = 
   return { email: normalized, exp };
 }
 
+export async function verifyOwnerTokenForEmails(token, secret, now = Date.now(), emails = [OWNER_EMAIL_DEFAULT]) {
+  for (const email of ownerEmailList({ emails })) {
+    const signed = await verifyOwnerToken(token, secret, now, email);
+    if (signed) return signed;
+  }
+  return null;
+}
+
+function cleanText(value, max, pattern) {
+  const raw = String(value || "").trim();
+  if (!raw || raw.length > max) return "";
+  return pattern.test(raw) ? raw : "";
+}
+
+function deviceExtras(event = {}) {
+  const language = cleanText(event.language, 16, /^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})?$/);
+  const timezone = cleanText(event.timezone, 64, /^[A-Za-z0-9_+\-/]{1,64}$/);
+  const browser = String(event.browser || "")
+    .replace(/[^\w ./-]/g, "")
+    .trim()
+    .slice(0, 48);
+  const share = SHARE_VALUES.has(event.share) ? event.share : "";
+  return {
+    ...(language ? { language } : {}),
+    ...(timezone ? { timezone } : {}),
+    ...(browser ? { browser } : {}),
+    ...(share ? { share } : {}),
+  };
+}
+
+function fillMissing(existing = {}, extras = {}) {
+  const next = { ...existing };
+  for (const [key, value] of Object.entries(extras)) {
+    if (value && !next[key]) next[key] = value;
+  }
+  return next;
+}
+
 export function recordDevice(ledger, event) {
   const device = String(event?.device || "").trim();
   if (!device || device.length < 8) {
     return { ledger, added: false, error: "A device id is required" };
   }
+  const extras = deviceExtras(event);
+  const seenAt = event.lastSeen || event.at || new Date().toISOString();
   if (ledger.devices?.[device]) {
-    return { ledger, added: false };
+    const current = ledger.devices[device];
+    const nextRow = {
+      ...fillMissing(current, extras),
+      lastSeen: seenAt,
+      standalone: Boolean(event.standalone) || Boolean(current.standalone),
+    };
+    return {
+      ledger: {
+        ...ledger,
+        devices: {
+          ...(ledger.devices || {}),
+          [device]: nextRow,
+        },
+      },
+      added: false,
+      updated: true,
+    };
   }
   const at = event.at || new Date().toISOString();
   const platform = ["ios", "android", "desktop"].includes(event.platform) ? event.platform : "desktop";
@@ -135,14 +209,17 @@ export function recordDevice(ledger, event) {
         ...(ledger.devices || {}),
         [device]: {
           at,
+          lastSeen: seenAt,
           platform,
           source,
           standalone: Boolean(event.standalone),
+          ...extras,
           ...(note ? { note } : {}),
         },
       },
     },
     added: true,
+    updated: false,
   };
 }
 
@@ -165,9 +242,14 @@ export function ownerStats(ledger) {
     .map(([device, row]) => ({
       device: device.slice(0, 8),
       at: row.at,
+      lastSeen: row.lastSeen || row.at,
       platform: row.platform,
       source: row.source,
       standalone: Boolean(row.standalone),
+      language: row.language || "",
+      timezone: row.timezone || "",
+      browser: row.browser || "",
+      share: row.share || "",
       note: row.note || "",
     }))
     .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));

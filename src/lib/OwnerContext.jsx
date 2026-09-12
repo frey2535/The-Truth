@@ -15,6 +15,11 @@ export function OwnerProvider({ children }) {
         setSession(next);
         return next;
       },
+      async loginWithGoogle(tokens) {
+        const next = await base44.owner.loginWithGoogle(tokens);
+        setSession(next);
+        return next;
+      },
       logout() {
         base44.owner.logout();
         setSession(null);

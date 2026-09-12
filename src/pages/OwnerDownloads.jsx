@@ -23,6 +23,14 @@ function sourceLabel(source) {
   return "Opened as installed app";
 }
 
+function shareLabel(share) {
+  if (share === "facebook") return "Opened from Facebook / Instagram";
+  if (share === "play") return "Opened from Google Play";
+  if (share === "link") return "Opened from the install link";
+  if (share === "direct") return "Opened the site directly";
+  return "";
+}
+
 function formatWhen(iso) {
   if (!iso) return "Unknown time";
   try {
@@ -268,8 +276,24 @@ export default function OwnerDownloads() {
                 <span>
                   <span className="block text-sm font-medium text-[#2b2620]">{platformLabel(row.platform)}</span>
                   <span className="block text-xs text-[#5b5142]">{sourceLabel(row.source)}</span>
+                  {row.standalone ? (
+                    <span className="block text-xs text-[#5b5142]">Running as the installed app</span>
+                  ) : null}
+                  {shareLabel(row.share) ? (
+                    <span className="block text-xs text-[#5b5142]">{shareLabel(row.share)}</span>
+                  ) : null}
+                  {row.browser ? <span className="block text-xs text-[#5b5142]">{row.browser}</span> : null}
+                  {row.language || row.timezone ? (
+                    <span className="block text-xs text-[#5b5142]">
+                      {[row.language, row.timezone].filter(Boolean).join(" · ")}
+                    </span>
+                  ) : null}
                   {row.note ? <span className="block text-xs text-[#2b2620] mt-1">{row.note}</span> : null}
-                  <span className="block text-xs text-[#8a7f6f] mt-1">{formatWhen(row.at)}</span>
+                  <span className="block text-xs text-[#8a7f6f] mt-1">First seen {formatWhen(row.at)}</span>
+                  {row.lastSeen && row.lastSeen !== row.at ? (
+                    <span className="block text-xs text-[#8a7f6f]">Last opened {formatWhen(row.lastSeen)}</span>
+                  ) : null}
+                  <span className="block text-[11px] text-[#8a7f6f]">Device {row.device}</span>
                 </span>
               </li>
             ))}

@@ -117,6 +117,21 @@ const login = await handleOwnerLogin({
 assert.equal(login.status, 200);
 assert.ok(login.body.token.startsWith("own2."));
 
+const googleLogin = await handleOwnerLogin({
+  body: { id_token: "test-token" },
+  credentials: { configured: true, email: OWNER_EMAIL_DEFAULT, password: "owner-secret" },
+  verifyGoogle: async () => ({ email: OWNER_EMAIL_DEFAULT, email_verified: true }),
+});
+assert.equal(googleLogin.status, 200);
+assert.ok(googleLogin.body.token.startsWith("own2."));
+
+const stranger = await handleOwnerLogin({
+  body: { id_token: "test-token" },
+  credentials: { configured: true, email: OWNER_EMAIL_DEFAULT, password: "owner-secret" },
+  verifyGoogle: async () => ({ email: "stranger@gmail.com", email_verified: true }),
+});
+assert.equal(stranger.status, 401);
+
 const hitStore = { ledger: emptyLedger() };
 const hit = await handleInstallHit({
   query: { device: "device-hit-9999", platform: "ios", source: "appinstalled", standalone: "1" },

@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KeyRound, Loader2, Lock, Mail } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
+import GoogleIcon from "@/components/GoogleIcon";
+import { googleSignInOriginHint, resolveGoogleClientId } from "@/lib/googleIdentity";
 import { OWNER_EMAIL_DEFAULT } from "@/lib/installLedger";
 import { useOwner } from "@/lib/OwnerContext";
 
@@ -15,6 +18,19 @@ export default function OwnerLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleReady, setGoogleReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    resolveGoogleClientId()
+      .then((id) => {
+        if (!cancelled) setGoogleReady(Boolean(id));
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (isOwner) return <Navigate to="/owner/downloads" replace />;
 
@@ -37,7 +53,7 @@ export default function OwnerLogin() {
       variant="dark"
       icon={KeyRound}
       title="Platform owner"
-      subtitle="See every device that installed The Truth"
+      subtitle={`Sign in as ${OWNER_EMAIL_DEFAULT} to use the app as owner and see every install`}
       footer={
         <>
           Regular readers use{" "}
@@ -95,8 +111,29 @@ export default function OwnerLogin() {
             "View downloads"
           )}
         </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full h-12 text-sm font-medium bg-white/10 text-white border-white/40 hover:bg-white/20"
+          disabled={loading || !googleReady}
+          onClick={async () => {
+            setError("");
+            setLoading(true);
+            try {
+              await base44.auth.loginWithProvider("google", "/owner/downloads");
+            } catch (err) {
+              const hint = googleSignInOriginHint();
+              setError([err.message || "Google sign-in is not available", hint].filter(Boolean).join(" "));
+              setLoading(false);
+            }
+          }}
+        >
+          {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <GoogleIcon className="w-5 h-5 mr-2" />}
+          Continue with Google
+        </Button>
         <p className="text-xs text-white/80 text-center">
-          Use the password you saved as PLATFORM_OWNER_PASSWORD. On this computer only, if that is not set, use{" "}
+          Use <span className="font-semibold text-white">{OWNER_EMAIL_DEFAULT}</span> with Google, or the
+          password saved as PLATFORM_OWNER_PASSWORD. On this computer only, if that is not set, use{" "}
           <span className="font-semibold text-white">owner-local</span>.
         </p>
       </form>

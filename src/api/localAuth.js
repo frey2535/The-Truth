@@ -14,6 +14,8 @@ import {
   shouldBounceGoogleToLoopback,
 } from "@/lib/googleIdentity";
 import { loginUrl } from "@/lib/publicUrl";
+import { isPlatformOwnerEmail } from "@/lib/installLedger";
+import { localOwner } from "./localOwner";
 
 export const GUEST_EMAIL = "guest@local";
 
@@ -85,7 +87,7 @@ function buildUser(db, { email, passwordHash, passwordSalt, full_name, isGuest, 
     id: newId("user"),
     email,
     full_name: full_name || email.split("@")[0],
-    role: isFirstUser ? "admin" : "user",
+    role: isFirstUser || isPlatformOwnerEmail(email) ? "admin" : "user",
     is_guest: !!isGuest,
     created_date: new Date().toISOString(),
     auth_provider: auth_provider || (isGuest ? "guest" : "password"),
@@ -277,6 +279,7 @@ export const localAuth = {
       }
       if (profile.picture) user.picture = profile.picture;
     }
+    if (isPlatformOwnerEmail(email)) user.role = "admin";
 
     issueSession(db, user);
     return publicUser(user);
@@ -297,6 +300,16 @@ export const localAuth = {
     const profile = await requestGoogleProfile(dest);
     if (!profile) return;
     await this.signInWithGoogle(profile);
+    if (isPlatformOwnerEmail(profile.email) && (profile.access_token || profile.idToken)) {
+      try {
+        await localOwner.loginWithGoogle({
+          idToken: profile.idToken,
+          accessToken: profile.access_token,
+        });
+      } catch {
+        /* reader admin still works; owner downloads may ask for the Cloudflare password */
+      }
+    }
     window.location.assign(dest);
   },
 

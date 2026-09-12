@@ -1,4 +1,5 @@
 import { metricsApiOrigin } from "@/lib/appOrigin";
+import { installReportExtras } from "@/lib/installContext";
 import { detectInstallSource } from "@/lib/installDisplay";
 import { getInstallPlatform, isStandaloneDisplay } from "@/lib/pwa";
 import { readOwnerSession } from "@/lib/ownerSession";
@@ -72,6 +73,10 @@ function installHitUrl(origin, payload) {
     standalone: payload.standalone ? "1" : "0",
     at: payload.at || new Date().toISOString(),
   });
+  if (payload.language) params.set("language", payload.language);
+  if (payload.timezone) params.set("timezone", payload.timezone);
+  if (payload.browser) params.set("browser", payload.browser);
+  if (payload.share) params.set("share", payload.share);
   return `${origin}/api/install-hit?${params}`;
 }
 
@@ -153,6 +158,7 @@ export async function reportAppInstall(source = "standalone") {
     source,
     standalone: isStandaloneDisplay(),
     at: new Date().toISOString(),
+    ...installReportExtras(),
   };
   writeJson(PENDING_KEY, payload);
   const recorded = await postInstall(payload);
@@ -232,6 +238,21 @@ export async function ownerLogin(email, password) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || "Owner sign-in failed");
+  return data;
+}
+
+export async function ownerLoginWithGoogle({ idToken, accessToken } = {}) {
+  const origin = installMetricsOrigin();
+  const res = await fetch(`${origin}/api/owner-login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id_token: idToken || "",
+      access_token: accessToken || "",
+    }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || "Owner Google sign-in failed");
   return data;
 }
 

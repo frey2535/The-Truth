@@ -1,4 +1,4 @@
-import { handleOwnerLogin, readOwnerCredentials } from "../../src/lib/installsApi.js";
+import { handleOwnerLogin, ownerLoginStatus, readOwnerCredentials } from "../../src/lib/installsApi.js";
 import { loadInstallLedger, saveInstallLedger } from "../../src/lib/installStore.js";
 
 function json(status, body) {
@@ -25,7 +25,7 @@ export async function onRequestOptions() {
 
 export async function onRequestGet({ env }) {
   const credentials = readOwnerCredentials(env, false);
-  return json(200, { configured: credentials.configured });
+  return json(200, ownerLoginStatus(credentials));
 }
 
 export async function onRequestPost({ request, env }) {

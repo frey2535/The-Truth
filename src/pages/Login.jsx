@@ -9,12 +9,13 @@ import AuthLayout from "@/components/AuthLayout";
 import GoogleIcon from "@/components/GoogleIcon";
 import { safeReturnTo } from "@/lib/authReturnTo";
 import { consumeGoogleRedirect, googleSignInOriginHint, resolveGoogleClientId } from "@/lib/googleIdentity";
-import { normalizeEmail, OWNER_EMAIL_DEFAULT } from "@/lib/installLedger";
+import { adoptOwnerFromGoogle } from "@/lib/adoptOwner";
+import { isPlatformOwnerEmail } from "@/lib/installLedger";
 import { useOwner } from "@/lib/OwnerContext";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login: loginOwner } = useOwner();
+  const { login: loginOwner, loginWithGoogle } = useOwner();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -34,6 +35,11 @@ export default function Login() {
         if (result) {
           setLoading(true);
           await base44.auth.signInWithGoogle(result.profile);
+          try {
+            await adoptOwnerFromGoogle(loginWithGoogle, result.profile, result.idToken);
+          } catch {
+            /* owner downloads still work after password sign-in */
+          }
           if (!cancelled) window.location.replace(result.returnTo || "/");
           return;
         }
@@ -51,7 +57,7 @@ export default function Login() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [loginWithGoogle, returnTo]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,7 +74,7 @@ export default function Login() {
           window.location.href = returnTo;
           return;
         } catch (readerErr) {
-          if (normalizeEmail(email) === OWNER_EMAIL_DEFAULT) {
+          if (isPlatformOwnerEmail(email)) {
             throw new Error(
               /did not receive PLATFORM_OWNER_PASSWORD|cannot see PLATFORM_OWNER_PASSWORD|not configured|wrangler\.toml/i.test(
                 ownerErr.message || ""
