@@ -13,9 +13,10 @@ import {
   PLAY_TITLE,
   PRIVACY_POLICY_URL,
 } from "./playStore.js";
+import { CONTACT_EMAIL } from "./contact.js";
 
 export const PLAY_CATEGORY = "Books & Reference";
-export const PLAY_CONTACT_EMAIL = "owner@thetruth.currentflowconsulting.org";
+export const PLAY_CONTACT_EMAIL = CONTACT_EMAIL;
 export const PLAY_WEBSITE = `https://${PLAY_HOST}`;
 export const PLAY_DEFAULT_LANGUAGE = "en-US";
 export const PLAY_VERSION_NAME = "1.0.0";

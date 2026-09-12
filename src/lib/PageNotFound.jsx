@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import PageTools from "@/components/PageTools";
 
 export default function PageNotFound() {
   const location = useLocation();
@@ -24,6 +25,9 @@ export default function PageNotFound() {
           >
             Open Prophecy
           </Link>
+          <div className="mt-3">
+            <PageTools pageTitle="Page not found" />
+          </div>
         </div>
       </div>
     </div>

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2, FlaskConical } from "lucide-react";
+import NotebookItemActions from "@/components/NotebookItemActions";
 import VerseCard from "@/components/study/VerseCard";
 
 export default function StudyPlanView() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [plan, setPlan] = useState(null);
   const [verses, setVerses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -79,12 +81,24 @@ export default function StudyPlanView() {
         {plan.description && (
           <p className="text-[#5b5142] max-w-3xl leading-relaxed">{plan.description}</p>
         )}
-        <div className="flex items-center gap-4 mt-3 text-sm text-[#8a7f6f]">
+        <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-[#8a7f6f]">
           <span>
             {verses.length} passage{verses.length === 1 ? "" : "s"}
           </span>
           <span>·</span>
           <span>Ordered chronologically by event</span>
+          <NotebookItemActions
+            kind="Study plan"
+            item={{
+              ...plan,
+              body: [plan.description, ...verses.map((v) => `${v.reference || ""}\n${v.text || ""}`)].filter(Boolean).join("\n\n"),
+            }}
+            onDelete={async () => {
+              await Promise.all(verses.map((verse) => base44.entities.StudyVerse.delete(verse.id)));
+              await base44.entities.StudyPlan.delete(id);
+              navigate("/notebook");
+            }}
+          />
         </div>
         {plan.derivatives && (
           <div className="mt-4">

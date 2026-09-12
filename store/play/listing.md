@@ -50,7 +50,7 @@ Books & Reference
 
 ## Contact
 
-Email: owner@thetruth.currentflowconsulting.org
+Email: currenflowconsultingllc@gmail.com
 Website: https://thetruth.currentflowconsulting.org
 Privacy policy: https://thetruth.currentflowconsulting.org/privacy
 

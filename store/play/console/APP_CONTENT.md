@@ -216,7 +216,7 @@ _Those tools search texts stored in the app. They do not require OpenAI or any p
 
 ### IARC email
 
-**owner@thetruth.currentflowconsulting.org**
+**currenflowconsultingllc@gmail.com**
 
 ### Category
 

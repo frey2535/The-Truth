@@ -42,7 +42,7 @@ export const APP_PAGES = [
   { path: "/customs", title: "Customs", purpose: "Inherited customs" },
   { path: "/map", title: "Map", purpose: "Bible map" },
   { path: "/calendar", title: "Calendar", purpose: "Study calendar" },
-  { path: "/notebook", title: "Notebook", purpose: "On-device study notes" },
+  { path: "/notebook", title: "Notebook", purpose: "On-device notes — delete, download, or print" },
   { path: "/learn", title: "Learn", purpose: "Study plans" },
   { path: "/install", title: "Install", purpose: "Add the PWA to a phone or computer" },
   { path: "/privacy", title: "Privacy", purpose: "Privacy policy" },

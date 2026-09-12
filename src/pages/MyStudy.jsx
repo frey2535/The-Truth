@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import NotebookItemActions from "@/components/NotebookItemActions";
 import PlanCard from "@/components/study/PlanCard";
-import { BookMarked, Highlighter, Star, StickyNote, Trash2 } from "lucide-react";
+import { BookMarked, Highlighter, Star, StickyNote } from "lucide-react";
 import { libraryHref } from "@/lib/libraryLinks";
+import { downloadText, notebookItemText, printText } from "@/lib/notebookExport";
 
 const TABS = [
   { id: "plans", label: "Study plans", icon: BookMarked },
@@ -50,7 +52,28 @@ export default function MyStudy() {
 
   async function remove(entity, id) {
     await base44.entities[entity].delete(id);
-    load();
+    await load();
+  }
+
+  async function removePlan(id) {
+    const verses = await base44.entities.StudyVerse.filter({ plan_id: id }).catch(() => []);
+    await Promise.all((verses || []).map((verse) => base44.entities.StudyVerse.delete(verse.id)));
+    await base44.entities.StudyPlan.delete(id);
+    await load();
+  }
+
+  function exportTab() {
+    const rows =
+      tab === "plans"
+        ? plans.map((p) => notebookItemText("Study plan", p))
+        : tab === "notes"
+          ? shownNotes.map((n) => notebookItemText("Note", n))
+          : tab === "highlights"
+            ? highlights.map((h) => notebookItemText("Highlight", h))
+            : shownFavs.map((f) => notebookItemText("Favorite", f));
+    const text = rows.join("\n---\n\n") || "No items.\n";
+    const label = TABS.find((entry) => entry.id === tab)?.label || "Notebook";
+    return { text, label };
   }
 
   const shownNotes = topicFilter === "all" ? notes : notes.filter((n) => n.topic === topicFilter);
@@ -59,10 +82,10 @@ export default function MyStudy() {
   return (
     <div>
       <header className="mb-8">
-        <h1 className="font-display text-4xl text-[#2b2620] mb-2">My study</h1>
+        <h1 className="font-display text-4xl text-[#2b2620] mb-2">Notebook</h1>
         <p className="text-[#5b5142] max-w-2xl">
-          Plans, notes, highlights, and favorites stay on this device, for this signed-in or guest session.
-          They are not sent to the internet.
+          Plans, notes, highlights, and favorites stay on this device. Delete, download, or print any
+          item. They are not sent to the internet.
         </p>
       </header>
 
@@ -79,6 +102,28 @@ export default function MyStudy() {
             <Icon className="w-4 h-4" /> {label}
           </button>
         ))}
+      </div>
+      <div className="flex flex-wrap gap-2 mb-6">
+        <button
+          type="button"
+          className="text-xs px-3 py-1.5 rounded-full border border-[#e8ddc7] bg-white"
+          onClick={() => {
+            const { text, label } = exportTab();
+            downloadText(`${label.toLowerCase().replace(/\s+/g, "-")}.txt`, text);
+          }}
+        >
+          Download this list
+        </button>
+        <button
+          type="button"
+          className="text-xs px-3 py-1.5 rounded-full border border-[#e8ddc7] bg-white"
+          onClick={() => {
+            const { text, label } = exportTab();
+            printText(label, text);
+          }}
+        >
+          Print this list
+        </button>
       </div>
 
       {(tab === "notes" || tab === "favorites") && topics.length > 0 && (
@@ -132,7 +177,19 @@ export default function MyStudy() {
           </form>
           {plans.length ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {plans.map((p) => <PlanCard key={p.id} plan={p} />)}
+              {plans.map((p) => (
+                <PlanCard
+                  key={p.id}
+                  plan={p}
+                  actions={
+                    <NotebookItemActions
+                      kind="Study plan"
+                      item={p}
+                      onDelete={() => removePlan(p.id)}
+                    />
+                  }
+                />
+              ))}
             </div>
           ) : (
             <p className="text-[#8a7f6f]">No study plans yet. Save one above, or start from the home search.</p>
@@ -150,7 +207,7 @@ export default function MyStudy() {
                   <Link to={libraryHref({ reference: n.reference })} className="hover:underline">{n.reference}</Link>
                   {n.topic ? ` · ${n.topic}` : ""}
                 </p>
-                <button type="button" onClick={() => remove("Note", n.id)} className="text-[#8a7f6f]"><Trash2 className="w-4 h-4" /></button>
+                <NotebookItemActions kind="Note" item={n} onDelete={() => remove("Note", n.id)} />
               </div>
               <p className="text-sm text-[#6b6155] mt-1">{n.text}</p>
               <p className="text-[#2b2620] mt-2 whitespace-pre-wrap">{n.body}</p>
@@ -168,7 +225,7 @@ export default function MyStudy() {
                 <p className="text-sm font-medium text-[#7a2e2e]">
                   <Link to={libraryHref({ reference: h.reference })} className="hover:underline">{h.reference}</Link>
                 </p>
-                <button type="button" onClick={() => remove("Highlight", h.id)} className="text-[#8a7f6f]"><Trash2 className="w-4 h-4" /></button>
+                <NotebookItemActions kind="Highlight" item={h} onDelete={() => remove("Highlight", h.id)} />
               </div>
               <p className="text-[#2b2620] mt-1 leading-relaxed">{h.text}</p>
             </article>
@@ -186,7 +243,7 @@ export default function MyStudy() {
                   <Link to={libraryHref({ reference: f.reference })} className="hover:underline">{f.reference}</Link>
                   {f.topic ? ` · ${f.topic}` : ""}
                 </p>
-                <button type="button" onClick={() => remove("Favorite", f.id)} className="text-[#8a7f6f]"><Trash2 className="w-4 h-4" /></button>
+                <NotebookItemActions kind="Favorite" item={f} onDelete={() => remove("Favorite", f.id)} />
               </div>
               <p className="text-[#2b2620] mt-1 leading-relaxed">{f.text}</p>
             </article>

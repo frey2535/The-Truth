@@ -9,6 +9,7 @@ import PapyrusBackdrop from "@/components/PapyrusBackdrop";
 import { CUSTOMS_NAV_LABEL } from "@/data/inheritedCustoms";
 import AppUpdateBanner from "@/components/AppUpdateBanner";
 import InstallAppPrompt from "@/components/InstallAppPrompt";
+import PageTools from "@/components/PageTools";
 import { isEvidencePath } from "@/components/evidence/EvidenceSectionNav";
 import { isStandaloneDisplay } from "@/lib/pwa";
 import {
@@ -148,6 +149,9 @@ export default function Layout() {
                 </Link>
               </>
             ) : null}
+            <div className="hidden sm:block">
+              <PageTools dark={!usePapyrus} />
+            </div>
             {isGuest ? (
               <Link
                 to="/login"
@@ -205,6 +209,9 @@ export default function Layout() {
               Delete account
             </Link>
           </p>
+          <div className="mt-3">
+            <PageTools />
+          </div>
         </div>
       </footer>
       <nav

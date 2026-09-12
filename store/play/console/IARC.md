@@ -1,12 +1,12 @@
 # IARC content rating answers
 
 Expected outcome: **Teen**. Not Designed for Families.
-IARC email: owner@thetruth.currentflowconsulting.org
+IARC email: currenflowconsultingllc@gmail.com
 Category: All Other App Types (Utility / Productivity / Reference). Not a game.
 
 ## IARC email
 
-**owner@thetruth.currentflowconsulting.org**
+**currenflowconsultingllc@gmail.com**
 
 ## Category
 
