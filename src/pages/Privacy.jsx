@@ -71,9 +71,9 @@ export default function Privacy() {
           on the device. They search stored texts only and do not use a paid AI API.
         </li>
         <li>
-          <strong>Listen.</strong> Read-aloud uses this device’s speech voices. You choose the voice
-          and reading speed; that choice stays on the device. The wording is not sent to the
-          internet to be read.
+          <strong>Listen.</strong> Spoken English voices run on this device and are meant to sound
+          like a person. The first use may download a voice model onto this device. You can also
+          pick a system voice and a reading speed. Scripture is not uploaded to be read.
         </li>
         <li>
           <strong>Hosting.</strong> Cloudflare (and the GitHub Pages mirror) see ordinary web

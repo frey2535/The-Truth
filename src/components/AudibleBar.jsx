@@ -5,7 +5,7 @@ import ListenSettings from "@/components/ListenSettings";
 import { pauseAudible, resumeAudible, stopAudible } from "@/lib/audibleReader";
 
 export default function AudibleBar() {
-  const { status, title, supported } = useAudibleReader();
+  const { status, title, supported, preparing } = useAudibleReader();
   if (!supported || status === "idle") return null;
   return (
     <div
@@ -15,7 +15,9 @@ export default function AudibleBar() {
       <div className="max-w-6xl mx-auto flex items-center justify-between gap-3 text-sm text-[#2b2620]">
         <p className="min-w-0 truncate inline-flex items-center gap-2">
           <Volume2 className="w-4 h-4 shrink-0 text-[#7a2e2e]" />
-          <span className="truncate">{status === "paused" ? "Paused" : "Listening"}: {title}</span>
+          <span className="truncate">
+            {preparing || (status === "paused" ? `Paused: ${title}` : `Listening: ${title}`)}
+          </span>
         </p>
         <div className="flex items-center gap-2 shrink-0">
           <ListenSettings compact />
