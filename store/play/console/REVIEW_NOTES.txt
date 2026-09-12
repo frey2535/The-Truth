@@ -1,4 +1,4 @@
-The app is free. There is no checkout, paid unlock, or subscription.
+The app is free. There is no checkout, paid unlock, or subscription. No ads.
 
 Demo: open the app. Reading the library works without creating an account.
 
@@ -6,4 +6,6 @@ Optional sign-in: Create account on the device (email/password). Continue with G
 
 Do not use /owner — that is the platform operator page.
 
-Research, Investigate, Assistant, and Word Study search only texts stored in the app. They do not search the live internet or invent archives.
+Research, Investigate, Assistant, and Word Study search only texts stored in the app. They do not search the live internet, invent archives, or require a paid API.
+
+Paste pack for every Console question: https://thetruth.currentflowconsulting.org/play-console

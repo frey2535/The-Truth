@@ -25,6 +25,7 @@ import Learn from "@/pages/Learn";
 import Install from "@/pages/Install";
 import Privacy from "@/pages/Privacy";
 import DataSafety from "@/pages/DataSafety";
+import PlayConsole from "@/pages/PlayConsole";
 import Account from "@/pages/Account";
 import Search from "@/pages/Search";
 import MyStudy from "@/pages/MyStudy";
@@ -96,6 +97,7 @@ const AuthenticatedApp = () => {
         <Route path="/install" element={<Install />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/data-safety" element={<DataSafety />} />
+        <Route path="/play-console" element={<PlayConsole />} />
         <Route path="/account" element={<Account />} />
         </Route>
       <Route path="*" element={<PageNotFound />} />

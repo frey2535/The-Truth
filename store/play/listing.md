@@ -2,6 +2,8 @@
 
 Paste these fields in Play Console → Grow → Store presence → Main store listing.
 
+Public click-through pack: https://thetruth.currentflowconsulting.org/play-console
+
 ## App name (30)
 
 The Truth
@@ -33,8 +35,8 @@ Research, Investigate, the Assistant, and Word Study search only texts and publi
 Optional sign-in
 Create a local account on this device, or continue with Google. That is optional. Reading works without an account.
 
-Optional extra AI
-Some extra tools may call OpenAI if the site operator has configured a key. Ordinary study search does not.
+No paid services
+Research, Investigate, the Assistant, and Word Study do not use a paid AI API. The Play listing has no ads and no in-app purchases.
 
 This listing is free. No ads. No in-app purchases or subscriptions.
 
@@ -61,3 +63,4 @@ Privacy policy: https://thetruth.currentflowconsulting.org/privacy
 - `screenshots/ten-*.png` — 10-inch tablet, 1920×1200
 
 The same files are copied to `fastlane/metadata/android/en-US/`.
+Leave the Play Console “AI-generated content” box unchecked on these graphics.

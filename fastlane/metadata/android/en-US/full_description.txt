@@ -15,8 +15,8 @@ Research, Investigate, the Assistant, and Word Study search only texts and publi
 Optional sign-in
 Create a local account on this device, or continue with Google. That is optional. Reading works without an account.
 
-Optional extra AI
-Some extra tools may call OpenAI if the site operator has configured a key. Ordinary study search does not.
+No paid services
+Research, Investigate, the Assistant, and Word Study do not use a paid AI API. The Play listing has no ads and no in-app purchases.
 
 This listing is free. No ads. No in-app purchases or subscriptions.
 

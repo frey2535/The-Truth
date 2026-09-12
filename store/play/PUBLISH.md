@@ -4,21 +4,27 @@ The Play app is a Trusted Web Activity. It opens `https://thetruth.currentflowco
 
 GitHub Pages is a mirror only. Do not point the TWA at it.
 
-This repository now contains the listing copy, graphics, Console answers, and the Android project. **Play Console still has to receive the signed `.aab` from you** — Google does not let this repo create the developer account or click Submit.
+The listing is **free**. Do not add a paid download, in-app products, subscriptions, ads, or a paid testing service. Study features do not need a paid AI API.
+
+**Paste every Console answer from** https://thetruth.currentflowconsulting.org/play-console  
+Repo copies: `store/play/console/` and `src/lib/playConsole.js`.
+
+This repository cannot create the Play developer account or click Submit. If you already have a Play developer account, there is no extra Google fee for this listing. A new personal account still pays Google’s one-time registration fee — that is Google’s charge, not an in-app cost. Until Play is live, the public site is already the free production app.
 
 ## What is already done in the repo
 
-- Privacy, data safety, account deletion: `/privacy`, `/data-safety`, `/account`
+- Privacy, data safety, account deletion, Console answers: `/privacy`, `/data-safety`, `/account`, `/play-console`
 - Digital Asset Links: `public/.well-known/assetlinks.json`
 - Android TWA, package `org.currentflowconsulting.thetruth`, target / compile SDK **36**
 - No Play Billing, no advertising ID
 - Store listing and screenshots: `store/play/` and `fastlane/metadata/android/en-US/`
 - Console paste pack: `store/play/console/`
 - Reviewer notes: `store/play/console/REVIEW_NOTES.txt`
+- Closed-test steps (free Google Group): `store/play/console/CLOSED_TESTING.md`
 
 ## What you still do in Play Console
 
-1. Pay the Play developer fee and finish identity verification.
+1. Sign in with an existing Play developer account, or create one (Google’s one-time fee). Finish identity verification.
 2. Create the app:
    - Name: **The Truth**
    - Package: `org.currentflowconsulting.thetruth`
@@ -27,13 +33,13 @@ This repository now contains the listing copy, graphics, Console answers, and th
    - **Free** (not Paid). Do not add in-app products or subscriptions.
 3. Turn on **Play App Signing**.
 4. Paste listing copy from `store/play/listing.md` (or upload `fastlane/metadata/android/en-US/`).
-5. Upload graphics from `store/play/` (icon, feature graphic, phone + tablet screenshots).
-6. App content: follow `store/play/console/APP_CONTENT.md`.
+5. Upload graphics from `store/play/` (icon, feature graphic, phone + tablet screenshots). Leave the AI-generated-content box **unchecked**.
+6. App content: open `/play-console` and copy each answer, or follow `store/play/console/APP_CONTENT.md`.
 7. Data safety: `store/play/console/DATA_SAFETY.md` (same as `/data-safety`).
 8. IARC questionnaire: `store/play/console/IARC.md` (expect Teen; not Designed for Families).
 9. Review notes: `store/play/console/REVIEW_NOTES.txt`.
 10. Upload the signed Android App Bundle (`.aab`).
-11. If this is a **personal** developer account created after 13 November 2023, run a **closed test** with at least **12 testers opted in for 14 continuous days**, then apply for production access on the Dashboard. Internal testing does not count. Organization accounts can usually go to production after review.
+11. If this is a **personal** developer account created after 13 November 2023, run a **closed test** with at least **12 testers opted in for 14 continuous days**, then apply for production access on the Dashboard. Use a free Google Group — see `store/play/console/CLOSED_TESTING.md`. Internal testing does not count. Organization accounts can usually go to production after review.
 
 ## Build the App Bundle
 

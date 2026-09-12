@@ -198,6 +198,9 @@ export default function Layout() {
             <Link to="/data-safety" className="hover:underline">
               Data safety
             </Link>
+            <Link to="/play-console" className="hover:underline">
+              Play Console
+            </Link>
             <Link to="/account" className="hover:underline">
               Delete account
             </Link>
