@@ -94,16 +94,17 @@ function tokensOf(folded) {
   return folded.match(/[\p{L}\p{N}']+/gu) || [];
 }
 
-export function scorePassage(text, { phrase, forms }) {
+export function scorePassage(text, { phrase, forms, exact = false }) {
   const folded = foldMarks(text).toLowerCase();
   if (!folded) return 0;
   const tokens = tokensOf(folded);
   const tokenSet = new Set(tokens);
-  const tokenKeys = new Set(tokens.map(consonantKey).filter(Boolean));
+  const tokenKeys = exact ? null : new Set(tokens.map(consonantKey).filter(Boolean));
+  const minLen = exact ? 1 : 3;
   const candidates = new Set(
     [phrase, ...(forms || [])]
       .map((item) => foldMarks(item).toLowerCase().trim())
-      .filter((item) => item.length >= 3)
+      .filter((item) => item.length >= minLen)
   );
   let hits = 0;
   for (const ff of candidates) {
@@ -115,6 +116,7 @@ export function scorePassage(text, { phrase, forms }) {
       hits += 1;
       continue;
     }
+    if (exact) continue;
     const key = consonantKey(ff);
     if (key && tokenKeys.has(key)) hits += 1;
   }
