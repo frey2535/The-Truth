@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import HeavenBackdrop from "@/components/HeavenBackdrop";
+import PageTools from "@/components/PageTools";
 import { publishedApiOrigin } from "@/lib/appOrigin";
 import { cursorMcpSnippet, mcpEndpoint } from "@/lib/mcpConfig";
 import { useOwner } from "@/lib/OwnerContext";
@@ -105,7 +106,8 @@ export default function OwnerCursor() {
             <h1 className="font-display text-4xl text-[#f3e9c8]">Cursor</h1>
             <p className="text-sm text-[#f3e9c8]/80 mt-1">{owner.email}</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <PageTools dark pageTitle="Cursor" />
             <Button asChild variant="outline" className="h-10 bg-white/90">
               <Link to="/owner/downloads">Downloads</Link>
             </Button>

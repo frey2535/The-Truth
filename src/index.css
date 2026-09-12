@@ -283,3 +283,30 @@
 .biblical-name-tip::before {
   display: none !important;
 }
+
+@media print {
+  .truth-heaven,
+  .truth-papyrus,
+  header,
+  footer,
+  nav,
+  .page-tools,
+  .app-update-banner,
+  #install-app-prompt {
+    display: none !important;
+  }
+
+  .truth-app,
+  .truth-app--read,
+  body,
+  #root {
+    background: #fff !important;
+    color: #2b2620 !important;
+    min-height: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+}

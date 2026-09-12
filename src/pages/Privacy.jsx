@@ -7,6 +7,7 @@ import {
   PLAY_HOST,
   PRIVACY_POLICY_URL,
 } from "@/lib/playStore";
+import { CONTACT_EMAIL } from "@/lib/contact";
 
 export default function Privacy() {
   return (
@@ -21,8 +22,8 @@ export default function Privacy() {
       </LegalP>
       <LegalP>
         Current Flow Consulting operates the public site. Contact:{" "}
-        <a className="text-[#7a2e2e] underline" href="mailto:owner@thetruth.currentflowconsulting.org">
-          owner@thetruth.currentflowconsulting.org
+        <a className="text-[#7a2e2e] underline" href={`mailto:${CONTACT_EMAIL}`}>
+          {CONTACT_EMAIL}
         </a>
         .
       </LegalP>

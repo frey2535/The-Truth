@@ -1,5 +1,6 @@
 import React from "react";
 import HeavenBackdrop from "@/components/HeavenBackdrop";
+import PageTools from "@/components/PageTools";
 
 export default function AuthLayout({ icon: Icon, title, subtitle, footer, children, variant = "light" }) {
   const dark = variant === "dark";
@@ -32,6 +33,9 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
             {footer}
           </p>
         )}
+        <div className="mt-6">
+          <PageTools dark pageTitle={title} />
+        </div>
       </div>
     </div>
   );

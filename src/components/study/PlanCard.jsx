@@ -2,11 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Loader2 } from "lucide-react";
 
-export default function PlanCard({ plan }) {
+export default function PlanCard({ plan, actions }) {
   return (
+    <div className="rounded-2xl border border-[#e8ddc7] bg-white/70 hover:bg-white hover:border-[#b08d3c]/50 transition-all p-5 shadow-sm hover:shadow-md">
     <Link
       to={`/plan/${plan.id}`}
-      className="group block rounded-2xl border border-[#e8ddc7] bg-white/70 hover:bg-white hover:border-[#b08d3c]/50 transition-all p-5 shadow-sm hover:shadow-md"
+      className="group block"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
@@ -31,5 +32,7 @@ export default function PlanCard({ plan }) {
         </span>
       </div>
     </Link>
+    {actions ? <div className="mt-3 flex justify-end">{actions}</div> : null}
+    </div>
   );
 }

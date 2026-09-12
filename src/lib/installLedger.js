@@ -1,6 +1,8 @@
 /** Shared install ledger — used by the Cloudflare function and local Vite API. */
 
-export const OWNER_EMAIL_DEFAULT = "owner@thetruth.currentflowconsulting.org";
+import { CONTACT_EMAIL } from "./contact.js";
+
+export const OWNER_EMAIL_DEFAULT = CONTACT_EMAIL;
 export const LOCAL_OWNER_PASSWORD = "owner-local";
 export const OWNER_SESSION_MS = 30 * 24 * 60 * 60 * 1000;
 
