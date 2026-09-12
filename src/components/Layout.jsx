@@ -8,8 +8,10 @@ import HeavenBackdrop from "@/components/HeavenBackdrop";
 import PapyrusBackdrop from "@/components/PapyrusBackdrop";
 import { CUSTOMS_NAV_LABEL } from "@/data/inheritedCustoms";
 import AppUpdateBanner from "@/components/AppUpdateBanner";
+import AudibleBar from "@/components/AudibleBar";
 import InstallAppPrompt from "@/components/InstallAppPrompt";
 import PageTools from "@/components/PageTools";
+import { stopAudible } from "@/lib/audibleReader";
 import { isEvidencePath } from "@/components/evidence/EvidenceSectionNav";
 import { isStandaloneDisplay } from "@/lib/pwa";
 import {
@@ -63,6 +65,10 @@ export default function Layout() {
     document.documentElement.classList.toggle("truth-standalone", standalone);
     return () => document.documentElement.classList.remove("truth-standalone");
   }, [standalone]);
+
+  useEffect(() => {
+    stopAudible();
+  }, [pathname]);
 
   return (
     <div className={`min-h-dvh truth-app text-[#2b2620] flex flex-col${usePapyrus ? " truth-app--read" : ""}`}>
@@ -246,6 +252,7 @@ export default function Layout() {
           })}
         </div>
       </nav>
+      <AudibleBar />
       <InstallAppPrompt />
     </div>
   );

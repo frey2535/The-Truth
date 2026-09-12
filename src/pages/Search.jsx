@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Search as SearchIcon } from "lucide-react";
 import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
+import ListenControl from "@/components/ListenControl";
 import { libraryHref } from "@/lib/libraryLinks";
 
 const PAGE = 400;
@@ -119,15 +120,24 @@ export default function Search() {
       <div className="space-y-3 max-w-3xl mx-auto">
         {visible.map((m, i) => (
           <article key={`${m.source}-${m.reference}-${i}`} className="rounded-2xl border border-[#e8ddc7] bg-white/80 p-4">
-            <p className="text-sm font-medium text-[#7a2e2e]">
-              <Link
-                to={libraryHref({ book: m.book, chapter: m.chapter, source: m.source, reference: m.reference })}
-                className="hover:underline"
-              >
-                {m.reference}
-              </Link>{" "}
-              <span className="text-[10px] uppercase tracking-wide text-[#8a7f6f]">{m.source}</span>
-            </p>
+            <div className="flex items-start justify-between gap-3">
+              <p className="text-sm font-medium text-[#7a2e2e]">
+                <Link
+                  to={libraryHref({ book: m.book, chapter: m.chapter, source: m.source, reference: m.reference })}
+                  className="hover:underline"
+                >
+                  {m.reference}
+                </Link>{" "}
+                <span className="text-[10px] uppercase tracking-wide text-[#8a7f6f]">{m.source}</span>
+              </p>
+              <ListenControl
+                variant="icon"
+                id={`search:${m.source}:${m.reference}:${i}`}
+                title={m.reference}
+                label="result"
+                text={`${m.reference}. ${m.text || ""}`}
+              />
+            </div>
             <p className="text-[#2b2620] leading-relaxed mt-1">{m.text}</p>
           </article>
         ))}

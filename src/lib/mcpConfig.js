@@ -30,7 +30,7 @@ export function cursorMcpSnippet(url, token) {
 
 export const APP_PAGES = [
   { path: "/", title: "Home", purpose: "Install and welcome" },
-  { path: "/library", title: "Read", purpose: "Catalog of stored texts — readers do not upload" },
+  { path: "/library", title: "Read", purpose: "Catalog of stored texts — listen, or read on the page" },
   { path: "/search", title: "Search", purpose: "Search stored King James, Apocrypha, DSS, Enoch, fathers, Philo, Josephus" },
   { path: "/assistant", title: "Assistant", purpose: "Study questions against in-app texts only" },
   { path: "/word-study", title: "Word Study", purpose: "Define words from stored texts" },
@@ -42,7 +42,7 @@ export const APP_PAGES = [
   { path: "/customs", title: "Customs", purpose: "Inherited customs" },
   { path: "/map", title: "Map", purpose: "Bible map" },
   { path: "/calendar", title: "Calendar", purpose: "Study calendar" },
-  { path: "/notebook", title: "Notebook", purpose: "On-device notes — delete, download, or print" },
+  { path: "/notebook", title: "Notebook", purpose: "On-device notes — delete, download, print, or listen" },
   { path: "/learn", title: "Learn", purpose: "Study plans" },
   { path: "/install", title: "Install", purpose: "Add the PWA to a phone or computer" },
   { path: "/privacy", title: "Privacy", purpose: "Privacy policy" },

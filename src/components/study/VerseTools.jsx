@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Highlighter, Star, StickyNote, Link2, Languages, Loader2, X } from "lucide-react";
+import ListenControl from "@/components/ListenControl";
 import { findRelatedVerses } from "@/lib/localCorpusSearch";
 import { lookupLexicon } from "@/data/strongsLexicon";
 
@@ -74,6 +75,13 @@ export default function VerseTools({ reference, text, book }) {
   return (
     <div className="mt-2">
       <div className="flex flex-wrap gap-1.5">
+        <ListenControl
+          variant="verse"
+          id={`verse:${reference}`}
+          title={reference}
+          label="Listen"
+          text={`${reference}. ${text}`}
+        />
         <button type="button" onClick={highlight} className="verse-tool" title="Highlight">
           <Highlighter className="w-3.5 h-3.5" /> Highlight
         </button>

@@ -291,6 +291,8 @@
   footer,
   nav,
   .page-tools,
+  .listen-control,
+  .listen-now,
   .app-update-banner,
   #install-app-prompt {
     display: none !important;
