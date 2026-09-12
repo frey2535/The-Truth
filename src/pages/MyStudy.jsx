@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import ListenControl from "@/components/ListenControl";
+import ListenSettings from "@/components/ListenSettings";
 import NotebookItemActions from "@/components/NotebookItemActions";
 import PlanCard from "@/components/study/PlanCard";
 import { BookMarked, Highlighter, Star, StickyNote } from "lucide-react";
@@ -132,6 +133,7 @@ export default function MyStudy() {
           label="Listen to this list"
           text={() => exportTab().text}
         />
+        <ListenSettings compact />
       </div>
 
       {(tab === "notes" || tab === "favorites") && topics.length > 0 && (
