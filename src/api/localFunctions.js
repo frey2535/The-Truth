@@ -329,17 +329,24 @@ async function define_word({ word, reference }) {
   }
 }
 
-async function search_texts({ query, corpus }) {
+async function search_texts({ query, corpus, exact }) {
   requireUser();
   const q = String(query || "").trim();
   if (!q) return fail("A search word is required.");
   const chosen = SEARCH_CORPORA.find((c) => c.id === corpus) || SEARCH_CORPORA[0];
+  const onlyWord = Boolean(exact);
   try {
-    const found = await searchCorpus(q, { limit: Infinity, sources: chosen.sources || undefined });
+    const found = await searchCorpus(q, {
+      limit: Infinity,
+      sources: chosen.sources || undefined,
+      exact: onlyWord,
+    });
     return {
       query: q,
       corpus: chosen.id,
       label: chosen.label,
+      exact: onlyWord,
+      forms: found.forms || [],
       total: found.total ?? found.matches.length,
       matches: found.matches,
     };

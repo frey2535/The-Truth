@@ -120,17 +120,22 @@ function addFormsForWord(forms, word) {
   }
 }
 
-export function expandSearchForms(topic) {
+export function expandSearchForms(topic, { exact = false } = {}) {
   const phrase = foldMarks(topic)
     .toLowerCase()
     .replace(/[^\p{L}\p{N}\s'-]/gu, " ")
     .replace(/\s+/g, " ")
     .trim();
-  const words = phrase.split(" ").filter((w) => w.length > 2 && !STOP.has(w));
+  const rawWords = phrase.split(" ").filter(Boolean);
+  const words = exact ? rawWords : rawWords.filter((w) => w.length > 2 && !STOP.has(w));
   const forms = new Set();
   if (phrase) forms.add(phrase);
+  if (exact) {
+    for (const w of words) forms.add(w);
+    return { phrase, words, forms: [...forms].filter(Boolean), exact: true };
+  }
   for (const w of words) addFormsForWord(forms, w);
-  return { phrase, words, forms: [...forms].filter((f) => f.length >= 3) };
+  return { phrase, words, forms: [...forms].filter((f) => f.length >= 3), exact: false };
 }
 
 export function contentWordsForQuestion(topic) {
@@ -403,14 +408,17 @@ export function yieldToBrowser() {
 function prepareQuery(item) {
   const q = String(item?.q || item || "").trim();
   if (!q) return null;
-  const forms = expandSearchForms(q);
+  const exact = Boolean(item?.exact);
+  const forms = expandSearchForms(q, { exact });
   if (!forms.forms.length && !forms.phrase) return null;
+  const minLen = exact ? 1 : 3;
   return {
     q,
     forms,
+    exact,
     requirePhrase: Boolean(item?.requirePhrase),
     foldedPhrase: foldMarks(forms.phrase).toLowerCase(),
-    needles: (forms.forms || []).map((f) => foldMarks(f).toLowerCase()).filter((f) => f.length >= 3),
+    needles: (forms.forms || []).map((f) => foldMarks(f).toLowerCase()).filter((f) => f.length >= minLen),
   };
 }
 
@@ -418,6 +426,12 @@ function cheapRowHit(folded, pq) {
   if (!folded) return false;
   if (pq.requirePhrase) {
     return Boolean(pq.foldedPhrase && folded.includes(pq.foldedPhrase));
+  }
+  if (pq.exact) {
+    return pq.needles.some((n) => {
+      if (n.includes(" ")) return folded.includes(n);
+      return new RegExp(`\\b${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(folded);
+    });
   }
   return pq.needles.some((n) => folded.includes(n));
 }
@@ -524,8 +538,8 @@ export async function searchCorpusMany(queries, { limit = Infinity, sources, con
   };
 }
 
-export async function searchCorpus(topic, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll } = {}) {
-  return searchCorpusMany([{ q: topic, requirePhrase }], {
+export async function searchCorpus(topic, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll, exact } = {}) {
+  return searchCorpusMany([{ q: topic, requirePhrase, exact }], {
     limit,
     sources,
     contentWords,
