@@ -222,7 +222,7 @@
   flex-direction: column;
   height: min(42vh, calc(100dvh - 20rem));
   min-height: 7.5rem;
-  padding-bottom: 0.15rem;
+  padding-bottom: clamp(1.1rem, 3.2vh, 2.4rem);
 }
 
 .home-heaven-title {
