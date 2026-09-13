@@ -33,7 +33,8 @@
     "vendor-philo": "python3 scripts/vendor-philo.py",
     "test:philo": "node scripts/test-philo.mjs",
     "test:notebook": "node scripts/test-notebook-print.mjs",
-    "test:audible": "node scripts/test-audible-reader.mjs"
+    "test:audible": "node scripts/test-audible-reader.mjs",
+    "test:map-labels": "node scripts/test-map-labels.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",
