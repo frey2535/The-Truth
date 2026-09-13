@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { useOwner } from "@/lib/OwnerContext";
@@ -11,6 +11,7 @@ import AppUpdateBanner from "@/components/AppUpdateBanner";
 import AudibleBar from "@/components/AudibleBar";
 import InstallAppPrompt from "@/components/InstallAppPrompt";
 import PageTools from "@/components/PageTools";
+import { fitHeaderBar } from "@/lib/fitHeaderBar";
 import { stopAudible } from "@/lib/audibleReader";
 import { isEvidencePath } from "@/components/evidence/EvidenceSectionNav";
 import { isStandaloneDisplay } from "@/lib/pwa";
@@ -52,6 +53,25 @@ function navActive(pathname, to, matchEvidence) {
   return matchEvidence ? isEvidencePath(pathname) : pathname.startsWith(to);
 }
 
+function HeaderBar({ children, fitKey }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    const run = () => fitHeaderBar(el);
+    run();
+    const ro = new ResizeObserver(run);
+    ro.observe(el);
+    document.fonts?.ready?.then(run);
+    return () => ro.disconnect();
+  }, [fitKey]);
+  return (
+    <div ref={ref} className="truth-header-bar">
+      <div className="truth-header-fit">{children}</div>
+    </div>
+  );
+}
+
 export default function Layout() {
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
@@ -81,7 +101,7 @@ export default function Layout() {
             : "border-[#e8c97a]/25 bg-[#120c08]"
         }`}
       >
-        <div className="truth-header-bar">
+        <HeaderBar fitKey={`${isOwner ? "o" : "u"}-${isGuest ? "g" : "s"}`}>
           <Link to="/" className="truth-header-brand group">
             <img
               src={publicUrl("/icon-192.png?v=6")}
@@ -162,9 +182,6 @@ export default function Layout() {
                 </Link>
               </>
             ) : null}
-            <div className="truth-header-tools">
-              <PageTools dark={!usePapyrus} compact />
-            </div>
             {isGuest ? (
               <Link
                 to="/login"
@@ -187,7 +204,7 @@ export default function Layout() {
               </button>
             )}
           </nav>
-        </div>
+        </HeaderBar>
       </header>
       <main
         className={`relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-5 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8 ${
