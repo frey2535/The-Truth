@@ -3,6 +3,7 @@ import ListenControl from "@/components/ListenControl";
 import ListenSettings from "@/components/ListenSettings";
 import VerseStudyRow from "./VerseStudyRow";
 import ReadingTypeSize from "./ReadingTypeSize";
+import ManuscriptPage from "./ManuscriptPage";
 import { useStudyMarks } from "@/hooks/useStudyMarks";
 import useAudibleReader from "@/hooks/useAudibleReader";
 import { chapterReadingText, stopAudible } from "@/lib/audibleReader";
@@ -77,7 +78,7 @@ export default function ReadingVerseList({
   const visible = verses.length > shown ? verses.slice(0, shown) : verses;
 
   return (
-    <div className="py-1" style={{ "--reading-size": `${1.0625 * fontScale}rem` }}>
+    <div className="py-1" style={{ "--reading-size": `${1.2 * fontScale}rem` }}>
       {verses.length ? (
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <ListenControl
@@ -100,51 +101,56 @@ export default function ReadingVerseList({
           />
         </div>
       ) : null}
-      {visible.map((v) => {
-        const verseItems = showEvidence
-          ? [
-              ...itemsForVerse(evidence, "scripture_reference", book, chapter, v.verse).map((i) => ({
-                ...i,
-                _kind: "evidence",
-              })),
-              ...itemsForVerse(modern, "prophecy_reference", book, chapter, v.verse).map((i) => ({
-                ...i,
-                _kind: "modern",
-              })),
-              ...itemsForVerse(scientific, "scripture_reference", book, chapter, v.verse).map((i) => ({
-                ...i,
-                _kind: "scientific",
-              })),
-              ...itemsForVerse(government, "scripture_reference", book, chapter, v.verse).map((i) => ({
-                ...i,
-                _kind: "government",
-              })),
-            ]
-          : [];
-        return (
-          <VerseStudyRow
-            key={v.verse}
-            book={book}
-            chapter={chapter}
-            verse={v}
-            text={v.text}
-            verses={verses}
-            evidenceItems={verseItems}
-            highlights={highlights}
-            favorites={favorites}
-            onChanged={reload}
-            listening={String(v.verse) === String(listeningVerse)}
-          />
-        );
-      })}
-      {shown < verses.length ? (
-        <button
-          type="button"
-          onClick={() => setShown((n) => n + PAGE_SIZE)}
-          className="mt-4 text-sm text-[#7a2e2e] hover:underline"
-        >
-          Show next {Math.min(PAGE_SIZE, verses.length - shown)} of {verses.length - shown} remaining verses
-        </button>
+      {verses.length ? (
+        <ManuscriptPage book={book} chapter={chapter}>
+          {visible.map((v, index) => {
+            const verseItems = showEvidence
+              ? [
+                  ...itemsForVerse(evidence, "scripture_reference", book, chapter, v.verse).map((i) => ({
+                    ...i,
+                    _kind: "evidence",
+                  })),
+                  ...itemsForVerse(modern, "prophecy_reference", book, chapter, v.verse).map((i) => ({
+                    ...i,
+                    _kind: "modern",
+                  })),
+                  ...itemsForVerse(scientific, "scripture_reference", book, chapter, v.verse).map((i) => ({
+                    ...i,
+                    _kind: "scientific",
+                  })),
+                  ...itemsForVerse(government, "scripture_reference", book, chapter, v.verse).map((i) => ({
+                    ...i,
+                    _kind: "government",
+                  })),
+                ]
+              : [];
+            return (
+              <VerseStudyRow
+                key={v.verse}
+                book={book}
+                chapter={chapter}
+                verse={v}
+                text={v.text}
+                verses={verses}
+                evidenceItems={verseItems}
+                highlights={highlights}
+                favorites={favorites}
+                onChanged={reload}
+                listening={String(v.verse) === String(listeningVerse)}
+                dropCap={index === 0}
+              />
+            );
+          })}
+          {shown < verses.length ? (
+            <button
+              type="button"
+              onClick={() => setShown((n) => n + PAGE_SIZE)}
+              className="manuscript-more"
+            >
+              Further verses · {Math.min(PAGE_SIZE, verses.length - shown)} more
+            </button>
+          ) : null}
+        </ManuscriptPage>
       ) : null}
     </div>
   );
