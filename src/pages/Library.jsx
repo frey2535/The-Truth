@@ -11,7 +11,7 @@ import ApocryphaLibrary from "@/components/library/ApocryphaLibrary";
 import CatalogBrowser from "@/components/library/CatalogBrowser";
 import WorkRecord from "@/components/library/WorkRecord";
 import { getCatalogWork, libraryReadHref } from "@/data/textCatalog";
-import { loadReadingPosition, readingHref, readingLabel } from "@/lib/readingSession";
+import { loadReadingPosition, readingHref, readingLabel, saveReadingPosition } from "@/lib/readingSession";
 
 const CORPORA = [
   {
@@ -95,6 +95,17 @@ export default function Library() {
   useEffect(() => {
     setActive(requested);
     scrollReadingToTop();
+    const book = params.get("book");
+    const chapter = params.get("chapter");
+    if (requested?.key === "bible" && book) {
+      saveReadingPosition({
+        corpus: "bible",
+        book,
+        chapter,
+        verse: params.get("verse") || "",
+        title: `${book}${chapter ? ` ${chapter}` : ""}`,
+      });
+    }
   }, [requested, work, params]);
 
   if (active?.kind === "bible") {

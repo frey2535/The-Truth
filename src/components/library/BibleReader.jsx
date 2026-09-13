@@ -8,6 +8,7 @@ import { useChapterEvidence } from "./useChapterEvidence";
 import ReadingVerseList from "./ReadingVerseList";
 import { useStudyMarks } from "@/hooks/useStudyMarks";
 import { scrollReadingToTop } from "@/lib/scrollReading";
+import { saveReadingPosition } from "@/lib/readingSession";
 
 export default function BibleReader({
   books,
@@ -78,6 +79,12 @@ export default function BibleReader({
       chapter: String(next),
     });
     navigate(`/library?${q.toString()}`, { replace: true });
+    saveReadingPosition({
+      corpus: apocrypha ? "apocrypha" : corpus,
+      book: nextBook,
+      chapter: next,
+      title: `${nextBook} ${next}`,
+    });
   }
 
   const chapterCount = data?.chapters?.length || 0;
