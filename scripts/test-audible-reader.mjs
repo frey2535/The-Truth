@@ -14,7 +14,7 @@ import {
   spokenText,
 } from "../src/lib/audibleReader.js";
 import { isRoboticVoiceName, scoreDeviceVoice } from "../src/lib/voiceQuality.js";
-import { HUMAN_VOICES, isHumanVoice } from "../src/lib/humanTts.js";
+import { HUMAN_VOICES, canUseHumanTts, humanTtsAllowed, humanTtsSupported, isHumanVoice } from "../src/lib/humanTts.js";
 
 assert.equal(spokenText("  And ye shall <b>know</b> the truth.  "), "And ye shall know the truth.");
 assert.equal(spokenText("**Yes.** [John 8:32]"), "Yes. John 8:32");
@@ -58,13 +58,17 @@ const memory = {
   getItem: (key) => (store.has(key) ? store.get(key) : null),
   setItem: (key, value) => store.set(key, String(value)),
 };
-assert.equal(defaultListenPrefs().voiceURI, HUMAN_VOICES[0].uri);
-assert.ok(isHumanVoice(defaultListenPrefs().voiceURI));
+assert.equal(defaultListenPrefs().voiceURI, "");
+assert.equal(humanTtsSupported(), false);
+assert.equal(canUseHumanTts(), false);
 assert.deepEqual(loadListenPrefs(memory), defaultListenPrefs());
 const saved = saveListenPrefs({ voiceURI: "human:am_michael", rate: 0.85 }, memory);
 assert.equal(saved.rate, 0.85);
-assert.equal(loadListenPrefs(memory).voiceURI, "human:am_michael");
+assert.equal(loadListenPrefs(memory).voiceURI, "");
 assert.match(memory.getItem(LISTEN_PREFS_KEY), /am_michael/);
+const deviceSaved = saveListenPrefs({ voiceURI: "en-US", rate: 1.2 }, memory);
+assert.equal(deviceSaved.voiceURI, "en-US");
+assert.equal(loadListenPrefs(memory).voiceURI, "en-US");
 
 assert.ok(isRoboticVoiceName("eSpeak NG", "en"));
 assert.ok(scoreDeviceVoice({ name: "Google US English", lang: "en-US", localService: false }) > scoreDeviceVoice({ name: "eSpeak NG", lang: "en-GB" }));
@@ -77,8 +81,16 @@ const voices = listVoiceChoices([
 assert.equal(voices[0].name, "Google US English");
 assert.match(voices.at(-1).name, /eSpeak|mechanical/i);
 
-const options = listenVoiceOptions([]);
+assert.equal(listenVoiceOptions([]).some((voice) => isHumanVoice(voice.uri)), false);
+const options = listenVoiceOptions([], { includeHuman: true });
 assert.equal(options[0].uri, HUMAN_VOICES[0].uri);
 assert.match(options[0].group, /person/i);
+
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)", deviceMemory: 8 }), false);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Linux; Android 14)", deviceMemory: 8 }), false);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 4 }), false);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", deviceMemory: undefined }), false);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 8 }), true);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 8, skip: true }), false);
 
 console.log("audible reader ok");

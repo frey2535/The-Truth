@@ -11,7 +11,7 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 
 export default function Privacy() {
   return (
-    <LegalDoc kicker="Legal" title="Privacy policy" updated="Effective 7 September 2026">
+    <LegalDoc kicker="Legal" title="Privacy policy" updated="Effective 13 September 2026">
       <LegalP>
         This policy is for <strong>The Truth</strong>, the Scripture research app at{" "}
         <a className="text-[#7a2e2e] underline" href={PRIVACY_POLICY_URL}>
@@ -71,9 +71,10 @@ export default function Privacy() {
           on the device. They search stored texts only and do not use a paid AI API.
         </li>
         <li>
-          <strong>Listen.</strong> Spoken English voices run on this device and are meant to sound
-          like a person. The first use may download a voice model onto this device. You can also
-          pick a system voice and a reading speed. Scripture is not uploaded to be read.
+          <strong>Listen.</strong> Reading uses a voice on this device. You can pick a system voice
+          and a reading speed. On a capable computer you may choose a spoken-English voice; the
+          first use may download a voice model onto this device. Phones keep Listen on the device
+          voice so the app does not crash. Scripture is not uploaded to be read.
         </li>
         <li>
           <strong>Hosting.</strong> Cloudflare (and the GitHub Pages mirror) see ordinary web

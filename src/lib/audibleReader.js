@@ -2,7 +2,9 @@
 
 import {
   HUMAN_VOICES,
+  canUseHumanTts,
   isHumanVoice,
+  markHumanTtsFailed,
   pauseHumanAudio,
   resumeHumanAudio,
   speakHumanText,
@@ -80,7 +82,7 @@ export function pageReadingText(root) {
   return spokenText(clone.innerText || clone.textContent || "");
 }
 
-export const LISTEN_PREFS_KEY = "searchingfortruth_listen_v2";
+export const LISTEN_PREFS_KEY = "searchingfortruth_listen_v3";
 
 export const RATE_PRESETS = [
   { value: 0.7, label: "Slow" },
@@ -123,20 +125,23 @@ export function listVoiceChoices(voices = []) {
   }));
 }
 
-export function listenVoiceOptions(voices = []) {
+export function listenVoiceOptions(voices = [], { includeHuman } = {}) {
+  const human = includeHuman ?? canUseHumanTts();
   return [
-    ...HUMAN_VOICES.map((voice) => ({
-      uri: voice.uri,
-      name: voice.name,
-      lang: "en",
-      group: "Spoken English — sounds like a person",
-    })),
+    ...(human
+      ? HUMAN_VOICES.map((voice) => ({
+          uri: voice.uri,
+          name: voice.name,
+          lang: "en",
+          group: "Spoken English — sounds like a person",
+        }))
+      : []),
     ...listVoiceChoices(voices),
   ];
 }
 
 export function defaultListenPrefs() {
-  return { voiceURI: HUMAN_VOICES[0].uri, rate: 1 };
+  return { voiceURI: "", rate: 1 };
 }
 
 export function loadListenPrefs(storage) {
@@ -145,8 +150,9 @@ export function loadListenPrefs(storage) {
     const raw = storage?.getItem?.(LISTEN_PREFS_KEY);
     if (!raw) return fallback;
     const parsed = JSON.parse(raw);
+    const voiceURI = String(parsed.voiceURI || "");
     return {
-      voiceURI: String(parsed.voiceURI || ""),
+      voiceURI: isHumanVoice(voiceURI) && !canUseHumanTts() ? "" : voiceURI,
       rate: normalizeRate(parsed.rate),
     };
   } catch {
@@ -290,7 +296,7 @@ function speakNext(myToken) {
 }
 
 function beginQueue(text, { id = "", title = "" } = {}) {
-  const human = isHumanVoice(prefs.voiceURI);
+  const human = isHumanVoice(prefs.voiceURI) && canUseHumanTts();
   queue = chunkSpokenText(typeof text === "function" ? text() : text, human ? HUMAN_CHUNK : DEVICE_CHUNK);
   index = 0;
   return {
@@ -321,16 +327,17 @@ async function speakHumanQueue(myToken, id, title) {
     if (myToken !== token || signal.aborted) return;
     state = idleState();
     emit();
-  } catch (error) {
+  } catch {
+    markHumanTtsFailed();
     if (myToken !== token || signal.aborted) return;
-    state = { ...state, preparing: "That human voice could not load. Using this device instead." };
-    emit();
     const speech = synth();
     if (!speech) {
       state = idleState();
       emit();
       return;
     }
+    state = { status: "speaking", id, title, preparing: "Using this device’s voice." };
+    emit();
     speakNext(myToken);
   }
 }
@@ -351,7 +358,18 @@ export function speakText(text, { id = "", title = "" } = {}) {
     return false;
   }
   if (started.human) {
-    void speakHumanQueue(myToken, started.id, started.title);
+    void speakHumanQueue(myToken, started.id, started.title).catch(() => {
+      markHumanTtsFailed();
+      if (myToken !== token) return;
+      if (!speech) {
+        state = idleState();
+        emit();
+        return;
+      }
+      state = { status: "speaking", id: started.id, title: started.title, preparing: "Using this device’s voice." };
+      emit();
+      speakNext(myToken);
+    });
     return true;
   }
   if (!speech) return false;
@@ -370,7 +388,7 @@ export function speakText(text, { id = "", title = "" } = {}) {
 
 export function pauseAudible() {
   if (state.status !== "speaking") return;
-  if (isHumanVoice(prefs.voiceURI)) pauseHumanAudio();
+  if (isHumanVoice(prefs.voiceURI) && canUseHumanTts()) pauseHumanAudio();
   else synth()?.pause();
   state = { ...state, status: "paused" };
   emit();
@@ -378,7 +396,7 @@ export function pauseAudible() {
 
 export function resumeAudible() {
   if (state.status !== "paused") return;
-  if (isHumanVoice(prefs.voiceURI)) {
+  if (isHumanVoice(prefs.voiceURI) && canUseHumanTts()) {
     if (pendingRestart) {
       pendingRestart = false;
       token += 1;
@@ -441,8 +459,11 @@ function applyLiveSettings() {
     emit();
     return;
   }
-  if (isHumanVoice(prefs.voiceURI)) {
-    void speakHumanQueue(token, id, title);
+  if (isHumanVoice(prefs.voiceURI) && canUseHumanTts()) {
+    void speakHumanQueue(token, id, title).catch(() => {
+      markHumanTtsFailed();
+      speakNext(token);
+    });
     return;
   }
   speakNext(token);

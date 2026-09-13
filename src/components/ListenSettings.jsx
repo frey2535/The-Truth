@@ -51,8 +51,8 @@ export default function ListenSettings({ dark = false, compact = false, classNam
                   Voice and speed
                 </h2>
                 <p className="text-sm text-[#5b5142] mt-1">
-                  Spoken English voices sound like a person and run on this device. The first use may download a
-                  voice model onto this device. Scripture is not uploaded.
+                  Listen uses a voice on this device. Spoken-English voices that sound like a person appear here
+                  only when this computer can run them. Scripture is not uploaded.
                 </p>
               </div>
               <button type="button" onClick={() => setOpen(false)} className="text-[#8a7f6f]" aria-label="Close">
