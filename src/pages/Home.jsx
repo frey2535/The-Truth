@@ -76,19 +76,18 @@ export default function Home() {
 
   return (
     <div>
-      <section className="text-center pt-10 pb-12">
-        <h1 className="font-display text-5xl sm:text-7xl text-[#f3e9c8] leading-tight mb-8 drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]">
-          The Truth
-        </h1>
-        <form onSubmit={handleResearch} className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
+      <div className="home-heaven-clear" aria-hidden="true" />
+      <div className="home-below-heaven">
+      <section className="text-center pb-6">
+        <form onSubmit={handleResearch} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-2">
           <Input
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            placeholder="Search Scripture, early writings, and stored evidence — no internet"
-            className="flex-1 h-12 bg-white/90 border-[#e8ddc7] text-[#2b2620] text-base shadow-lg"
+            placeholder="Search Scripture and stored evidence — no internet"
+            className="flex-1 h-10 bg-white/90 border-[#e8ddc7] text-[#2b2620] text-sm shadow-md"
             disabled={busy}
           />
-          <Button type="submit" disabled={busy} className="h-12 px-6 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]">
+          <Button type="submit" disabled={busy} className="h-10 px-4 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]">
             {busy ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin mr-2" /> Researching…
@@ -100,57 +99,57 @@ export default function Home() {
             )}
           </Button>
         </form>
-        {error && <p className="text-[#7a2e2e] text-sm mt-4">{error}</p>}
-        <div className="mt-5 flex flex-col items-center gap-3">
+        {error && <p className="text-[#7a2e2e] text-sm mt-3">{error}</p>}
+        <div className="mt-3 flex flex-col items-center gap-2">
           {continueLabel ? (
             <Link
               to={continueHref}
-              className="inline-flex items-center gap-2 rounded-full bg-[#f3e9c8] text-[#2b2620] px-5 py-2.5 text-sm font-medium shadow-lg hover:bg-white"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#f3e9c8] text-[#2b2620] px-3.5 py-1.5 text-xs font-medium shadow hover:bg-white"
             >
-              <BookOpenText className="w-4 h-4" />
+              <BookOpenText className="w-3.5 h-3.5" />
               Continue reading {continueLabel}
             </Link>
           ) : (
             <Link
               to="/library?corpus=bible&book=John&chapter=8"
-              className="inline-flex items-center gap-2 rounded-full bg-[#f3e9c8] text-[#2b2620] px-5 py-2.5 text-sm font-medium shadow-lg hover:bg-white"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#f3e9c8] text-[#2b2620] px-3.5 py-1.5 text-xs font-medium shadow hover:bg-white"
             >
-              <BookOpenText className="w-4 h-4" />
+              <BookOpenText className="w-3.5 h-3.5" />
               Open John 8
             </Link>
           )}
           <Link
             to="/install"
-            className="inline-flex items-center gap-2 text-sm text-[#f3e9c8] hover:underline drop-shadow"
+            className="inline-flex items-center gap-1.5 text-xs text-[#5b5142] hover:underline"
           >
-            <Download className="w-4 h-4" />
+            <Download className="w-3.5 h-3.5" />
             Install on a phone or computer
           </Link>
         </div>
         {busy && (
-          <p className="text-[#8a7f6f] text-sm mt-4">
+          <p className="text-[#8a7f6f] text-xs mt-3">
             Searching every text and published record stored in this app. First search may take a moment while the books load.
           </p>
         )}
       </section>
 
-      <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
+      <section className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 mb-8">
         {ACTIONS.map(({ to, label, desc, icon: Icon }) => (
           <Link
             key={to}
             to={to === "/library" && continueLabel ? continueHref : to}
-            className="group text-left p-5 rounded-2xl border border-[#e8ddc7] bg-white/80 backdrop-blur-md hover:border-[#b08d3c]/60 hover:shadow-md transition-all"
+            className="group text-left p-3 rounded-xl border border-[#e8ddc7] bg-white/90 hover:border-[#b08d3c]/60 hover:shadow-sm transition-all"
           >
-            <div className="flex items-center gap-3 mb-2">
-              <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#f3e9c8]/50 text-[#b08d3c]">
-                <Icon className="w-5 h-5" />
+            <div className="flex items-center gap-2 mb-1">
+              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[#f3e9c8]/70 text-[#b08d3c]">
+                <Icon className="w-3.5 h-3.5" />
               </span>
-              <h3 className="font-display text-xl text-[#2b2620] flex items-center gap-1">
+              <h3 className="font-display text-base text-[#2b2620] flex items-center gap-1 leading-tight">
                 {label}
-                <ArrowRight className="w-4 h-4 text-[#b08d3c] opacity-0 group-hover:opacity-100 transition-opacity" />
+                <ArrowRight className="w-3 h-3 text-[#b08d3c] opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
             </div>
-            <p className="text-sm text-[#6b6155] leading-relaxed">{desc}</p>
+            <p className="text-[11px] text-[#6b6155] leading-snug">{desc}</p>
           </Link>
         ))}
       </section>
@@ -172,6 +171,7 @@ export default function Home() {
           </div>
         </section>
       )}
+      </div>
     </div>
   );
 }

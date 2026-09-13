@@ -6,12 +6,18 @@ import ReportIssue from "@/components/ReportIssue";
 import { pageReadingText } from "@/lib/audibleReader";
 import { printCurrentPage } from "@/lib/notebookExport";
 
-export default function PageTools({ dark = false, pageTitle }) {
+export default function PageTools({ dark = false, pageTitle, compact = false }) {
   const tone = dark
     ? "inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-[#f3e9c8]/85 hover:underline"
     : "inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wide text-[#7a2e2e] hover:underline";
   return (
-    <div className="page-tools flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+    <div
+      className={
+        compact
+          ? "page-tools page-tools--compact flex flex-nowrap items-center gap-0.5"
+          : "page-tools flex flex-wrap items-center justify-center gap-x-4 gap-y-1"
+      }
+    >
       <ListenControl
         id={`page:${pageTitle || "current"}`}
         title={pageTitle || "This page"}
