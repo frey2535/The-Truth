@@ -298,10 +298,15 @@ function speakNext(myToken) {
     index += 1;
     speakNext(myToken);
   };
-  utterance.onerror = () => {
+  utterance.onerror = (event) => {
     if (myToken !== token) return;
-    index += 1;
-    speakNext(myToken);
+    if (event?.error === "canceled" || event?.error === "interrupted") return;
+    if (event?.error === "not-allowed") return;
+    window.setTimeout(() => {
+      if (myToken !== token) return;
+      index += 1;
+      speakNext(myToken);
+    }, 80);
   };
   speech.speak(utterance);
 }

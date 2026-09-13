@@ -39,9 +39,13 @@ export default function Home() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [plans, setPlans] = useState([]);
-  const lastReading = loadReadingPosition();
+  const [lastReading, setLastReading] = useState(loadReadingPosition);
   const continueHref = lastReading ? readingHref(lastReading) : "/library";
   const continueLabel = lastReading ? readingLabel(lastReading) : "";
+
+  useEffect(() => {
+    setLastReading(loadReadingPosition());
+  }, []);
 
   async function loadPlans() {
     try {

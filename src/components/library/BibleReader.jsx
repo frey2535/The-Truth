@@ -164,7 +164,7 @@ export default function BibleReader({
           </select>
           <button
             disabled={chapter >= chapterCount || loading}
-            onClick={() => openChapter(book, Math.min(chapterCount, c + 1))}
+            onClick={() => openChapter(book, Math.min(chapterCount, chapter + 1))}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-[#e8ddc7] text-sm disabled:opacity-40 hover:bg-[#f3e9c8]/40"
           >
             Next <ChevronRight className="w-4 h-4" />
