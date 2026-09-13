@@ -19,6 +19,7 @@ import {
   placeColor,
 } from "@/data/biblicalAtlas";
 import { libraryHref } from "@/lib/libraryLinks";
+import { layoutPlaceLabels, pinLabel } from "@/lib/mapLabelLayout";
 import { earthViewHref, streetViewHref } from "@/lib/placeLinks";
 import { Link } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
@@ -161,7 +162,14 @@ export default function MapExplore() {
     () => BIBLE_ROUTES.filter((r) => layers.routes && r.layers.some((layer) => layers[layer])),
     [layers]
   );
-  const showAllNames = layers.names && zoom >= 8;
+  const labelLayout = useMemo(() => {
+    const pool = layers.names ? shown : selected ? [selected] : [];
+    return layoutPlaceLabels(pool, {
+      zoom,
+      selectedId: selected?.id,
+      showModern: layers.names && zoom >= 11,
+    });
+  }, [layers.names, shown, zoom, selected]);
 
   return (
     <div>
@@ -323,6 +331,8 @@ export default function MapExplore() {
             {shown.map((place) => {
               const color = placeColor(place);
               const isSel = selected?.id === place.id;
+              const pin = labelLayout.get(place.id);
+              const standing = Boolean(pin);
               return (
                 <CircleMarker
                   key={place.id}
@@ -336,14 +346,18 @@ export default function MapExplore() {
                     weight: isSel ? 3 : 2,
                   }}
                 >
-                  {(showAllNames || isSel) && (
-                    <Tooltip permanent direction="top" offset={[0, -8]} className="place-tip">
-                      <span className="font-display">{place.ancient}</span>
-                      {layers.names && place.modern !== place.ancient && (
-                        <span className="block text-[10px] text-[#5b5142]">{place.modern}</span>
-                      )}
-                    </Tooltip>
-                  )}
+                  <Tooltip
+                    key={`${place.id}-${standing ? pin.direction : "hover"}-${Math.round(zoom * 10)}`}
+                    permanent={standing}
+                    direction={pin?.direction || "top"}
+                    offset={pin?.offset || [0, -8]}
+                    className={`place-tip${isSel ? " place-tip-selected" : ""}`}
+                  >
+                    <span className="font-display">{pin?.text || pinLabel(place)}</span>
+                    {(!standing || pin?.twoLine) && place.modern !== place.ancient ? (
+                      <span className="block text-[10px] text-[#5b5142]">{place.modern}</span>
+                    ) : null}
+                  </Tooltip>
                   <Popup>
                     <p className="font-display text-lg text-[#2b2620] m-0">{place.ancient}</p>
                     <p className="text-sm text-[#5b5142]">Today: {place.modern}</p>
@@ -419,7 +433,8 @@ export default function MapExplore() {
       ) : null}
 
       <p className="text-xs text-[#8a7f6f] mt-3">
-        Streets and satellite tiles need a network connection. Place-names are stored in this app.
+        Names that would cover each other stay hidden until you zoom in or hover the pin. Streets and
+        satellite tiles need a network connection. Place-names are stored in this app.
         Disputed identifications are marked in the note. Color marks the era:{" "}
         <span style={{ color: ERA_COLOR.patriarchs }}>patriarchs</span>,{" "}
         <span style={{ color: ERA_COLOR.exodus }}>exodus</span>,{" "}
