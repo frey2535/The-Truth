@@ -216,8 +216,8 @@
 }
 
 .home-heaven-clear {
-  height: min(40vh, calc(100dvh - 20rem));
-  min-height: 7rem;
+  height: min(42vh, calc(100dvh - 20rem));
+  min-height: 7.5rem;
 }
 
 .home-below-heaven {
@@ -234,7 +234,7 @@
 
 @media (min-width: 640px) {
   .home-heaven-clear {
-    height: min(46vh, calc(100dvh - 18rem));
+    height: min(50vh, calc(100dvh - 17rem));
   }
 
   .home-below-heaven {
@@ -245,7 +245,7 @@
 
 @media (min-width: 1024px) {
   .home-heaven-clear {
-    height: min(48vh, calc(100dvh - 16rem));
+    height: min(52vh, calc(100dvh - 15rem));
   }
 }
 
