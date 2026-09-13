@@ -77,6 +77,7 @@ export default function Home() {
   return (
     <div>
       <div className="home-heaven-clear" aria-hidden="true" />
+      <div className="home-below-heaven">
       <section className="text-center pb-6">
         <form onSubmit={handleResearch} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-2">
           <Input
@@ -170,6 +171,7 @@ export default function Home() {
           </div>
         </section>
       )}
+      </div>
     </div>
   );
 }

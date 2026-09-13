@@ -222,8 +222,31 @@
 }
 
 .home-heaven-clear {
-  height: min(46vh, calc(100dvh - 17rem));
-  min-height: 8.5rem;
+  height: min(62vh, calc(100dvh - 14rem));
+  min-height: 10rem;
+}
+
+.home-below-heaven {
+  position: relative;
+  margin-inline: -1rem;
+  padding: 0.25rem 1rem 0;
+  background: linear-gradient(
+    180deg,
+    rgba(250, 246, 239, 0) 0%,
+    rgba(250, 246, 239, 0.88) 1.5rem,
+    #faf6ef 2.75rem
+  );
+}
+
+@media (min-width: 640px) {
+  .home-heaven-clear {
+    height: min(66vh, calc(100dvh - 15rem));
+  }
+
+  .home-below-heaven {
+    margin-inline: -1.25rem;
+    padding-inline: 1.25rem;
+  }
 }
 
 @container truth-header (max-width: 1080px) {
