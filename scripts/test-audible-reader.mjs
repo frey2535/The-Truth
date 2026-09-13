@@ -27,6 +27,7 @@ import {
   verseDomId,
 } from "../src/lib/readingSession.js";
 import { libraryHref } from "../src/lib/libraryLinks.js";
+import { romanNumeral } from "../src/lib/romanNumeral.js";
 
 assert.equal(spokenText("  And ye shall <b>know</b> the truth.  "), "And ye shall know the truth.");
 assert.equal(spokenText("**Yes.** [John 8:32]"), "Yes. John 8:32");
@@ -134,5 +135,8 @@ const lastRead = saveReadingPosition({ corpus: "bible", book: "John", chapter: 8
 assert.equal(readingLabel(lastRead), "John 8:32");
 assert.equal(readingHref(lastRead), "/library?corpus=bible&book=John&chapter=8&verse=32");
 assert.match(libraryHref({ book: "John", chapter: 8, source: "canon", reference: "John 8:32" }), /verse=32/);
+assert.equal(romanNumeral(8), "VIII");
+assert.equal(romanNumeral(9), "IX");
+assert.equal(romanNumeral(119), "CXIX");
 
 console.log("audible reader ok");

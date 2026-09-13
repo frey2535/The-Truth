@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Highlighter, Star, StickyNote, Link2, Languages, ChevronDown, Volume2 } from "lucide-react";
+import { Highlighter, Star, StickyNote, Link2, Languages, Volume2 } from "lucide-react";
 import { speakText } from "@/lib/audibleReader";
 import VerseEvidenceBadge from "./VerseEvidenceBadge";
 import { chapterCrossRefs, significantWords } from "@/lib/crossRefs";
@@ -55,6 +55,7 @@ export default function VerseStudyRow({
   favorites,
   onChanged,
   listening = false,
+  dropCap = false,
 }) {
   const ref = `${book} ${chapter}:${verse.verse}`;
   const [note, setNote] = useState("");
@@ -142,28 +143,29 @@ export default function VerseStudyRow({
   return (
     <div
       id={verseDomId(book, chapter, verse.verse)}
-      className={`mb-6 last:mb-0 ${
-        listening
-          ? "-mx-3 px-3 py-2 rounded-lg bg-[#f3e9c8] border border-[#7a2e2e]/40 ring-1 ring-[#7a2e2e]/30"
-          : highlighted
-            ? "-mx-3 px-3 py-2 rounded-lg bg-[#f3e9c8]/90 border border-[#b08d3c]/30"
-            : ""
-      }`}
+      className={`manuscript-verse${listening ? " is-listening" : ""}${highlighted ? " is-marked" : ""}${dropCap ? " is-drop" : ""}`}
     >
-      <p className="text-[#2b2620] leading-[1.85]" style={{ fontSize: "var(--reading-size, 1.0625rem)" }}>
-        <sup className="text-[#b08d3c] font-semibold mr-1.5 select-none">{verse.verse}</sup>
+      <span className="manuscript-verse-num">{verse.verse}</span>
+      <p className="manuscript-verse-text">
+        {dropCap ? <span className="manuscript-drop">{(text.match(/[A-Za-z]/) || [""])[0]}</span> : null}
         {segments.map((seg, i) => (
-          <WordParts key={`${ref}-seg-${i}`} text={seg.text} jesus={seg.jesus} refLabel={ref} />
+          <WordParts
+            key={`${ref}-seg-${i}`}
+            text={i === 0 && dropCap ? String(seg.text || "").replace(/[A-Za-z]/, "") : seg.text}
+            jesus={seg.jesus}
+            refLabel={ref}
+          />
         ))}
         {evidenceItems?.length > 0 && <VerseEvidenceBadge verse={ref} items={evidenceItems} />}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              className="ml-2 align-middle text-xs font-medium text-[#7a2e2e] hover:underline underline-offset-2"
+              className="manuscript-verse-options"
+              title={`Options for ${ref}`}
             >
-              Options
-              <ChevronDown className="inline w-3 h-3 ml-0.5 align-[-1px]" />
+              ¶
+              <span className="sr-only">Options</span>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-52">
