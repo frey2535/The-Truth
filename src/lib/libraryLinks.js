@@ -21,7 +21,8 @@ export function parseReference(reference) {
 }
 
 export function libraryHref({ book, chapter, source, reference } = {}) {
-  const parsed = book ? { book, chapter } : parseReference(reference);
+  const fromRef = parseReference(reference);
+  const parsed = book ? { book, chapter, verse: fromRef?.verse || "" } : fromRef;
   const corpus = CORPUS_FROM_SOURCE[source] || "bible";
   if (!parsed?.book) {
     return corpus === "bible" ? "/library" : `/library?corpus=${corpus}`;
@@ -32,6 +33,7 @@ export function libraryHref({ book, chapter, source, reference } = {}) {
       book: parsed.book,
       chapter: String(parsed.chapter || 1),
     });
+    if (parsed.verse) q.set("verse", String(parsed.verse));
     return `/library?${q.toString()}`;
   }
   return `/library?corpus=${corpus}`;

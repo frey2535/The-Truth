@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { scrollReadingToTop } from "@/lib/scrollReading";
 import {
   CANON_BOOK_ENTRIES,
@@ -11,6 +11,7 @@ import ApocryphaLibrary from "@/components/library/ApocryphaLibrary";
 import CatalogBrowser from "@/components/library/CatalogBrowser";
 import WorkRecord from "@/components/library/WorkRecord";
 import { getCatalogWork, libraryReadHref } from "@/data/textCatalog";
+import { loadReadingPosition, readingHref, readingLabel, saveReadingPosition } from "@/lib/readingSession";
 
 const CORPORA = [
   {
@@ -94,6 +95,17 @@ export default function Library() {
   useEffect(() => {
     setActive(requested);
     scrollReadingToTop();
+    const book = params.get("book");
+    const chapter = params.get("chapter");
+    if (requested?.key === "bible" && book) {
+      saveReadingPosition({
+        corpus: "bible",
+        book,
+        chapter,
+        verse: params.get("verse") || "",
+        title: `${book}${chapter ? ` ${chapter}` : ""}`,
+      });
+    }
   }, [requested, work, params]);
 
   if (active?.kind === "bible") {
@@ -105,6 +117,8 @@ export default function Library() {
         subtitle={active.desc}
         initialBook={params.get("book") || undefined}
         initialChapter={params.get("chapter") || undefined}
+        initialVerse={params.get("verse") || undefined}
+        corpus="bible"
         onBack={() => {
           setActive(null);
           navigate("/library");
@@ -116,6 +130,7 @@ export default function Library() {
     return (
       <ManuscriptReader
         group={active.group}
+        corpus={active.key}
         onBack={() => {
           setActive(null);
           navigate("/library");
@@ -143,8 +158,24 @@ export default function Library() {
     );
   }
 
+  const last = loadReadingPosition();
+  const continueHref = last ? readingHref(last) : "";
+  const continueLabel = last ? readingLabel(last) : "";
+
   return (
     <div>
+      {continueHref && continueHref !== "/library" && continueLabel ? (
+        <Link
+          to={continueHref}
+          className="mb-6 flex items-center justify-between gap-3 rounded-2xl border border-[#e8ddc7] bg-white/80 px-4 py-3 text-[#2b2620] hover:border-[#b08d3c]/60"
+        >
+          <span>
+            <span className="block text-xs uppercase tracking-wide text-[#8a7f6f]">Continue reading</span>
+            <span className="font-display text-xl">{continueLabel}</span>
+          </span>
+          <span className="text-sm text-[#7a2e2e]">Open →</span>
+        </Link>
+      ) : null}
       <CatalogBrowser
         onOpenWork={(id) => {
           const record = getCatalogWork(id);

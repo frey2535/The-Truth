@@ -88,7 +88,7 @@ export default function WorkRecord({ work, onBack }) {
                 Showing the first stored portion of this volume so the page stays usable. The rest of the file is on disk and was not invented.
               </p>
             ) : null}
-            <ReadingVerseList book={work.title} chapter={1} verses={verses} />
+            <ReadingVerseList book={work.title} chapter={1} verses={verses} corpus="other" />
           </>
         ) : null}
         {!loading && !text ? (

@@ -17,6 +17,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import PlanCard from "@/components/study/PlanCard";
+import { loadReadingPosition, readingHref, readingLabel } from "@/lib/readingSession";
 
 const ACTIONS = [
   { to: "/library", label: "Read", desc: "Open the wording stored in this published app — the same library for every reader", icon: BookOpenText },
@@ -38,6 +39,13 @@ export default function Home() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [plans, setPlans] = useState([]);
+  const [lastReading, setLastReading] = useState(loadReadingPosition);
+  const continueHref = lastReading ? readingHref(lastReading) : "/library";
+  const continueLabel = lastReading ? readingLabel(lastReading) : "";
+
+  useEffect(() => {
+    setLastReading(loadReadingPosition());
+  }, []);
 
   async function loadPlans() {
     try {
@@ -93,7 +101,24 @@ export default function Home() {
           </Button>
         </form>
         {error && <p className="text-[#7a2e2e] text-sm mt-4">{error}</p>}
-        <div className="mt-5">
+        <div className="mt-5 flex flex-col items-center gap-3">
+          {continueLabel ? (
+            <Link
+              to={continueHref}
+              className="inline-flex items-center gap-2 rounded-full bg-[#f3e9c8] text-[#2b2620] px-5 py-2.5 text-sm font-medium shadow-lg hover:bg-white"
+            >
+              <BookOpenText className="w-4 h-4" />
+              Continue reading {continueLabel}
+            </Link>
+          ) : (
+            <Link
+              to="/library?corpus=bible&book=John&chapter=8"
+              className="inline-flex items-center gap-2 rounded-full bg-[#f3e9c8] text-[#2b2620] px-5 py-2.5 text-sm font-medium shadow-lg hover:bg-white"
+            >
+              <BookOpenText className="w-4 h-4" />
+              Open John 8
+            </Link>
+          )}
           <Link
             to="/install"
             className="inline-flex items-center gap-2 text-sm text-[#f3e9c8] hover:underline drop-shadow"
@@ -113,7 +138,7 @@ export default function Home() {
         {ACTIONS.map(({ to, label, desc, icon: Icon }) => (
           <Link
             key={to}
-            to={to}
+            to={to === "/library" && continueLabel ? continueHref : to}
             className="group text-left p-5 rounded-2xl border border-[#e8ddc7] bg-white/80 backdrop-blur-md hover:border-[#b08d3c]/60 hover:shadow-md transition-all"
           >
             <div className="flex items-center gap-3 mb-2">

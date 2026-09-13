@@ -190,15 +190,16 @@ function playBlob(blob, signal) {
   });
 }
 
-export async function speakHumanText(chunks, { voice, speed, signal, onProgress }) {
+export async function speakHumanText(chunks, { voice, speed, signal, onProgress, onChunkStart }) {
   const tts = await loadHumanTts(onProgress);
   if (signal?.aborted) return;
   onProgress?.("");
   const id = humanVoiceId(voice);
   const rate = Number(speed) || 1;
-  for (const chunk of chunks) {
+  for (let i = 0; i < chunks.length; i += 1) {
     if (signal?.aborted) return;
-    const raw = await tts.generate(chunk, { voice: id, speed: rate });
+    onChunkStart?.(i);
+    const raw = await tts.generate(chunks[i], { voice: id, speed: rate });
     if (signal?.aborted) return;
     await playBlob(raw.toBlob(), signal);
   }

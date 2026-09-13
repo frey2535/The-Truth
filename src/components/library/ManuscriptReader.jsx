@@ -121,7 +121,7 @@ function ChapterNav({ chapter, chapterCount, onChange, loading }) {
   );
 }
 
-function ScriptureReader({ item, group, groupTitle, onBack }) {
+function ScriptureReader({ item, group, groupTitle, onBack, corpus }) {
   const bookList = item.kjvSet || [item.kjv || item.kjv1611];
   const apocrypha = Boolean(item.kjv1611);
   const [book, setBook] = useState(bookList[0]);
@@ -205,13 +205,13 @@ function ScriptureReader({ item, group, groupTitle, onBack }) {
         </div>
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
-      {!loading && !error && <ReadingVerseList book={book} chapter={chapter} verses={verses} />}
+      {!loading && !error && <ReadingVerseList book={book} chapter={chapter} verses={verses} corpus={corpus} />}
       <LeonLevyFooter group={group} item={item} />
     </div>
   );
 }
 
-function WebReader({ item, group, groupTitle, onBack }) {
+function WebReader({ item, group, groupTitle, onBack, corpus }) {
   const [chapter, setChapter] = useState(1);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -264,6 +264,7 @@ function WebReader({ item, group, groupTitle, onBack }) {
           book={item.title}
           chapter={chapter}
           verses={textToNumberedVerses(data.text)}
+          corpus={corpus}
         />
       )}
       <LeonLevyFooter group={group} item={item} />
@@ -271,7 +272,7 @@ function WebReader({ item, group, groupTitle, onBack }) {
   );
 }
 
-function MarkdownReader({ item, group, groupTitle, onBack }) {
+function MarkdownReader({ item, group, groupTitle, onBack, corpus }) {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -327,14 +328,14 @@ function MarkdownReader({ item, group, groupTitle, onBack }) {
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
       {!loading && !error && text && (
-        <ReadingVerseList book={item.title} chapter={1} verses={textToNumberedVerses(text)} />
+        <ReadingVerseList book={item.title} chapter={1} verses={textToNumberedVerses(text)} corpus={corpus} />
       )}
       <LeonLevyFooter group={group} item={item} />
     </div>
   );
 }
 
-export default function ManuscriptReader({ group, onBack }) {
+export default function ManuscriptReader({ group, onBack, corpus = "other" }) {
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
@@ -385,10 +386,10 @@ export default function ManuscriptReader({ group, onBack }) {
 
   const back = () => setSelected(null);
   if (selected.kjv || selected.kjv1611 || selected.kjvSet) {
-    return <ScriptureReader item={selected} group={group} groupTitle={group.title} onBack={back} />;
+    return <ScriptureReader item={selected} group={group} groupTitle={group.title} onBack={back} corpus={corpus} />;
   }
   if (selected.webBookId) {
-    return <WebReader item={selected} group={group} groupTitle={group.title} onBack={back} />;
+    return <WebReader item={selected} group={group} groupTitle={group.title} onBack={back} corpus={corpus} />;
   }
-  return <MarkdownReader item={selected} group={group} groupTitle={group.title} onBack={back} />;
+  return <MarkdownReader item={selected} group={group} groupTitle={group.title} onBack={back} corpus={corpus} />;
 }
