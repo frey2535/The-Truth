@@ -222,6 +222,9 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(rootDir, "./src"),
       },
     },
+    optimizeDeps: {
+      exclude: ["kokoro-js", "@huggingface/transformers"],
+    },
     server: {
       host: true,
       port: 5174,

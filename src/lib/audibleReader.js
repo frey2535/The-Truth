@@ -1,6 +1,17 @@
-/** On-device read-aloud. Uses the browser’s speech voices. Text is not sent to the internet. */
+/** Read-aloud. Spoken-English voices run on this device. Scripture is not uploaded. */
 
-const MAX_CHUNK = 280;
+import {
+  HUMAN_VOICES,
+  isHumanVoice,
+  pauseHumanAudio,
+  resumeHumanAudio,
+  speakHumanText,
+  stopHumanAudio,
+} from "./humanTts.js";
+import { bestDeviceVoice, isRoboticVoiceName, rankDeviceVoices } from "./voiceQuality.js";
+
+const DEVICE_CHUNK = 900;
+const HUMAN_CHUNK = 380;
 
 export function spokenText(raw) {
   return String(raw || "")
@@ -11,7 +22,7 @@ export function spokenText(raw) {
     .trim();
 }
 
-export function chunkSpokenText(text, max = MAX_CHUNK) {
+export function chunkSpokenText(text, max = DEVICE_CHUNK) {
   const clean = spokenText(text);
   if (!clean) return [];
   const parts = clean.split(/(?<=[.!?;:])\s+/);
@@ -69,7 +80,7 @@ export function pageReadingText(root) {
   return spokenText(clone.innerText || clone.textContent || "");
 }
 
-export const LISTEN_PREFS_KEY = "searchingfortruth_listen_v1";
+export const LISTEN_PREFS_KEY = "searchingfortruth_listen_v2";
 
 export const RATE_PRESETS = [
   { value: 0.7, label: "Slow" },
@@ -95,23 +106,37 @@ export function ratePresetLabel(rate) {
 }
 
 export function listVoiceChoices(voices = []) {
-  return [...voices]
-    .map((voice) => ({
-      uri: String(voice.voiceURI || voice.name || ""),
-      name: String(voice.name || "Voice"),
-      lang: String(voice.lang || ""),
-    }))
-    .filter((voice) => voice.uri)
-    .sort((a, b) => {
-      const ae = /^en/i.test(a.lang) ? 0 : 1;
-      const be = /^en/i.test(b.lang) ? 0 : 1;
-      if (ae !== be) return ae - be;
-      return a.name.localeCompare(b.name);
-    });
+  return rankDeviceVoices(
+    [...voices]
+      .map((voice) => ({
+        uri: String(voice.voiceURI || voice.name || ""),
+        name: String(voice.name || "Voice"),
+        lang: String(voice.lang || ""),
+        localService: voice.localService,
+      }))
+      .filter((voice) => voice.uri)
+  ).map((voice) => ({
+    uri: voice.uri,
+    name: isRoboticVoiceName(voice.name, voice.uri) ? `${voice.name} (mechanical)` : voice.name,
+    lang: voice.lang,
+    group: isRoboticVoiceName(voice.name, voice.uri) ? "Mechanical system voices" : "This device",
+  }));
+}
+
+export function listenVoiceOptions(voices = []) {
+  return [
+    ...HUMAN_VOICES.map((voice) => ({
+      uri: voice.uri,
+      name: voice.name,
+      lang: "en",
+      group: "Spoken English — sounds like a person",
+    })),
+    ...listVoiceChoices(voices),
+  ];
 }
 
 export function defaultListenPrefs() {
-  return { voiceURI: "", rate: 1 };
+  return { voiceURI: HUMAN_VOICES[0].uri, rate: 1 };
 }
 
 export function loadListenPrefs(storage) {
@@ -142,16 +167,18 @@ export function saveListenPrefs(prefs, storage) {
   return next;
 }
 
-const idleState = () => ({ status: "idle", id: "", title: "" });
+const idleState = () => ({ status: "idle", id: "", title: "", preparing: "" });
 
 let prefs = defaultListenPrefs();
-let cachedVoices = [];
+let cachedVoices = listenVoiceOptions();
 let pendingRestart = false;
 let state = idleState();
 const listeners = new Set();
 let queue = [];
 let index = 0;
 let token = 0;
+let speakAbort = null;
+let keepAliveTimer = null;
 
 function snapshot() {
   return {
@@ -186,24 +213,36 @@ function synth() {
 }
 
 function refreshVoices(speech) {
-  cachedVoices = listVoiceChoices(speech?.getVoices?.() || []);
+  cachedVoices = listenVoiceOptions(speech?.getVoices?.() || []);
   return cachedVoices;
 }
 
 function pickVoice(speech) {
   const voices = speech.getVoices?.() || [];
-  if (prefs.voiceURI) {
+  if (prefs.voiceURI && !isHumanVoice(prefs.voiceURI)) {
     const chosen = voices.find((voice) => (voice.voiceURI || voice.name) === prefs.voiceURI);
     if (chosen) return chosen;
   }
-  return (
-    voices.find((voice) => /^en-GB/i.test(voice.lang) && /United Kingdom|English \(UK\)/i.test(voice.name)) ||
-    voices.find((voice) => /^en/i.test(voice.lang) && /natural|premium|enhanced|neural/i.test(voice.name)) ||
-    voices.find((voice) => voice.lang === "en-US") ||
-    voices.find((voice) => /^en/i.test(voice.lang)) ||
-    voices[0] ||
-    null
-  );
+  return bestDeviceVoice(voices);
+}
+
+function clearKeepAlive() {
+  if (keepAliveTimer) {
+    window.clearInterval(keepAliveTimer);
+    keepAliveTimer = null;
+  }
+}
+
+function startKeepAlive() {
+  clearKeepAlive();
+  if (typeof window === "undefined") return;
+  keepAliveTimer = window.setInterval(() => {
+    const speech = synth();
+    if (speech?.speaking && state.status === "speaking") {
+      speech.pause();
+      speech.resume();
+    }
+  }, 12000);
 }
 
 function loadPrefsFromWindow() {
@@ -225,6 +264,7 @@ function speakNext(myToken) {
   const speech = synth();
   if (!speech || myToken !== token) return;
   if (index >= queue.length) {
+    clearKeepAlive();
     state = idleState();
     emit();
     return;
@@ -234,6 +274,8 @@ function speakNext(myToken) {
   if (voice) utterance.voice = voice;
   utterance.lang = voice?.lang || "en-US";
   utterance.rate = prefs.rate;
+  utterance.pitch = 1;
+  startKeepAlive();
   utterance.onend = () => {
     if (myToken !== token) return;
     index += 1;
@@ -247,20 +289,73 @@ function speakNext(myToken) {
   speech.speak(utterance);
 }
 
+function beginQueue(text, { id = "", title = "" } = {}) {
+  const human = isHumanVoice(prefs.voiceURI);
+  queue = chunkSpokenText(typeof text === "function" ? text() : text, human ? HUMAN_CHUNK : DEVICE_CHUNK);
+  index = 0;
+  return {
+    human,
+    id: String(id || title || "listen"),
+    title: String(title || "The Truth"),
+  };
+}
+
+async function speakHumanQueue(myToken, id, title) {
+  speakAbort?.abort();
+  speakAbort = new AbortController();
+  const signal = speakAbort.signal;
+  state = { status: "speaking", id, title, preparing: "Preparing a human voice…" };
+  emit();
+  try {
+    const remaining = queue.slice(index);
+    await speakHumanText(remaining, {
+      voice: prefs.voiceURI,
+      speed: prefs.rate,
+      signal,
+      onProgress: (message) => {
+        if (myToken !== token) return;
+        state = { ...state, preparing: message || "" };
+        emit();
+      },
+    });
+    if (myToken !== token || signal.aborted) return;
+    state = idleState();
+    emit();
+  } catch (error) {
+    if (myToken !== token || signal.aborted) return;
+    state = { ...state, preparing: "That human voice could not load. Using this device instead." };
+    emit();
+    const speech = synth();
+    if (!speech) {
+      state = idleState();
+      emit();
+      return;
+    }
+    speakNext(myToken);
+  }
+}
+
 export function speakText(text, { id = "", title = "" } = {}) {
-  const speech = synth();
-  if (!speech) return false;
   token += 1;
   const myToken = token;
-  speech.cancel();
-  queue = chunkSpokenText(typeof text === "function" ? text() : text);
-  index = 0;
+  speakAbort?.abort();
+  speakAbort = null;
+  stopHumanAudio();
+  clearKeepAlive();
+  const speech = synth();
+  if (speech) speech.cancel();
+  const started = beginQueue(text, { id, title });
   if (!queue.length) {
     state = idleState();
     emit();
     return false;
   }
-  state = { status: "speaking", id: String(id || title || "listen"), title: String(title || "The Truth") };
+  if (started.human) {
+    void speakHumanQueue(myToken, started.id, started.title);
+    return true;
+  }
+  if (!speech) return false;
+  state = { status: "speaking", id: started.id, title: started.title, preparing: "" };
   emit();
   const start = () => {
     if (myToken !== token) return;
@@ -269,21 +364,34 @@ export function speakText(text, { id = "", title = "" } = {}) {
   if (!speech.getVoices().length) {
     speech.addEventListener("voiceschanged", start, { once: true });
   }
-  start();
+  window.setTimeout(start, 60);
   return true;
 }
 
 export function pauseAudible() {
-  const speech = synth();
-  if (!speech || state.status !== "speaking") return;
-  speech.pause();
+  if (state.status !== "speaking") return;
+  if (isHumanVoice(prefs.voiceURI)) pauseHumanAudio();
+  else synth()?.pause();
   state = { ...state, status: "paused" };
   emit();
 }
 
 export function resumeAudible() {
+  if (state.status !== "paused") return;
+  if (isHumanVoice(prefs.voiceURI)) {
+    if (pendingRestart) {
+      pendingRestart = false;
+      token += 1;
+      void speakHumanQueue(token, state.id, state.title);
+      return;
+    }
+    void resumeHumanAudio();
+    state = { ...state, status: "speaking" };
+    emit();
+    return;
+  }
   const speech = synth();
-  if (!speech || state.status !== "paused") return;
+  if (!speech) return;
   if (pendingRestart || !speech.speaking) {
     pendingRestart = false;
     token += 1;
@@ -300,6 +408,10 @@ export function resumeAudible() {
 export function stopAudible() {
   token += 1;
   pendingRestart = false;
+  speakAbort?.abort();
+  speakAbort = null;
+  stopHumanAudio();
+  clearKeepAlive();
   const speech = synth();
   if (speech) speech.cancel();
   queue = [];
@@ -315,14 +427,22 @@ function persistPrefs(next) {
 
 function applyLiveSettings() {
   if (state.status === "idle") return;
-  const speech = synth();
   const wasPaused = state.status === "paused";
+  const id = state.id;
+  const title = state.title;
   token += 1;
-  if (speech) speech.cancel();
+  speakAbort?.abort();
+  stopHumanAudio();
+  clearKeepAlive();
+  synth()?.cancel();
   if (wasPaused) {
     pendingRestart = true;
-    state = { ...state, status: "paused" };
+    state = { ...state, status: "paused", preparing: "" };
     emit();
+    return;
+  }
+  if (isHumanVoice(prefs.voiceURI)) {
+    void speakHumanQueue(token, id, title);
     return;
   }
   speakNext(token);
