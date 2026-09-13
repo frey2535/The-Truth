@@ -134,6 +134,7 @@ export default function MapExplore() {
   const [viewBounds, setViewBounds] = useState(MAP_VIEWS[0].bounds);
   const [focus, setFocus] = useState(null);
   const [zoom, setZoom] = useState(8);
+  const [hoveredId, setHoveredId] = useState("");
 
   function pick(place) {
     setSelectedId(place.id);
@@ -164,12 +165,22 @@ export default function MapExplore() {
   );
   const labelLayout = useMemo(() => {
     const pool = layers.names ? shown : selected ? [selected] : [];
-    return layoutPlaceLabels(pool, {
+    const layout = layoutPlaceLabels(pool, {
       zoom,
       selectedId: selected?.id,
       showModern: layers.names && zoom >= 11,
     });
-  }, [layers.names, shown, zoom, selected]);
+    const hovered = hoveredId ? shown.find((p) => p.id === hoveredId) : null;
+    if (!hovered || layout.has(hovered.id)) return layout;
+    const next = new Map(layout);
+    next.set(hovered.id, {
+      direction: "top",
+      offset: [0, -8],
+      text: pinLabel(hovered),
+      twoLine: hovered.modern !== hovered.ancient,
+    });
+    return next;
+  }, [layers.names, shown, zoom, selected, hoveredId]);
 
   return (
     <div>
@@ -337,8 +348,12 @@ export default function MapExplore() {
                 <CircleMarker
                   key={place.id}
                   center={[place.lat, place.lng]}
-                  radius={isSel ? 10 : 6}
-                  eventHandlers={{ click: () => pick(place) }}
+                  radius={isSel ? 11 : 8}
+                  eventHandlers={{
+                    click: () => pick(place),
+                    mouseover: () => setHoveredId(place.id),
+                    mouseout: () => setHoveredId((id) => (id === place.id ? "" : id)),
+                  }}
                   pathOptions={{
                     color: isSel ? "#2b2620" : color,
                     fillColor: color,
