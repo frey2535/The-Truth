@@ -216,30 +216,36 @@
 }
 
 .home-heaven-clear {
-  height: min(62vh, calc(100dvh - 14rem));
-  min-height: 10rem;
+  height: min(40vh, calc(100dvh - 20rem));
+  min-height: 7rem;
 }
 
 .home-below-heaven {
   position: relative;
   margin-inline: -1rem;
-  padding: 0.25rem 1rem 0;
+  padding: 0.15rem 1rem 0;
   background: linear-gradient(
     180deg,
     rgba(250, 246, 239, 0) 0%,
-    rgba(250, 246, 239, 0.88) 1.5rem,
-    #faf6ef 2.75rem
+    rgba(250, 246, 239, 0.62) 0.85rem,
+    #faf6ef 1.85rem
   );
 }
 
 @media (min-width: 640px) {
   .home-heaven-clear {
-    height: min(66vh, calc(100dvh - 15rem));
+    height: min(46vh, calc(100dvh - 18rem));
   }
 
   .home-below-heaven {
     margin-inline: -1.25rem;
     padding-inline: 1.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-heaven-clear {
+    height: min(48vh, calc(100dvh - 16rem));
   }
 }
 
