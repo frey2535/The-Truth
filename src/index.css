@@ -108,12 +108,161 @@
   isolation: isolate;
   background: #0c0806;
   min-height: 100dvh;
-  --truth-header-end: calc(env(safe-area-inset-top, 0px) + 3.5rem);
+  --truth-header-bar: clamp(2.75rem, 7vw, 3.5rem);
+  --truth-header-end: calc(env(safe-area-inset-top, 0px) + var(--truth-header-bar));
 }
 
-@media (min-width: 640px) {
-  .truth-app {
-    --truth-header-end: calc(env(safe-area-inset-top, 0px) + 4rem);
+.truth-header {
+  overflow: hidden;
+}
+
+.truth-header-bar {
+  container-type: inline-size;
+  container-name: truth-header;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  height: var(--truth-header-bar);
+  max-width: 100%;
+  margin-inline: auto;
+  padding-inline: clamp(0.4rem, 1.2vw, 1.25rem);
+  gap: clamp(0.2rem, 0.8vw, 0.85rem);
+  overflow: hidden;
+}
+
+.truth-header-brand {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.35rem, 0.7vw, 0.65rem);
+  min-width: 0;
+  flex: 0 1 auto;
+}
+
+.truth-header-brand img {
+  width: clamp(1.6rem, 3.4vw, 2.25rem);
+  height: clamp(1.6rem, 3.4vw, 2.25rem);
+}
+
+.truth-header-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1;
+}
+
+.truth-header-title {
+  font-size: clamp(1.05rem, 2.1vw, 1.5rem);
+  white-space: nowrap;
+}
+
+.truth-header-tag {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: clamp(0.48rem, 0.72vw, 0.625rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.truth-header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-wrap: nowrap;
+  gap: clamp(0.05rem, 0.28vw, 0.35rem);
+}
+
+.truth-header-link,
+.truth-header-ask,
+.truth-header-account {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  font-size: clamp(0.62rem, 1.05vw, 0.8125rem);
+  line-height: 1;
+  padding: 0.38rem clamp(0.22rem, 0.5vw, 0.7rem);
+  gap: clamp(0.15rem, 0.35vw, 0.4rem);
+  border-radius: 999px;
+}
+
+.truth-header-link svg,
+.truth-header-ask svg {
+  width: clamp(0.75rem, 1.25vw, 1rem);
+  height: clamp(0.75rem, 1.25vw, 1rem);
+  flex-shrink: 0;
+}
+
+.truth-header-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.truth-header-tools {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.truth-header-tools .page-tools--compact button {
+  font-size: 0 !important;
+  letter-spacing: 0;
+  gap: 0;
+  padding: 0.28rem;
+  line-height: 0;
+}
+
+.truth-header-tools .page-tools--compact svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+.home-heaven-clear {
+  height: min(46vh, calc(100dvh - 17rem));
+  min-height: 8.5rem;
+}
+
+@container truth-header (max-width: 1080px) {
+  .truth-header-tag {
+    display: none;
+  }
+}
+
+@container truth-header (max-width: 860px) {
+  .truth-header-label {
+    display: none;
+  }
+
+  .truth-header-link,
+  .truth-header-ask,
+  .truth-header-account {
+    padding-inline: clamp(0.28rem, 0.8vw, 0.5rem);
+  }
+}
+
+@container truth-header (max-width: 620px) {
+  .truth-header-brand-text {
+    display: none;
+  }
+
+  .truth-header-tools {
+    display: none;
+  }
+}
+
+@container truth-header (max-width: 400px) {
+  .truth-header-link,
+  .truth-header-ask,
+  .truth-header-account {
+    padding-inline: 0.2rem;
+  }
+
+  .truth-header-account {
+    font-size: 0.65rem;
   }
 }
 

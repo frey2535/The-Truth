@@ -32,7 +32,7 @@ const PRIMARY = [
   { to: "/search", label: "Search", icon: Search },
   { to: "/map", label: "Map", icon: MapIcon },
   { to: "/calendar", label: "Calendar", icon: CalendarDays },
-  { to: "/customs", label: CUSTOMS_NAV_LABEL, icon: Moon },
+  { to: "/customs", label: CUSTOMS_NAV_LABEL, shortLabel: "Traditions", icon: Moon },
   { to: "/prophecy", label: "Prophecy", icon: Globe },
   { to: "/evidence", label: "Evidence", icon: Landmark, matchEvidence: true },
   { to: "/notebook", label: "Notebook", icon: BookMarked },
@@ -41,9 +41,9 @@ const PRIMARY = [
 const MOBILE_NAV = [
   { to: "/library", label: "Read", icon: BookOpenText },
   { to: "/search", label: "Search", icon: Search },
-  { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/map", label: "Map", icon: MapIcon },
-  { to: "/prophecy", label: "Prophecy", icon: Globe },
+  { to: "/notebook", label: "Notebook", icon: BookMarked },
+  { to: "/calendar", label: "Calendar", icon: CalendarDays },
   { to: "/evidence", label: "Evidence", icon: Landmark, matchEvidence: true },
   { to: "/assistant", label: "Ask", icon: Sparkles },
 ];
@@ -75,34 +75,39 @@ export default function Layout() {
       {usePapyrus ? <PapyrusBackdrop /> : <HeavenBackdrop />}
       <AppUpdateBanner />
       <header
-        className={`sticky top-0 z-[90] border-b pt-[env(safe-area-inset-top)] ${
+        className={`truth-header sticky top-0 z-[90] border-b pt-[env(safe-area-inset-top)] ${
           usePapyrus
             ? "border-[#c9b27c]/50 bg-[#efe0b8]"
             : "border-[#e8c97a]/25 bg-[#120c08]"
         }`}
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-5 h-14 sm:h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2.5 group min-w-0">
+        <div className="truth-header-bar">
+          <Link to="/" className="truth-header-brand group">
             <img
               src={publicUrl("/icon-192.png?v=6")}
               alt=""
               width="36"
               height="36"
-              className="w-9 h-9 shrink-0 rounded-full object-cover shadow-[0_0_24px_rgba(243,221,150,0.45)]"
+              className="shrink-0 rounded-full object-cover shadow-[0_0_24px_rgba(243,221,150,0.45)]"
             />
-            <span className="flex flex-col leading-none min-w-0">
-              <span className={`font-display text-2xl tracking-wide ${usePapyrus ? "text-[#2b2620]" : "text-[#f3e9c8]"}`}>The Truth</span>
-              <span className={`hidden sm:block text-[10px] tracking-[0.25em] uppercase ${usePapyrus ? "text-[#7a2e2e]" : "text-[#e8c97a]"}`}>Read · Investigate · Learn</span>
+            <span className="truth-header-brand-text">
+              <span className={`truth-header-title font-display tracking-wide ${usePapyrus ? "text-[#2b2620]" : "text-[#f3e9c8]"}`}>
+                The Truth
+              </span>
+              <span className={`truth-header-tag ${usePapyrus ? "text-[#7a2e2e]" : "text-[#e8c97a]"}`}>
+                Read · Investigate · Learn
+              </span>
             </span>
           </Link>
-          <nav className="flex items-center gap-1">
-            {PRIMARY.map(({ to, label, icon: Icon, matchEvidence }) => {
+          <nav className="truth-header-nav" aria-label="Primary">
+            {PRIMARY.map(({ to, label, shortLabel, icon: Icon, matchEvidence }) => {
               const active = navActive(pathname, to, matchEvidence);
               return (
                 <Link
                   key={to}
                   to={to}
-                  className={`group relative hidden md:flex items-center gap-1.5 px-3 py-2 rounded-full text-sm transition-colors ${
+                  title={label}
+                  className={`truth-header-link ${
                     active
                       ? "bg-[#f3e9c8] text-[#2b2620]"
                       : usePapyrus
@@ -110,38 +115,39 @@ export default function Layout() {
                         : "text-[#f3e9c8]/85 hover:bg-white/10"
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="hidden lg:inline">{label}</span>
-                  <span className="lg:hidden pointer-events-none absolute top-full left-1/2 -translate-x-1/2 mt-1.5 whitespace-nowrap rounded-md bg-[#2b2620] px-2 py-1 text-[11px] text-[#f3e9c8] opacity-0 group-hover:opacity-100 transition-opacity z-50">
-                    {label}
-                  </span>
+                  <Icon />
+                  <span className="truth-header-label">{shortLabel || label}</span>
                 </Link>
               );
             })}
             <Link
               to="/assistant"
-              className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              title="Truth Assistant"
+              className={`truth-header-ask font-medium ${
                 pathname.startsWith("/assistant")
                   ? "bg-[#5e2222] text-[#f3e9c8]"
                   : "bg-[#7a2e2e] text-[#f3e9c8] hover:bg-[#5e2222]"
               }`}
             >
-              <Sparkles className="w-4 h-4" />
-              Truth Assistant
+              <Sparkles />
+              <span className="truth-header-label">Ask</span>
             </Link>
             {isOwner ? (
               <>
                 <Link
                   to="/owner/downloads"
-                  className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${
+                  title="Downloads"
+                  className={`truth-header-link ${
                     usePapyrus ? "text-[#3a3328] hover:bg-[#2b2620]/8" : "text-[#e8c97a] hover:bg-white/10"
                   }`}
                 >
-                  Downloads
+                  <Download />
+                  <span className="truth-header-label">Downloads</span>
                 </Link>
                 <Link
                   to="/owner/cursor"
-                  className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${
+                  title="Cursor"
+                  className={`truth-header-link ${
                     pathname.startsWith("/owner/cursor")
                       ? usePapyrus
                         ? "bg-[#2b2620]/10 text-[#3a3328]"
@@ -151,17 +157,18 @@ export default function Layout() {
                         : "text-[#e8c97a] hover:bg-white/10"
                   }`}
                 >
-                  Cursor
+                  <Sparkles />
+                  <span className="truth-header-label">Cursor</span>
                 </Link>
               </>
             ) : null}
-            <div className="hidden sm:block">
-              <PageTools dark={!usePapyrus} />
+            <div className="truth-header-tools">
+              <PageTools dark={!usePapyrus} compact />
             </div>
             {isGuest ? (
               <Link
                 to="/login"
-                className={`relative z-[91] inline-flex items-center px-3 py-2 rounded-full text-sm ${
+                className={`truth-header-account relative z-[91] ${
                   usePapyrus ? "text-[#3a3328] hover:bg-[#2b2620]/8" : "text-[#f3e9c8]/90 hover:bg-white/10"
                 }`}
               >
@@ -171,7 +178,7 @@ export default function Layout() {
               <button
                 type="button"
                 onClick={() => logout(true)}
-                className={`inline-flex items-center px-3 py-2 rounded-full text-sm ${
+                className={`truth-header-account ${
                   usePapyrus ? "text-[#3a3328] hover:bg-[#2b2620]/8" : "text-[#f3e9c8]/90 hover:bg-white/10"
                 }`}
                 title={user.email}
@@ -182,7 +189,11 @@ export default function Layout() {
           </nav>
         </div>
       </header>
-      <main className="relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-5 py-6 sm:py-8 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8">
+      <main
+        className={`relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-5 pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-8 ${
+          isHome ? "pt-0" : "pt-6 sm:pt-8"
+        }`}
+      >
         <Outlet />
       </main>
       <footer className="relative z-10 border-t border-[#e8ddc7]/70 bg-[#faf6ef]/70 backdrop-blur-md py-6 mb-[calc(4.25rem+env(safe-area-inset-bottom))] md:mb-0">
