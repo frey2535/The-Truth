@@ -78,7 +78,7 @@ export default function ReadingVerseList({
   const visible = verses.length > shown ? verses.slice(0, shown) : verses;
 
   return (
-    <div className="py-1" style={{ "--reading-size": `${1.2 * fontScale}rem` }}>
+    <div className="py-1" style={{ "--reading-size": `${1.25 * fontScale}rem` }}>
       {verses.length ? (
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <ListenControl
