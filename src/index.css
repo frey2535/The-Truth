@@ -216,97 +216,70 @@
 }
 
 .manuscript-leaf {
-  --reading-ink: #1a120c;
+  --reading-ink: #2a1c10;
   position: relative;
-  max-width: 44rem;
-  margin: 0.25rem auto 1.75rem;
-  padding: 1.1rem 0.7rem 1.4rem;
+  max-width: 42rem;
+  margin: 0.25rem auto 1.5rem;
   color: var(--reading-ink);
-  background: #141210;
-  box-shadow: 0 22px 48px rgba(8, 6, 4, 0.35);
-}
-
-.manuscript-clip {
-  position: absolute;
-  width: 0;
-  height: 0;
-}
-
-.manuscript-leaf-skin {
-  position: relative;
   background:
-    radial-gradient(90% 70% at 14% 10%, rgba(255, 236, 200, 0.35), transparent 46%),
-    radial-gradient(70% 60% at 88% 88%, rgba(92, 54, 22, 0.16), transparent 50%),
-    linear-gradient(180deg, #edd4a4 0%, #e2c48a 55%, #d7b578 100%);
+    radial-gradient(120% 80% at 12% 8%, rgba(255, 248, 230, 0.55), transparent 42%),
+    radial-gradient(90% 70% at 88% 92%, rgba(120, 78, 36, 0.12), transparent 48%),
+    linear-gradient(180deg, #f6edd4 0%, #efe0b8 48%, #e6d2a4 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 248, 230, 0.7) inset,
+    0 -18px 28px rgba(90, 58, 24, 0.08) inset,
+    0 18px 40px rgba(43, 38, 32, 0.18);
+  border: 1px solid #b08950;
 }
 
-.manuscript-leaf-wear {
+.manuscript-leaf::before {
+  content: "";
   position: absolute;
   inset: 0;
-  z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(18% 14% at 16% 12%, rgba(92, 54, 22, 0.16), transparent 70%),
-    radial-gradient(22% 16% at 86% 18%, rgba(92, 54, 22, 0.12), transparent 72%),
-    radial-gradient(20% 18% at 12% 82%, rgba(92, 54, 22, 0.14), transparent 70%),
-    radial-gradient(16% 12% at 78% 86%, rgba(92, 54, 22, 0.1), transparent 70%);
+  opacity: 0.28;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 13px,
+      rgba(90, 58, 24, 0.03) 14px
+    );
+  mix-blend-mode: multiply;
 }
 
 .manuscript-leaf-frame {
   position: relative;
-  z-index: 1;
-  margin: 0.55rem;
-  padding: 1.35rem 1.15rem 1.55rem;
-  border: 0;
-  box-shadow: none;
-  background: #f6e7c4;
+  margin: 0.7rem;
+  padding: 1.15rem 1.1rem 1.4rem;
+  border: 2px solid #7a2e2e;
+  box-shadow: 0 0 0 6px #efe0b8, 0 0 0 7px #b08950;
 }
 
 @media (min-width: 640px) {
-  .manuscript-leaf {
-    padding: 1.4rem 1rem 1.7rem;
-  }
-
   .manuscript-leaf-frame {
-    margin: 0.85rem 1rem 1rem;
-    padding: 1.7rem 1.85rem 2rem;
+    margin: 1rem 1.15rem 1.15rem;
+    padding: 1.5rem 1.75rem 1.85rem;
   }
 }
 
 .manuscript-leaf-head {
   text-align: center;
-  margin-bottom: 1rem;
-  padding-bottom: 0.65rem;
-  border-bottom: 1px solid rgba(42, 28, 16, 0.22);
+  margin-bottom: 1.1rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid rgba(122, 46, 46, 0.35);
 }
 
 .manuscript-leaf-running {
   font-family: var(--font-manuscript-sc), serif;
   font-size: 0.95rem;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #3a2416;
+  color: #7a2e2e;
 }
 
 .manuscript-leaf-body {
-  font-family: var(--font-heading), serif;
-}
-
-@media (prefers-contrast: more) {
-  .manuscript-leaf {
-    background: transparent;
-    box-shadow: none;
-    padding: 0;
-  }
-
-  .manuscript-leaf-skin {
-    clip-path: none !important;
-    background: #f6e7c4;
-  }
-
-  .manuscript-leaf-wear {
-    display: none;
-  }
+  font-family: var(--font-manuscript), serif;
 }
 
 .manuscript-verse {
@@ -322,11 +295,11 @@
 
 .manuscript-verse-text {
   margin: 0;
-  font-family: var(--font-heading), serif;
-  font-size: var(--reading-size, 1.25rem);
-  line-height: 1.8;
-  text-align: start;
-  hyphens: none;
+  font-family: var(--font-manuscript), serif;
+  font-size: var(--reading-size, 1.2rem);
+  line-height: 1.75;
+  text-align: justify;
+  hyphens: auto;
   color: var(--reading-ink);
 }
 
@@ -361,7 +334,7 @@
 }
 
 .manuscript-verse-options {
-  font-family: var(--font-heading), serif;
+  font-family: var(--font-manuscript), serif;
   font-size: 0.85em;
   color: #7a2e2e;
   margin-left: 0.35em;
@@ -488,27 +461,13 @@
   }
 
   .manuscript-leaf {
-    background: transparent !important;
     box-shadow: none;
     max-width: none;
     margin: 0;
-    padding: 0;
-  }
-
-  .manuscript-leaf-skin {
-    clip-path: none !important;
-    background: #fff;
-  }
-
-  .manuscript-leaf-wear {
-    display: none;
   }
 
   .manuscript-leaf-frame {
     box-shadow: none;
-    background: #fff;
-    padding: 0;
-    margin: 0;
   }
 
   .manuscript-verse-options {
