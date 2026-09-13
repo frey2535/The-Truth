@@ -1,4 +1,4 @@
-const CACHE = "the-truth-shell-v7";
+const CACHE = "the-truth-shell-v8";
 const SCOPE = new URL("./", self.location.href).pathname;
 
 function scoped(path) {
@@ -54,7 +54,10 @@ self.addEventListener("fetch", (event) => {
     url.pathname.startsWith(scoped("/dss/")) ||
     url.pathname === scoped("/__lan.json") ||
     url.pathname === scoped("/version.json") ||
-    url.pathname === scoped("/sw.js")
+    url.pathname === scoped("/sw.js") ||
+    url.pathname.endsWith(".wasm") ||
+    url.pathname.endsWith(".onnx") ||
+    url.pathname.includes("ort-wasm")
   ) {
     return;
   }

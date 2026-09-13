@@ -2,6 +2,7 @@
 
 export const HUMAN_MODEL_ID = "onnx-community/Kokoro-82M-v1.0-ONNX";
 export const HUMAN_VOICE_PREFIX = "human:";
+export const HUMAN_TTS_SKIP_KEY = "searchingfortruth_skip_human_tts";
 
 export const HUMAN_VOICES = [
   { id: "af_heart", uri: "human:af_heart", name: "Heart — American woman" },
@@ -22,52 +23,137 @@ export function humanVoiceId(uri) {
   return HUMAN_VOICES.some((voice) => voice.id === raw) ? raw : HUMAN_VOICES[0].id;
 }
 
+export function humanTtsAllowed({ userAgent = "", deviceMemory, webAssembly = true, skip = false } = {}) {
+  if (!webAssembly || skip) return false;
+  if (/Android|iPhone|iPad|iPod|Mobile|webOS|BlackBerry/i.test(String(userAgent))) return false;
+  const memory = Number(deviceMemory);
+  // The spoken model plus WASM is too large for phones and for browsers that
+  // do not report enough memory. Those devices keep Listen on the system voice.
+  if (!Number.isFinite(memory) || memory < 8) return false;
+  return true;
+}
+
+export function humanTtsSupported() {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
+  if (typeof WebAssembly !== "object") return false;
+  let skip = false;
+  try {
+    skip = window.sessionStorage?.getItem(HUMAN_TTS_SKIP_KEY) === "1";
+  } catch {
+    /* ignore quota / private mode */
+  }
+  return humanTtsAllowed({
+    userAgent: navigator.userAgent,
+    deviceMemory: navigator.deviceMemory,
+    webAssembly: true,
+    skip,
+  });
+}
+
+let humanTtsFailed = false;
+
+export function markHumanTtsFailed() {
+  humanTtsFailed = true;
+  try {
+    window.sessionStorage?.setItem(HUMAN_TTS_SKIP_KEY, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+export function canUseHumanTts() {
+  return humanTtsSupported() && !humanTtsFailed;
+}
+
 let model = null;
 let modelPromise = null;
 let audioEl = null;
 
 export function stopHumanAudio() {
   if (!audioEl) return;
-  audioEl.pause();
-  audioEl.removeAttribute("src");
-  audioEl.load();
+  try {
+    audioEl.pause();
+    audioEl.removeAttribute("src");
+    audioEl.load();
+  } catch {
+    /* some browsers throw if src is empty */
+  }
 }
 
 export function pauseHumanAudio() {
-  audioEl?.pause();
+  try {
+    audioEl?.pause();
+  } catch {
+    /* ignore */
+  }
 }
 
 export function resumeHumanAudio() {
-  return audioEl?.play?.() || Promise.resolve();
+  try {
+    return audioEl?.play?.() || Promise.resolve();
+  } catch (error) {
+    return Promise.reject(error);
+  }
+}
+
+function withTimeout(promise, ms, message) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(message)), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      }
+    );
+  });
 }
 
 export async function loadHumanTts(onProgress) {
+  if (!canUseHumanTts()) {
+    throw new Error("This device should use its own voice.");
+  }
   if (model) return model;
   if (modelPromise) return modelPromise;
   modelPromise = (async () => {
-    const { KokoroTTS } = await import("kokoro-js");
-    model = await KokoroTTS.from_pretrained(HUMAN_MODEL_ID, {
-      dtype: "q8",
-      device: "wasm",
-      progress_callback: (info) => {
-        const status = info?.status || "";
-        const file = String(info?.file || "").split("/").pop() || "voice model";
-        const pct =
-          Number.isFinite(info?.progress) ? Math.round(info.progress) : Number.isFinite(info?.loaded) && Number.isFinite(info?.total) && info.total
-            ? Math.round((info.loaded / info.total) * 100)
-            : null;
-        onProgress?.(
-          pct != null && status === "progress"
-            ? `Preparing a human voice… ${pct}%`
-            : status === "done"
-              ? "Preparing a human voice…"
-              : `Preparing a human voice… ${file}`
-        );
-      },
-    });
+    onProgress?.("Preparing a human voice…");
+    const { KokoroTTS } = await withTimeout(
+      import("kokoro-js"),
+      30000,
+      "The spoken-English voice could not start."
+    );
+    model = await withTimeout(
+      KokoroTTS.from_pretrained(HUMAN_MODEL_ID, {
+        dtype: "q8",
+        device: "wasm",
+        progress_callback: (info) => {
+          const status = info?.status || "";
+          const file = String(info?.file || "").split("/").pop() || "voice model";
+          const pct =
+            Number.isFinite(info?.progress)
+              ? Math.round(info.progress)
+              : Number.isFinite(info?.loaded) && Number.isFinite(info?.total) && info.total
+                ? Math.round((info.loaded / info.total) * 100)
+                : null;
+          onProgress?.(
+            pct != null && status === "progress"
+              ? `Preparing a human voice… ${pct}%`
+              : status === "done"
+                ? "Preparing a human voice…"
+                : `Preparing a human voice… ${file}`
+          );
+        },
+      }),
+      120000,
+      "The spoken-English voice took too long to load."
+    );
     return model;
   })().catch((error) => {
     modelPromise = null;
+    markHumanTtsFailed();
     throw error;
   });
   return modelPromise;
@@ -92,7 +178,11 @@ function playBlob(blob, signal) {
       return;
     }
     const onAbort = () => {
-      el.pause();
+      try {
+        el.pause();
+      } catch {
+        /* ignore */
+      }
       finish();
     };
     signal?.addEventListener("abort", onAbort, { once: true });
