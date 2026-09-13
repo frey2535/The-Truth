@@ -216,8 +216,25 @@
 }
 
 .home-heaven-clear {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: column;
   height: min(42vh, calc(100dvh - 20rem));
   min-height: 7.5rem;
+  padding-bottom: 0.15rem;
+}
+
+.home-heaven-title {
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(2.85rem, 8.2vw, 5.65rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  text-align: center;
+  text-shadow: 0 2px 22px rgba(12, 8, 6, 0.35);
 }
 
 .home-below-heaven {
