@@ -10,6 +10,9 @@ export default function ListenControl({
   label = "Listen",
   variant = "page",
   className = "",
+  verses,
+  book,
+  chapter,
 }) {
   const { status, id: activeId, supported } = useAudibleReader();
   if (!supported) return null;
@@ -21,7 +24,7 @@ export default function ListenControl({
   function onPlay() {
     if (speaking) pauseAudible();
     else if (paused) resumeAudible();
-    else toggleAudible(typeof text === "function" ? text() : text, { id: key, title: title || label });
+    else toggleAudible(typeof text === "function" ? text() : text, { id: key, title: title || label, verses, book, chapter });
   }
 
   if (variant === "icon") {

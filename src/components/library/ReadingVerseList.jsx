@@ -2,9 +2,18 @@ import React, { useEffect, useState } from "react";
 import ListenControl from "@/components/ListenControl";
 import ListenSettings from "@/components/ListenSettings";
 import VerseStudyRow from "./VerseStudyRow";
+import ReadingTypeSize from "./ReadingTypeSize";
 import { useStudyMarks } from "@/hooks/useStudyMarks";
+import useAudibleReader from "@/hooks/useAudibleReader";
 import { chapterReadingText, stopAudible } from "@/lib/audibleReader";
 import { itemsForVerse, useChapterEvidence } from "./useChapterEvidence";
+import {
+  listeningVerseId,
+  loadFontScale,
+  saveFontScale,
+  saveReadingPosition,
+  verseDomId,
+} from "@/lib/readingSession";
 
 const PAGE_SIZE = 80;
 
@@ -16,6 +25,8 @@ export default function ReadingVerseList({
   highlights: highlightsProp,
   favorites: favoritesProp,
   onChanged,
+  corpus = "bible",
+  focusVerse = "",
 }) {
   const marks = useStudyMarks();
   const highlights = highlightsProp ?? marks.highlights;
@@ -25,7 +36,10 @@ export default function ReadingVerseList({
     showEvidence ? book : "",
     showEvidence ? chapter : ""
   );
+  const { status, id: activeId, currentVerse } = useAudibleReader();
+  const listeningVerse = status === "idle" ? "" : listeningVerseId(activeId, currentVerse, book, chapter);
   const [shown, setShown] = useState(PAGE_SIZE);
+  const [fontScale, setFontScale] = useState(loadFontScale);
 
   useEffect(() => {
     setShown(PAGE_SIZE);
@@ -35,10 +49,35 @@ export default function ReadingVerseList({
     stopAudible();
   }, [book, chapter]);
 
+  useEffect(() => {
+    const target = String(listeningVerse || focusVerse || "");
+    if (!target) return;
+    const idx = verses.findIndex((row) => String(row.verse) === target);
+    if (idx >= 0 && idx + 1 > shown) setShown(Math.max(PAGE_SIZE, idx + 12));
+  }, [listeningVerse, focusVerse, verses, shown]);
+
+  useEffect(() => {
+    const target = String(listeningVerse || focusVerse || "");
+    if (!target || !book) return;
+    const el = document.getElementById(verseDomId(book, chapter, target));
+    if (el) el.scrollIntoView({ block: "center", behavior: listeningVerse ? "smooth" : "auto" });
+  }, [listeningVerse, focusVerse, book, chapter, shown]);
+
+  useEffect(() => {
+    if (!book) return;
+    saveReadingPosition({
+      corpus,
+      book,
+      chapter,
+      verse: listeningVerse || focusVerse || verses[0]?.verse || "",
+      title: `${book}${chapter ? ` ${chapter}` : ""}`,
+    });
+  }, [book, chapter, corpus, listeningVerse, focusVerse, verses]);
+
   const visible = verses.length > shown ? verses.slice(0, shown) : verses;
 
   return (
-    <div className="py-1">
+    <div className="py-1" style={{ "--reading-size": `${1.0625 * fontScale}rem` }}>
       {verses.length ? (
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <ListenControl
@@ -47,8 +86,18 @@ export default function ReadingVerseList({
             title={`${book}${chapter ? ` ${chapter}` : ""}`}
             label="Listen to this chapter"
             text={() => chapterReadingText(book, chapter, verses)}
+            verses={verses}
+            book={book}
+            chapter={chapter}
           />
           <ListenSettings compact />
+          <ReadingTypeSize
+            scale={fontScale}
+            onChange={(next) => {
+              setFontScale(next);
+              saveFontScale(next);
+            }}
+          />
         </div>
       ) : null}
       {visible.map((v) => {
@@ -84,6 +133,7 @@ export default function ReadingVerseList({
             highlights={highlights}
             favorites={favorites}
             onChanged={reload}
+            listening={String(v.verse) === String(listeningVerse)}
           />
         );
       })}

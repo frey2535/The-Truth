@@ -59,15 +59,23 @@ export function chunkSpokenText(text, max = DEVICE_CHUNK) {
   return chunks;
 }
 
-export function chapterReadingText(book, chapter, verses = []) {
-  const head = [book, chapter ? `chapter ${chapter}` : ""].filter(Boolean).join(", ");
-  const body = (verses || [])
-    .map((verse) => {
+export function chapterSpeakParts(book, chapter, verses = []) {
+  return (verses || [])
+    .map((verse, i) => {
+      const head = i === 0 ? [book, chapter ? `chapter ${chapter}` : ""].filter(Boolean).join(", ") : "";
       const number = verse?.verse != null && verse.verse !== "" ? `Verse ${verse.verse}. ` : "";
-      return `${number}${verse?.text || ""}`;
+      return {
+        verse: String(verse?.verse ?? ""),
+        text: spokenText(`${head ? `${head}. ` : ""}${number}${verse?.text || ""}`),
+      };
     })
+    .filter((part) => part.text);
+}
+
+export function chapterReadingText(book, chapter, verses = []) {
+  return chapterSpeakParts(book, chapter, verses)
+    .map((part) => part.text)
     .join(" ");
-  return spokenText(`${head}. ${body}`);
 }
 
 export function pageReadingText(root) {
@@ -173,7 +181,7 @@ export function saveListenPrefs(prefs, storage) {
   return next;
 }
 
-const idleState = () => ({ status: "idle", id: "", title: "", preparing: "" });
+const idleState = () => ({ status: "idle", id: "", title: "", preparing: "", currentVerse: "" });
 
 let prefs = defaultListenPrefs();
 let cachedVoices = listenVoiceOptions();
@@ -181,6 +189,7 @@ let pendingRestart = false;
 let state = idleState();
 const listeners = new Set();
 let queue = [];
+let verseMarks = [];
 let index = 0;
 let token = 0;
 let speakAbort = null;
@@ -275,6 +284,8 @@ function speakNext(myToken) {
     emit();
     return;
   }
+  state = { ...state, currentVerse: verseMarks[index] || "", preparing: "" };
+  emit();
   const utterance = new SpeechSynthesisUtterance(queue[index]);
   const voice = pickVoice(speech);
   if (voice) utterance.voice = voice;
@@ -295,9 +306,16 @@ function speakNext(myToken) {
   speech.speak(utterance);
 }
 
-function beginQueue(text, { id = "", title = "" } = {}) {
+function beginQueue(text, { id = "", title = "", verses, book, chapter } = {}) {
   const human = isHumanVoice(prefs.voiceURI) && canUseHumanTts();
-  queue = chunkSpokenText(typeof text === "function" ? text() : text, human ? HUMAN_CHUNK : DEVICE_CHUNK);
+  if (Array.isArray(verses) && verses.length) {
+    const parts = chapterSpeakParts(book, chapter, verses);
+    queue = parts.map((part) => part.text);
+    verseMarks = parts.map((part) => part.verse);
+  } else {
+    queue = chunkSpokenText(typeof text === "function" ? text() : text, human ? HUMAN_CHUNK : DEVICE_CHUNK);
+    verseMarks = queue.map(() => "");
+  }
   index = 0;
   return {
     human,
@@ -310,7 +328,7 @@ async function speakHumanQueue(myToken, id, title) {
   speakAbort?.abort();
   speakAbort = new AbortController();
   const signal = speakAbort.signal;
-  state = { status: "speaking", id, title, preparing: "Preparing a human voice…" };
+  state = { status: "speaking", id, title, preparing: "Preparing a human voice…", currentVerse: verseMarks[index] || "" };
   emit();
   try {
     const remaining = queue.slice(index);
@@ -318,9 +336,14 @@ async function speakHumanQueue(myToken, id, title) {
       voice: prefs.voiceURI,
       speed: prefs.rate,
       signal,
+      onChunkStart: (offset) => {
+        if (myToken !== token) return;
+        state = { ...state, currentVerse: verseMarks[index + offset] || "", preparing: "" };
+        emit();
+      },
       onProgress: (message) => {
         if (myToken !== token) return;
-        state = { ...state, preparing: message || "" };
+        state = { ...state, preparing: message || "", currentVerse: verseMarks[index] || state.currentVerse };
         emit();
       },
     });
@@ -336,7 +359,7 @@ async function speakHumanQueue(myToken, id, title) {
       emit();
       return;
     }
-    state = { status: "speaking", id, title, preparing: "Using this device’s voice." };
+    state = { status: "speaking", id, title, preparing: "Using this device’s voice.", currentVerse: verseMarks[index] || "" };
     emit();
     speakNext(myToken);
   }
@@ -366,14 +389,14 @@ export function speakText(text, { id = "", title = "" } = {}) {
         emit();
         return;
       }
-      state = { status: "speaking", id: started.id, title: started.title, preparing: "Using this device’s voice." };
+      state = { status: "speaking", id: started.id, title: started.title, preparing: "Using this device’s voice.", currentVerse: verseMarks[index] || "" };
       emit();
       speakNext(myToken);
     });
     return true;
   }
   if (!speech) return false;
-  state = { status: "speaking", id: started.id, title: started.title, preparing: "" };
+  state = { status: "speaking", id: started.id, title: started.title, preparing: "", currentVerse: verseMarks[0] || "" };
   emit();
   const start = () => {
     if (myToken !== token) return;
@@ -433,6 +456,7 @@ export function stopAudible() {
   const speech = synth();
   if (speech) speech.cancel();
   queue = [];
+  verseMarks = [];
   index = 0;
   state = idleState();
   emit();

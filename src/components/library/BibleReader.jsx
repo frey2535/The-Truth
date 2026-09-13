@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Loader2, ChevronLeft, ChevronRight, ArrowLeft, Search } from "lucide-react";
 import { bibleBookUrl, CANON_BOOK_ENTRIES, CANON_BOOK_INFO } from "./corpusData";
 import BookCard from "./BookCard";
@@ -9,7 +9,18 @@ import ReadingVerseList from "./ReadingVerseList";
 import { useStudyMarks } from "@/hooks/useStudyMarks";
 import { scrollReadingToTop } from "@/lib/scrollReading";
 
-export default function BibleReader({ books, apocrypha, title, subtitle, onBack, initialBook, initialChapter }) {
+export default function BibleReader({
+  books,
+  apocrypha,
+  title,
+  subtitle,
+  onBack,
+  initialBook,
+  initialChapter,
+  initialVerse,
+  corpus = "bible",
+}) {
+  const navigate = useNavigate();
   const [book, setBook] = useState(initialBook || null);
   const [chapter, setChapter] = useState(Number(initialChapter) || 1);
   const [data, setData] = useState(null);
@@ -49,8 +60,25 @@ export default function BibleReader({ books, apocrypha, title, subtitle, onBack,
   }, [book]);
 
   useEffect(() => {
+    if (initialBook) setBook(initialBook);
+    if (initialChapter) setChapter(Number(initialChapter) || 1);
+  }, [initialBook, initialChapter]);
+
+  useEffect(() => {
     scrollReadingToTop();
   }, [book, chapter]);
+
+  function openChapter(nextBook, nextChapter) {
+    const next = Number(nextChapter) || 1;
+    setBook(nextBook);
+    setChapter(next);
+    const q = new URLSearchParams({
+      corpus: apocrypha ? "apocrypha" : corpus,
+      book: nextBook,
+      chapter: String(next),
+    });
+    navigate(`/library?${q.toString()}`, { replace: true });
+  }
 
   const chapterCount = data?.chapters?.length || 0;
   const current = data?.chapters?.find((c) => String(c.chapter) === String(chapter));
@@ -83,10 +111,7 @@ export default function BibleReader({ books, apocrypha, title, subtitle, onBack,
                 key={bookTitle}
                 title={bookTitle}
                 description={description}
-                onClick={() => {
-                  setChapter(1);
-                  setBook(bookTitle);
-                }}
+                onClick={() => openChapter(bookTitle, 1)}
               />
             );
           })}
@@ -98,7 +123,10 @@ export default function BibleReader({ books, apocrypha, title, subtitle, onBack,
   return (
     <div>
       <button
-        onClick={() => (initialBook ? onBack() : setBook(null))}
+        onClick={() => {
+          setBook(null);
+          navigate(`/library?corpus=${apocrypha ? "apocrypha" : corpus}`, { replace: true });
+        }}
         className="inline-flex items-center gap-1.5 text-sm text-[#7a2e2e] hover:underline mb-4"
       >
         <ArrowLeft className="w-4 h-4" /> {title}
@@ -118,14 +146,14 @@ export default function BibleReader({ books, apocrypha, title, subtitle, onBack,
         />
         <button
           disabled={chapter <= 1 || loading}
-          onClick={() => setChapter((c) => Math.max(1, c - 1))}
+          onClick={() => openChapter(book, Math.max(1, chapter - 1))}
           className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-[#e8ddc7] text-sm disabled:opacity-40 hover:bg-[#f3e9c8]/40"
         >
           <ChevronLeft className="w-4 h-4" /> Prev
         </button>
           <select
             value={chapter}
-            onChange={(e) => setChapter(Number(e.target.value))}
+            onChange={(e) => openChapter(book, Number(e.target.value))}
             className="h-8 rounded-md border border-[#e8ddc7] bg-white text-sm px-2"
           >
             {Array.from({ length: chapterCount }, (_, i) => (
@@ -136,7 +164,7 @@ export default function BibleReader({ books, apocrypha, title, subtitle, onBack,
           </select>
           <button
             disabled={chapter >= chapterCount || loading}
-            onClick={() => setChapter((c) => Math.min(chapterCount, c + 1))}
+            onClick={() => openChapter(book, Math.min(chapterCount, c + 1))}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-[#e8ddc7] text-sm disabled:opacity-40 hover:bg-[#f3e9c8]/40"
           >
             Next <ChevronRight className="w-4 h-4" />
@@ -172,6 +200,8 @@ export default function BibleReader({ books, apocrypha, title, subtitle, onBack,
         <ReadingVerseList
           book={book}
           chapter={chapter}
+          corpus={apocrypha ? "apocrypha" : corpus}
+          focusVerse={initialVerse || ""}
           verses={verses.filter((v) => {
             if (!bookQuery.trim()) return true;
             return `${v.verse} ${v.text}`.toLowerCase().includes(bookQuery.toLowerCase());

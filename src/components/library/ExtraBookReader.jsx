@@ -37,7 +37,7 @@ function MarkdownBook({ book, onBack }) {
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
       {!loading && !error && text && (
-        <ReadingVerseList book={book.title} chapter={1} verses={textToNumberedVerses(text)} />
+        <ReadingVerseList book={book.title} chapter={1} verses={textToNumberedVerses(text)} corpus="apocrypha" />
       )}
     </div>
   );
@@ -101,6 +101,7 @@ function WebBook({ book, onBack }) {
           book={book.title}
           chapter={chapter}
           verses={textToNumberedVerses(data.text)}
+          corpus="apocrypha"
         />
       )}
     </div>
@@ -187,7 +188,7 @@ function KjvBook({ book, onBack }) {
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
       {!loading && !error && verses.length > 0 && (
-        <ReadingVerseList book={book.bookName || book.title} chapter={chapter} verses={verses} />
+        <ReadingVerseList book={book.bookName || book.title} chapter={chapter} verses={verses} corpus="apocrypha" />
       )}
     </div>
   );

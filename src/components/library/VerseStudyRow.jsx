@@ -7,6 +7,7 @@ import VerseEvidenceBadge from "./VerseEvidenceBadge";
 import { chapterCrossRefs, significantWords } from "@/lib/crossRefs";
 import { findRelatedVerses } from "@/lib/localCorpusSearch";
 import { libraryHref } from "@/lib/libraryLinks";
+import { verseDomId } from "@/lib/readingSession";
 import { speechSegments } from "@/lib/jesusWords";
 import {
   DropdownMenu,
@@ -53,6 +54,7 @@ export default function VerseStudyRow({
   highlights,
   favorites,
   onChanged,
+  listening = false,
 }) {
   const ref = `${book} ${chapter}:${verse.verse}`;
   const [note, setNote] = useState("");
@@ -138,8 +140,17 @@ export default function VerseStudyRow({
   }
 
   return (
-    <div className={`mb-6 last:mb-0 ${highlighted ? "-mx-3 px-3 py-2 rounded-lg bg-[#f3e9c8]/90 border border-[#b08d3c]/30" : ""}`}>
-      <p className="text-[#2b2620] leading-[1.85] text-[17px] sm:text-lg">
+    <div
+      id={verseDomId(book, chapter, verse.verse)}
+      className={`mb-6 last:mb-0 ${
+        listening
+          ? "-mx-3 px-3 py-2 rounded-lg bg-[#f3e9c8] border border-[#7a2e2e]/40 ring-1 ring-[#7a2e2e]/30"
+          : highlighted
+            ? "-mx-3 px-3 py-2 rounded-lg bg-[#f3e9c8]/90 border border-[#b08d3c]/30"
+            : ""
+      }`}
+    >
+      <p className="text-[#2b2620] leading-[1.85]" style={{ fontSize: "var(--reading-size, 1.0625rem)" }}>
         <sup className="text-[#b08d3c] font-semibold mr-1.5 select-none">{verse.verse}</sup>
         {segments.map((seg, i) => (
           <WordParts key={`${ref}-seg-${i}`} text={seg.text} jesus={seg.jesus} refLabel={ref} />
