@@ -36,7 +36,8 @@
     "test:notebook": "node scripts/test-notebook-print.mjs",
     "test:audible": "node scripts/test-audible-reader.mjs",
     "test:map-labels": "node scripts/test-map-labels.mjs",
-    "test:header": "node scripts/test-fit-header.mjs"
+    "test:header": "node scripts/test-fit-header.mjs",
+    "test:home-title": "node scripts/test-home-title.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",
