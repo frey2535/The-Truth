@@ -33,7 +33,7 @@ This repository cannot create the Play developer account or click Submit. If you
    - **Free** (not Paid). Do not add in-app products or subscriptions.
 3. Turn on **Play App Signing**.
 4. Paste listing copy from `store/play/listing.md` (or upload `fastlane/metadata/android/en-US/`).
-5. Upload graphics from `store/play/` (icon, feature graphic, phone + tablet screenshots). Leave the AI-generated-content box **unchecked**.
+5. Upload graphics from `store/play/` (icon, feature graphic, phone + tablet screenshots). Leave the AI-generated-content box **unchecked**. Do **not** enroll in Designed for Families.
 6. App content: open `/play-console` and copy each answer, or follow `store/play/console/APP_CONTENT.md`.
 7. Data safety: `store/play/console/DATA_SAFETY.md` (same as `/data-safety`).
 8. IARC questionnaire: `store/play/console/IARC.md` (expect Teen; not Designed for Families).
@@ -72,7 +72,7 @@ Google’s tester:
 
 https://digitalassetlinks.googleapis.com/v1/statements:list?source.web.site=https://thetruth.currentflowconsulting.org&relation=delegate_permission/common.handle_all_urls
 
-Until the live file matches Play App Signing, Android may show a Custom Tab URL bar.
+Until the live file matches Play App Signing, Android may show a Custom Tab URL bar. Play reviewers treat a TWA that still shows Chrome’s address bar as a website wrapper and can reject it. Add the Play signing fingerprint before you apply for production.
 
 ## After the listing is live
 

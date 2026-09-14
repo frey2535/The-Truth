@@ -78,7 +78,7 @@ Category: All Other App Types (Utility / Productivity / Reference). Not a game.
 
 ## Unrestricted internet / open web browser?
 
-**No. TWA is locked to this site.**
+**No.** The Play wrapper opens this site only. A few study pages open a specific source, map, or museum link. There is no general URL bar or open web browser.
 
 ## Primarily directed at children under 13?
 

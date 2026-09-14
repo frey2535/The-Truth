@@ -12,16 +12,17 @@ Click-through pack: https://thetruth.currentflowconsulting.org/play-console
 
 ## Declare
 
-- App info and performance → Other app performance data — collected: Yes; shared: No; optional: Yes; ephemeral: No. Analytics (anonymous install count). This site; not linked to name or email
-- Device or other IDs — collected: Yes; shared: No; optional: Yes; ephemeral: No. Analytics / App functionality (random install device id). Random install device id on this site
+- App info and performance → Other app performance data — collected: Yes; shared: No; optional: No; ephemeral: No. Analytics (anonymous install count). This site; not linked to name or email. The app still works if the report fails.
+- Device or other IDs — collected: Yes; shared: No; optional: No; ephemeral: No. Analytics / App functionality (random install device id, not an advertising ID).
 - Personal info → Email address, Name — collected: No; shared: Yes; optional: Yes; ephemeral: No. App functionality (Continue with Google only). On the device after Google returns the profile. Not uploaded to a reader server.
-- Photos and videos → Photos — collected: No; shared: Yes; optional: Yes; ephemeral: No. App functionality (Google profile picture URL only). On the device. The app does not request photo or camera permission.
 
 ## Do not declare
 
-Location, Financial info, Health and fitness, Messages, contacts, calendar, Files and docs, Audio, microphone, camera, Advertising or marketing IDs, Other user-generated content (notes stay on the device).
+Location, Financial info, Health and fitness, Messages, contacts, calendar, Files and docs, Photos and videos, Audio, microphone, camera, Advertising or marketing IDs, Other user-generated content (notes stay on the device).
+
+A Google profile picture URL may be stored on the device after optional Google sign-in. That is not access to the Android photo library. Do not declare Photos.
 
 ## Shared
 
-- Google — only if Continue with Google (email, name, picture). The app does not send those fields to a reader server.
+- Google — only if Continue with Google (email, name, picture URL). The app does not send those fields to a reader server.
 - Cloudflare — ordinary HTTPS request logs for hosting. Cloudflare is the host, not an advertising partner.
