@@ -62,6 +62,7 @@ const TITLE_FIX = {
   sinodos: "Sinodos",
   "book of the covenant eth": "Book of the Covenant (Ethiopic)",
   "ethiopic didascalia": "Ethiopic Didascalia",
+  "epic of gilgamesh": "Epic of Gilgamesh",
   "book of giants": "Book of Giants",
   "community rule": "Community Rule",
   "damascus document": "Damascus Document",

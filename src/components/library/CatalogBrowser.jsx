@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
+import { BIBLE_VERSIONS } from "@/data/bibleVersions";
 import {
   CATALOG_SECTIONS,
   TEXT_STATUS,
@@ -28,6 +30,35 @@ export default function CatalogBrowser({ onOpenWork }) {
           A church’s rejection does not remove a stored text. Nothing is invented to fill a gap.
         </p>
       </header>
+
+      <div className="grid sm:grid-cols-2 gap-3 mb-8">
+        <div className="rounded-2xl border border-[#e8ddc7] bg-white/80 p-4">
+          <h2 className="font-display text-xl text-[#2b2620] mb-1">Holy Bible versions</h2>
+          <p className="text-sm text-[#6b6155] mb-3">
+            Older complete English only. Download or read. NIV and other modern shortened Bibles are not here.
+          </p>
+          <div className="flex flex-col gap-2">
+            {BIBLE_VERSIONS.map((version) => (
+              <Link
+                key={version.id}
+                to={version.id === "kjv" ? "/library?corpus=bible" : `/library?corpus=bible&version=${version.id}`}
+                className="text-sm text-[#7a2e2e] hover:underline"
+              >
+                {version.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+        <Link
+          to="/library?corpus=ane"
+          className="rounded-2xl border border-[#e8ddc7] bg-white/80 p-4 hover:border-[#b08d3c]/60"
+        >
+          <h2 className="font-display text-xl text-[#2b2620] mb-1">Epic of Gilgamesh</h2>
+          <p className="text-sm text-[#6b6155]">
+            Old Babylonian version, Jastrow and Clay, 1920. Mesopotamian poem stored for comparison — not Scripture.
+          </p>
+        </Link>
+      </div>
 
       <div className="max-w-xl mx-auto mb-4">
         <Input

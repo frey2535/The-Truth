@@ -17,7 +17,7 @@ const CORPORA = [
   {
     key: "bible",
     title: "Holy Bible",
-    desc: "The 66 canonical books of the Old and New Testaments (King James Version).",
+    desc: "Older complete English Bibles stored in this app. Modern versions that omit verses are not offered.",
     kind: "bible",
     books: CANON_BOOK_ENTRIES,
     apocrypha: false,
@@ -64,6 +64,13 @@ const CORPORA = [
     group: MANUSCRIPT_GROUPS.philo,
   },
   {
+    key: "ane",
+    title: "Ancient Near East",
+    desc: "The Epic of Gilgamesh and related Mesopotamian works stored for comparison. Not Scripture.",
+    kind: "manuscript",
+    group: MANUSCRIPT_GROUPS.ane,
+  },
+  {
     key: "josephus",
     title: "Josephus",
     desc: "Antiquities of the Jews (Whiston). A first-century Jewish history stored in this app, not Scripture.",
@@ -104,6 +111,7 @@ export default function Library() {
         chapter,
         verse: params.get("verse") || "",
         title: `${book}${chapter ? ` ${chapter}` : ""}`,
+        version: params.get("version") || "",
       });
     }
   }, [requested, work, params]);
@@ -118,6 +126,7 @@ export default function Library() {
         initialBook={params.get("book") || undefined}
         initialChapter={params.get("chapter") || undefined}
         initialVerse={params.get("verse") || undefined}
+        initialVersion={params.get("version") || undefined}
         corpus="bible"
         onBack={() => {
           setActive(null);

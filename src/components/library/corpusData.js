@@ -1,6 +1,7 @@
 import { publicUrl } from "@/lib/publicUrl";
 import { DSS_GROUP } from "./dssWorks";
 import { PHILO_EDITION, PHILO_FILE, PHILO_WORKS } from "@/data/philoWorks";
+import { bibleBookFileName, bibleVersionById } from "@/data/bibleVersions";
 
 // Canonical Bible — modern KJV (aruljohn/Bible-kjv). Filenames are camelCase with no spaces.
 export const CANON_BOOKS = [
@@ -143,12 +144,13 @@ export const EXTRA_APOCRYPHA_BOOKS = [
   { id: "ethiopic_didascalia", title: "Ethiopic Didascalia", type: "markdown", slug: "ethiopic-didascalia", desc: "Ethiopian Didascalia of the Apostles. English: J. M. Harden, 1920 (public domain)." },
 ];
 
-export const bibleBookUrl = (book, apocrypha) =>
-  publicUrl(
-    apocrypha
-      ? `/corpus/apocrypha/${book.replace(/ /g, "_")}.json`
-      : `/corpus/bible/${book.replace(/ /g, "")}.json`
-  );
+export const bibleBookUrl = (book, apocrypha, versionId = "kjv") => {
+  if (apocrypha) {
+    return publicUrl(`/corpus/apocrypha/${book.replace(/ /g, "_")}.json`);
+  }
+  const version = bibleVersionById(versionId);
+  return publicUrl(`${version.path}/${bibleBookFileName(book)}`);
+};
 
 export const manuscriptUrl = (slug) => publicUrl(`/corpus/manuscripts/${slug}.md`);
 
@@ -258,6 +260,17 @@ export const MANUSCRIPT_GROUPS = {
       { slug: "sinodos", title: "Sinodos", desc: "Ethiopic church order. English: George Horner, 1904." },
       { slug: "book-of-the-covenant-eth", title: "Book of the Covenant (Ethiopic)", desc: "Testament of Our Lord. English: Cooper and Maclean, 1902." },
       { slug: "ethiopic-didascalia", title: "Ethiopic Didascalia", desc: "English: J. M. Harden, 1920." },
+    ],
+  },
+  ane: {
+    title: "Ancient Near East",
+    desc: "Older public-domain English of Mesopotamian works stored for comparison. Not Scripture.",
+    items: [
+      {
+        slug: "epic-of-gilgamesh",
+        title: "Epic of Gilgamesh",
+        desc: "Old Babylonian Pennsylvania and Yale tablets. English: Morris Jastrow Jr. and Albert T. Clay, 1920 (public domain). Not Scripture.",
+      },
     ],
   },
   fathers: {

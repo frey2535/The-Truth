@@ -767,6 +767,15 @@ function jewishGrecoInscriptions() {
         background: `${work.desc} ${PHILO_EDITION}`,
       })
     ),
+    E("epic-of-gilgamesh", "Epic of Gilgamesh", [52], [L.comp], {
+      alt: ["Gilgamesh", "Gilgamish", "Old Babylonian Gilgamesh"],
+      stored: { kind: "md", slug: "epic-of-gilgamesh", corpus: "ane" },
+      textStatus: "complete_stored",
+      translation: "Morris Jastrow Jr. and Albert T. Clay, Yale University Press, 1920 (public domain).",
+      canon: "Not Scripture. A Mesopotamian poem stored for comparison.",
+      background:
+        "Old Babylonian Pennsylvania and Yale tablet recension. This is not the later twelve-tablet Standard Babylonian edition, and it is not a modern copyrighted retelling.",
+    }),
     E("josephus-war", "Josephus — Jewish War", [52], [L.greco, L.comp], {
       stored: { kind: "plain", file: "/corpus/fathers/josephus-wars.txt" },
       textStatus: "complete_stored",

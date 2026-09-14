@@ -19,6 +19,7 @@ export function readingHref(last) {
   if (last.book) q.set("book", last.book);
   if (last.chapter) q.set("chapter", String(last.chapter));
   if (last.verse) q.set("verse", String(last.verse));
+  if (last.version && last.version !== "kjv") q.set("version", String(last.version));
   const qs = q.toString();
   return qs ? `/library?${qs}` : "/library";
 }
@@ -27,7 +28,8 @@ export function readingLabel(last) {
   if (!last?.book) return last?.title || "";
   const chapter = last.chapter ? ` ${last.chapter}` : "";
   const verse = last.verse ? `:${last.verse}` : "";
-  return `${last.book}${chapter}${verse}`;
+  const version = last.version && last.version !== "kjv" ? ` (${last.version})` : "";
+  return `${last.book}${chapter}${verse}${version}`;
 }
 
 export function listeningVerseId(activeId, currentVerse, book, chapter) {
@@ -100,6 +102,7 @@ export function saveReadingPosition(partial, storage = store()) {
     verse: partial?.verse != null && partial.verse !== "" ? String(partial.verse) : "",
     work: String(partial?.work || ""),
     title: String(partial?.title || ""),
+    version: String(partial?.version || prefs.last?.version || ""),
     ts: Date.now(),
   };
   last.href = readingHref(last);
