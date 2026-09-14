@@ -16,7 +16,7 @@ import { buildAssistantAnswer, slimPassage } from "@/lib/assistantAnswer";
 import { askHistory } from "@/lib/assistantSafety";
 import { understandQuestion } from "@/lib/questionUnderstand";
 import { ARCHIVE_NOTICE, searchArchive } from "@/data/inAppArchive";
-import { lookupLexicon } from "@/data/strongsLexicon";
+import { cleanStudyWord, hasStoredLexicon, studyCardFromLexicon, versesFromMatches } from "@/lib/wordStudy";
 import { looksLikeAppShell } from "@/lib/fetchStoredText";
 import { publicUrl } from "@/lib/publicUrl";
 
@@ -299,47 +299,38 @@ async function study_assistant({ question, history, corpus }) {
 
 async function define_word({ word, reference }) {
   requireUser();
-  const w = String(word || "").trim();
+  const w = cleanStudyWord(word);
   if (!w) return fail("A word is required.");
-  const ref = String(reference || "").trim();
-  const lex = lookupLexicon(w);
+  const card = studyCardFromLexicon(w);
   try {
-    const found = await searchCorpus(ref ? `${w} ${ref}` : w, { limit: 24 });
-    const quotes = found.matches
-      .filter((m) => new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(m.text))
-      .slice(0, 10);
-    if (!lex && !quotes.length) {
+    const found = await searchCorpus(w, { limit: Infinity, exact: true, clipLong: false });
+    const verses = versesFromMatches(found.matches, w);
+    if (!hasStoredLexicon(w) && !verses.verse_count) {
       return fail(`No Strong's entry and no verse stored in this app uses “${w}”. Nothing was invented.`);
     }
     return {
-      definition: lex
-        ? lex.meaning
-        : "No Strong's entry is stored for this English spelling. The verses below are the wording in this app.",
-      original_language: lex ? `${lex.language} · ${lex.strongs}` : "No lexicon entry stored",
-      original_word: lex ? `${lex.original} (${lex.translit})` : w,
-      original_meaning: lex ? lex.meaning : quotes[0]?.text || "",
-      etymology: lex ? lex.etymology : "Etymology is not guessed when Strong's does not list this spelling.",
-      era_context: lex
-        ? lex.source
-        : "Read each book in its own setting. This app does not invent a later meaning.",
-      verses: quotes.map((m) => `${m.reference}: ${m.text}`).join("\n\n"),
+      ...card,
+      ...verses,
+      reference: String(reference || "").trim(),
     };
   } catch (error) {
     return fail(error.message);
   }
 }
 
-async function search_texts({ query, corpus, exact }) {
+async function search_texts({ query, corpus, exact, clipLong, sources }) {
   requireUser();
   const q = String(query || "").trim();
   if (!q) return fail("A search word is required.");
   const chosen = SEARCH_CORPORA.find((c) => c.id === corpus) || SEARCH_CORPORA[0];
   const onlyWord = Boolean(exact);
+  const sourceList = Array.isArray(sources) && sources.length ? sources : chosen.sources;
   try {
     const found = await searchCorpus(q, {
       limit: Infinity,
-      sources: chosen.sources || undefined,
+      sources: sourceList || undefined,
       exact: onlyWord,
+      clipLong: clipLong !== false,
     });
     return {
       query: q,
