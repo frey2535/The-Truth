@@ -2,10 +2,14 @@ The app is free. There is no checkout, paid unlock, or subscription. No ads.
 
 Demo: open the app. Reading the library works without creating an account.
 
+Ask / Assistant is not a generative-AI chatbot. It searches texts stored in this app and quotes them. It does not call OpenAI or any paid model.
+
 Optional sign-in: Create account on the device (email/password). Continue with Google is optional and may be unavailable if a Google client ID is not bound.
+
+Account deletion: https://thetruth.currentflowconsulting.org/account — works in the app and in a browser. Accounts are stored on the device, not on a membership server.
 
 Do not use /owner — that is the platform operator page.
 
-Research, Investigate, Assistant, and Word Study search only texts stored in the app. They do not search the live internet, invent archives, or require a paid API.
+After the first upload, add the Play App Signing SHA-256 to public/.well-known/assetlinks.json so the Trusted Web Activity does not show a Chrome URL bar.
 
 Paste pack for every Console question: https://thetruth.currentflowconsulting.org/play-console

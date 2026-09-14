@@ -11,7 +11,7 @@ import { CONTACT_EMAIL } from "@/lib/contact";
 
 export default function Privacy() {
   return (
-    <LegalDoc kicker="Legal" title="Privacy policy" updated="Effective 13 September 2026">
+    <LegalDoc kicker="Legal" title="Privacy policy" updated="Effective 14 September 2026">
       <LegalP>
         This policy is for <strong>The Truth</strong>, the Scripture research app at{" "}
         <a className="text-[#7a2e2e] underline" href={PRIVACY_POLICY_URL}>
@@ -42,8 +42,8 @@ export default function Privacy() {
           and a session token in this browser’s storage.
         </li>
         <li>
-          Optional Google sign-in: email, name, picture URL, and Google account id, stored in this
-          browser after Google returns them.
+          Optional Google sign-in: email, name, optional picture URL, and Google account id, stored
+          in this browser after Google returns them. The app does not read your photo library.
         </li>
         <li>Notes, highlights, favorites, study plans, and conversations you create on this device.</li>
         <li>
@@ -104,9 +104,10 @@ export default function Privacy() {
           Delete account
         </Link>{" "}
         ({ACCOUNT_DELETION_URL}) to remove the named account and, if you choose, notes and plans on
-        this device. You can also clear site data in the browser or Android site settings. Google
-        sign-in can be revoked in your Google account. Install counts are anonymous device events
-        and are not tied to your email.
+        this device. That page also accepts an email request if you cannot open the app. You can
+        also clear site data in the browser or Android site settings. Google sign-in can be revoked
+        in your Google account. Install counts are anonymous device events and are not tied to your
+        email.
       </LegalP>
 
       <LegalH2>Play Store data safety</LegalH2>

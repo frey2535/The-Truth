@@ -214,7 +214,9 @@ export default function Assistant() {
             <h1 className="font-display text-4xl text-[#2b2620]">Truth Assistant</h1>
             <p className="inline-flex items-center gap-1.5 text-xs text-[#7a2e2e] mt-1">
               <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-              <span>Forbidden from giving false information, withholding, or steering you.</span>
+              <span>
+                Not a generative AI chatbot. It searches texts stored in this app and quotes them.
+              </span>
             </p>
           </div>
           <div className="flex gap-2 shrink-0">

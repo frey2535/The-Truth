@@ -8,7 +8,7 @@ export default function DataSafety() {
     <LegalDoc
       kicker="Google Play"
       title="Data safety"
-      updated="Use these answers on the Play Console Data safety form. Updated 11 September 2026."
+      updated="Use these answers on the Play Console Data safety form. Updated 14 September 2026."
     >
       <LegalP>
         This page is for the store listing, not a second privacy policy. The public policy is{" "}

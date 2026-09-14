@@ -46,7 +46,7 @@ export default function PlayConsole() {
     <LegalDoc
       kicker="Google Play"
       title="Play Console answers"
-      updated="Paste these exact answers. The listing stays free. Updated 11 September 2026."
+      updated="Paste these exact answers. The listing stays free. Updated 14 September 2026."
     >
       <LegalP>
         Open this page beside Play Console and copy each answer. The app is a free Trusted Web

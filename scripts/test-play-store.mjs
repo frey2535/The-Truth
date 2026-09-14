@@ -35,7 +35,10 @@ assert.equal(PLAY_SHORT_DESCRIPTION.length <= 80, true, "Play short description 
 assert.match(PLAY_SHORT_DESCRIPTION, /Free/i);
 assert.match(PLAY_FULL_DESCRIPTION, /free/i);
 assert.match(PLAY_FULL_DESCRIPTION, /no in-app purchases/i);
-assert.match(PLAY_FULL_DESCRIPTION, /do not use a paid AI API/i);
+assert.match(PLAY_FULL_DESCRIPTION, /does not use a paid AI API/i);
+assert.match(PLAY_FULL_DESCRIPTION, /not a generative AI chatbot/i);
+assert.match(PLAY_FULL_DESCRIPTION, /not a children’s game|not a children's game/i);
+assert.match(PLAY_FULL_DESCRIPTION, /independent/i);
 assert.doesNotMatch(PLAY_FULL_DESCRIPTION, /OpenAI/i);
 assert.ok(PLAY_FULL_DESCRIPTION.length > 200);
 assert.ok(PLAY_FULL_DESCRIPTION.length <= 4000);
@@ -98,6 +101,21 @@ assert.match(readFileSync("store/play/console/APP_CONTENT.md", "utf8"), /Ads[\s\
 assert.match(readFileSync("store/play/console/DATA_SAFETY.md", "utf8"), /Advertising ID/);
 assert.match(readFileSync("store/play/console/IARC.md", "utf8"), /Teen/);
 assert.match(readFileSync("store/play/console/REVIEW_NOTES.txt", "utf8"), /without creating an account/);
+assert.match(readFileSync("store/play/console/REVIEW_NOTES.txt", "utf8"), /not a generative-AI chatbot/);
+assert.equal(
+  PLAY_DATA_SAFETY.collected.some((row) => /photos/i.test(row.type)),
+  false,
+  "Do not declare Photos; the app never requests the photo library"
+);
+assert.ok(PLAY_DATA_SAFETY.doNotDeclare.some((item) => /photos/i.test(item)));
+assert.equal(PLAY_DATA_SAFETY.collected.find((row) => /Device/.test(row.type))?.optional, false);
+const accountPage = readFileSync("src/pages/Account.jsx", "utf8");
+assert.match(accountPage, /Request deletion by email/);
+assert.match(accountPage, /CONTACT_EMAIL|reportMailto/);
+assert.doesNotMatch(accountPage, /Create account/);
+assert.match(readFileSync("src/pages/Assistant.jsx", "utf8"), /Not a generative AI chatbot/);
+assert.match(readFileSync("store/play/console/IARC.md", "utf8"), /no general URL bar/i);
+assert.match(readFileSync("src/pages/Login.jsx", "utf8"), /Delete account/);
 assert.match(readFileSync("store/play/console/CLOSED_TESTING.md", "utf8"), /Google Group/);
 assert.match(redirects, /^\/play-console\s+\/index\.html\s+200/m);
 const questionnaireIds = PLAY_QUESTIONNAIRE.map((section) => section.id);
