@@ -86,6 +86,7 @@ const MANUSCRIPT_SLUGS = [
   "sinodos",
   "book-of-the-covenant-eth",
   "ethiopic-didascalia",
+  "epic-of-gilgamesh",
 ];
 
 const LOCAL_MARKDOWN = [

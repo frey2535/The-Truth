@@ -81,8 +81,9 @@ GitHub **Actions** publishes the Vite build to **GitHub Pages** (`.github/workfl
 
 Research, Investigate, Word Study, and the Assistant search only what is stored in this app:
 
-- King James (66 books) and the 1611 Apocrypha
-- Extra deuterocanonical books, 1–2 Enoch, Jubilees, and other early manuscripts
+- Older complete English Bibles: King James (1769), Geneva (1599), Douay-Rheims (Challoner), Young's Literal (1898), and Webster (1833). Modern shortened versions such as the NIV are not stored.
+- The 1611 Apocrypha, extra deuterocanonical books, 1–2 Enoch, Jubilees, and other early manuscripts
+- The Epic of Gilgamesh (Jastrow and Clay, 1920) for comparison — not Scripture
 - Dead Sea Scrolls English already in the Library
 - Ante-Nicene Fathers, Volume 1, Philo of Alexandria (Yonge), and Josephus, *Antiquities*
 - Published inscriptions, government science notes, state papers, and published papal / conciliar decrees
@@ -96,6 +97,8 @@ To refresh the public-domain downloads later:
 ```bash
 node scripts/vendor-corpus.mjs
 npm run vendor-philo
+npm run vendor-bible-versions
+npm run vendor-gilgamesh
 ```
 
 ## What changed vs Base44
