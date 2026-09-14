@@ -76,7 +76,10 @@ export default function Home() {
 
   return (
     <div>
-      <div className="home-heaven-clear" aria-hidden="true" />
+      <div className="home-heaven-stage">
+        <div className="home-heaven-clear" aria-hidden="true" />
+        <h1 className="home-heaven-title">The Truth</h1>
+      </div>
       <div className="home-below-heaven">
       <section className="text-center pb-6">
         <form onSubmit={handleResearch} className="max-w-xl mx-auto flex flex-col sm:flex-row gap-2">

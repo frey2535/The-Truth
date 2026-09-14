@@ -215,15 +215,41 @@
   display: none;
 }
 
+.home-heaven-stage {
+  position: relative;
+  z-index: 3;
+}
+
 .home-heaven-clear {
-  height: min(40vh, calc(100dvh - 20rem));
-  min-height: 7rem;
+  height: min(42vh, calc(100dvh - 22rem));
+  min-height: 7.5rem;
+}
+
+.home-heaven-title {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.15rem;
+  z-index: 4;
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(2.85rem, 8.2vw, 5.65rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 0.92;
+  text-align: center;
+  pointer-events: none;
+  text-shadow:
+    0 1px 0 rgba(12, 8, 6, 0.35),
+    0 6px 28px rgba(12, 8, 6, 0.55);
 }
 
 .home-below-heaven {
   position: relative;
+  z-index: 1;
   margin-inline: -1rem;
-  padding: 0.15rem 1rem 0;
+  padding: 1.15rem 1rem 0;
   background: linear-gradient(
     180deg,
     rgba(250, 246, 239, 0) 0%,
@@ -234,18 +260,18 @@
 
 @media (min-width: 640px) {
   .home-heaven-clear {
-    height: min(46vh, calc(100dvh - 18rem));
+    height: min(48vh, calc(100dvh - 19rem));
   }
 
   .home-below-heaven {
     margin-inline: -1.25rem;
-    padding-inline: 1.25rem;
+    padding: 1.35rem 1.25rem 0;
   }
 }
 
 @media (min-width: 1024px) {
   .home-heaven-clear {
-    height: min(48vh, calc(100dvh - 16rem));
+    height: min(50vh, calc(100dvh - 17rem));
   }
 }
 
