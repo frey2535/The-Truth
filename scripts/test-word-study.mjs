@@ -87,6 +87,7 @@ assert.match(page, /exact:\s*true/);
 assert.match(page, /sources:\s*\["canon", "apocrypha"\]/);
 assert.match(page, /clipLong:\s*false/);
 assert.match(page, /Finding every stored verse/);
+assert.match(page, /Searching remaining stored texts/);
 assert.doesNotMatch(page, /slice\(0,\s*10\)/);
 
 const helpers = readFileSync("src/lib/wordStudy.js", "utf8");

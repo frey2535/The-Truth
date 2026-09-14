@@ -159,11 +159,7 @@ export default function WordStudy() {
                 Verses in this app{result.verse_count ? ` · ${result.verse_count}` : ""}
               </dt>
               <dd className="text-[#3a3328] mt-2">
-                {loadingVerses ? (
-                  <p className="text-sm text-[#8a7f6f] inline-flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin" /> Finding every stored verse…
-                  </p>
-                ) : verses.length ? (
+                {verses.length ? (
                   <ol className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
                     {verses.map((row) => (
                       <li key={`${row.reference}-${row.text.slice(0, 24)}`} className="text-sm leading-relaxed">
@@ -177,8 +173,14 @@ export default function WordStudy() {
                       </li>
                     ))}
                   </ol>
-                ) : (
+                ) : !loadingVerses ? (
                   <p className="text-sm text-[#8a7f6f]">No stored verse uses this exact word.</p>
+                ) : null}
+                {loadingVerses && (
+                  <p className="text-sm text-[#8a7f6f] inline-flex items-center gap-2 mt-3">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    {verses.length ? "Searching remaining stored texts…" : "Finding every stored verse…"}
+                  </p>
                 )}
               </dd>
             </div>
