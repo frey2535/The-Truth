@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Languages, Loader2, Save, Check } from "lucide-react";
+import { libraryHref } from "@/lib/libraryLinks";
+import { cleanStudyWord, hasStoredLexicon, studyCardFromLexicon, versesFromMatches } from "@/lib/wordStudy";
 
 export default function WordStudy() {
   const [params] = useSearchParams();
   const [word, setWord] = useState(params.get("word") || "");
   const [reference, setReference] = useState(params.get("ref") || "");
   const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingVerses, setLoadingVerses] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState([]);
   const [justSaved, setJustSaved] = useState(false);
@@ -29,23 +31,42 @@ export default function WordStudy() {
 
   async function handleDefine(e, preset) {
     e?.preventDefault();
-    const w = (preset || word).trim();
-    if (!w || loading) return;
+    const w = cleanStudyWord(preset || word);
+    if (!w || loadingVerses) return;
     setWord(w);
-    setLoading(true);
     setError("");
-    setResult(null);
+    const card = studyCardFromLexicon(w);
+    setResult({ ...card, verse_list: [], verse_count: 0, verses: "" });
+    setLoadingVerses(true);
     try {
-      const res = await base44.functions.invoke("define_word", {
-        word: w,
-        reference: reference.trim(),
+      const scriptureRes = await base44.functions.invoke("search_texts", {
+        query: w,
+        sources: ["canon", "apocrypha"],
+        exact: true,
+        clipLong: false,
       });
-      if (res.data?.error) throw new Error(res.data.error);
-      setResult(res.data);
+      if (scriptureRes.data?.error) throw new Error(scriptureRes.data.error);
+      const scriptureVerses = versesFromMatches(scriptureRes.data?.matches || [], w);
+      setResult({ ...card, ...scriptureVerses });
+
+      const allRes = await base44.functions.invoke("search_texts", {
+        query: w,
+        corpus: "all",
+        exact: true,
+        clipLong: false,
+      });
+      if (allRes.data?.error) throw new Error(allRes.data.error);
+      const verses = versesFromMatches(allRes.data?.matches || [], w);
+      if (!hasStoredLexicon(w) && !verses.verse_count) {
+        setResult(null);
+        setError(`No Strong's entry and no verse stored in this app uses “${w}”. Nothing was invented.`);
+        return;
+      }
+      setResult({ ...card, ...verses });
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setLoadingVerses(false);
     }
   }
 
@@ -71,12 +92,14 @@ export default function WordStudy() {
     }
   }
 
+  const verses = result?.verse_list || [];
+
   return (
     <div className="max-w-3xl mx-auto">
       <header className="mb-8 text-center">
         <h1 className="font-display text-4xl text-[#2b2620] mb-2">Word Study</h1>
         <p className="text-[#5b5142]">
-          Definition and etymology from Strong's (1890), stored in this app, plus every loaded verse that uses the word.
+          Definition and etymology from Strong&apos;s (1890), stored in this app, plus every stored verse that uses the word.
         </p>
       </header>
 
@@ -86,17 +109,17 @@ export default function WordStudy() {
           onChange={(e) => setWord(e.target.value)}
           placeholder="Word (e.g. grace, repent, soul)"
           className="flex-1 h-11 bg-white border-[#e8ddc7]"
-          disabled={loading}
+          disabled={loadingVerses}
         />
         <Input
           value={reference}
           onChange={(e) => setReference(e.target.value)}
           placeholder="Reference (optional)"
           className="sm:w-48 h-11 bg-white border-[#e8ddc7]"
-          disabled={loading}
+          disabled={loadingVerses}
         />
-        <Button type="submit" disabled={loading} className="h-11 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]">
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Languages className="w-4 h-4 mr-2" /> Look up</>}
+        <Button type="submit" disabled={loadingVerses} className="h-11 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]">
+          {loadingVerses ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Languages className="w-4 h-4 mr-2" /> Look up</>}
         </Button>
       </form>
 
@@ -113,7 +136,7 @@ export default function WordStudy() {
           <dl className="space-y-4">
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <dt className="text-xs uppercase tracking-wide text-[#b08d3c] font-semibold">Language and Strong's</dt>
+                <dt className="text-xs uppercase tracking-wide text-[#b08d3c] font-semibold">Language and Strong&apos;s</dt>
                 <dd className="text-[#3a3328] mt-1">{result.original_language}</dd>
               </div>
               <div>
@@ -128,15 +151,37 @@ export default function WordStudy() {
               </div>
             )}
             <div>
-              <dt className="text-xs uppercase tracking-wide text-[#b08d3c] font-semibold">Strong's meaning</dt>
+              <dt className="text-xs uppercase tracking-wide text-[#b08d3c] font-semibold">Strong&apos;s meaning</dt>
               <dd className="text-[#3a3328] mt-1 leading-relaxed">{result.definition}</dd>
             </div>
-            {result.verses && (
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-[#b08d3c] font-semibold">Verses in this app</dt>
-                <dd className="text-[#3a3328] mt-1 whitespace-pre-wrap leading-relaxed">{result.verses}</dd>
-              </div>
-            )}
+            <div>
+              <dt className="text-xs uppercase tracking-wide text-[#b08d3c] font-semibold">
+                Verses in this app{result.verse_count ? ` · ${result.verse_count}` : ""}
+              </dt>
+              <dd className="text-[#3a3328] mt-2">
+                {loadingVerses ? (
+                  <p className="text-sm text-[#8a7f6f] inline-flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Finding every stored verse…
+                  </p>
+                ) : verses.length ? (
+                  <ol className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+                    {verses.map((row) => (
+                      <li key={`${row.reference}-${row.text.slice(0, 24)}`} className="text-sm leading-relaxed">
+                        <Link
+                          to={libraryHref({ reference: row.reference })}
+                          className="font-medium text-[#7a2e2e] hover:underline"
+                        >
+                          {row.reference}
+                        </Link>
+                        <p className="text-[#3a3328] mt-0.5">{row.text}</p>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="text-sm text-[#8a7f6f]">No stored verse uses this exact word.</p>
+                )}
+              </dd>
+            </div>
             {result.era_context && (
               <div>
                 <dt className="text-xs uppercase tracking-wide text-[#b08d3c] font-semibold">Source</dt>

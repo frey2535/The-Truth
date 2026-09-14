@@ -346,12 +346,32 @@ function loadArchiveRows() {
 }
 
 let corpusPromise = null;
+let scripturePromise = null;
+
+async function loadScriptureCorpus() {
+  if (!scripturePromise) {
+    scripturePromise = (async () => {
+      const rows = await loadScriptureRows();
+      if (!rows.length) scripturePromise = null;
+      return rows;
+    })().catch((error) => {
+      scripturePromise = null;
+      throw error;
+    });
+  }
+  return scripturePromise;
+}
+
+function sourcesAreScriptureOnly(sources) {
+  return Array.isArray(sources) && sources.length > 0 && sources.every((s) => s === "canon" || s === "apocrypha");
+}
+
 async function loadCorpus() {
   if (!corpusPromise) {
     corpusPromise = (async () => {
       let scripture = [];
       try {
-        scripture = await loadScriptureRows();
+        scripture = await loadScriptureCorpus();
       } catch {
         scripture = [];
       }
@@ -379,6 +399,7 @@ async function loadCorpus() {
 
 export function resetCorpusCache() {
   corpusPromise = null;
+  scripturePromise = null;
 }
 
 export const SEARCH_CORPORA = [
@@ -496,8 +517,8 @@ export async function searchCorpusMany(queries, { limit = Infinity, sources, con
   const must = (contentWords || []).filter(Boolean);
   const boost = (boostWords || []).filter(Boolean);
   const extras = { must, mustHitAll, boost, preferSpeech, preferCanon };
-  const corpus = await loadCorpus();
   const allow = Array.isArray(sources) && sources.length ? new Set(sources) : null;
+  const corpus = sourcesAreScriptureOnly(sources) ? await loadScriptureCorpus() : await loadCorpus();
   const scored = [];
   let n = 0;
   for (const row of corpus) {
@@ -538,7 +559,7 @@ export async function searchCorpusMany(queries, { limit = Infinity, sources, con
   };
 }
 
-export async function searchCorpus(topic, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll, exact } = {}) {
+export async function searchCorpus(topic, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, requirePhrase, mustHitAll, exact, clipLong = true } = {}) {
   return searchCorpusMany([{ q: topic, requirePhrase, exact }], {
     limit,
     sources,
@@ -547,6 +568,7 @@ export async function searchCorpus(topic, { limit = Infinity, sources, contentWo
     preferSpeech,
     preferCanon,
     mustHitAll,
+    clipLong,
   });
 }
 

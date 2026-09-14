@@ -23,6 +23,7 @@
     "test:assistant": "node scripts/test-assistant-understand.mjs",
     "test:storage": "node scripts/test-storage-chat.mjs",
     "test:search": "node scripts/test-search-all-verses.mjs",
+    "test:word-study": "node scripts/test-word-study.mjs",
     "test:missing-codex": "node scripts/test-missing-codex-texts.mjs",
     "play:assets": "python3 scripts/play/generate-store-assets.py",
     "play:listing": "node scripts/play/write-listing-files.mjs",
