@@ -17,11 +17,11 @@ export default function SymbolPhoto({ id, title, className = "", showCaption = f
   }
 
   return (
-    <figure className={`m-0 h-full w-full ${className}`}>
+    <figure className={`m-0 flex h-full w-full flex-col ${className}`}>
       <img
         src={photo.src}
         alt={photo.caption || title || ""}
-        className="h-full w-full rounded-xl object-cover"
+        className="h-full w-full rounded-xl bg-[#f3e9c8] object-contain"
       />
       {showCaption ? (
         <figcaption className="mt-2 text-[11px] leading-relaxed text-[#5b5142]">

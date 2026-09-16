@@ -114,9 +114,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "zodiac-wheel": photo(
     "zodiac-wheel.jpg",
-    "Beth Alpha synagogue mosaic: the twelve-sign zodiac wheel around the sun, with the four seasons below.",
+    "The zodiac wheel: twelve named signs in a circle around the year. Diagram of the sign, so each house can be read.",
     COMMONS,
-    commons("Beth Alpha-02-Mosaik-2010-gje.jpg")
+    commons("Zodiac.svg")
   ),
   ouroboros: photo(
     "ouroboros.jpg",
@@ -235,9 +235,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   weekdays: photo(
     "weekdays.jpg",
-    "Mars and his children, from the medieval Hausbuch of Wolfegg (after 1480). Planetary gods are how the weekday names were pictured.",
-    COMMONS,
-    commons("Hausbuch Wolfegg 13r Mars.jpg")
+    "English weekday names beside the gods they still carry: Sun, Moon, Tiw/Mars, Woden/Mercury, Thor/Jupiter, Frigg/Venus, Saturn.",
+    "Diagram of the named week",
+    commons("Planetary hours.svg")
   ),
   months: photo(
     "months.jpg",
@@ -429,9 +429,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   belial: photo(
     "belial.jpg",
-    "Belial as engraved in later occult catalogs. Printed plate only.",
+    "The Qumran War Scroll (1QM). That manuscript names Belial as the hostile power against the sons of light — a catalogued text, not a later occult portrait.",
     COMMONS,
-    commons("Belial.jpg")
+    commons("The War Scroll - Dead Sea Scroll.jpg")
   ),
   abaddon: photo(
     "abaddon.jpg",
@@ -441,9 +441,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   legion: photo(
     "legion.jpg",
-    "Briton Rivière, The Miracle of the Gadarene Swine. Painting of Mark 5 / Luke 8, not a portrait of Legion.",
+    "Sant’Apollinare Nuovo, Ravenna: mosaic of the Gerasene / Gadarene exorcism. Messiah, the possessed man, and swine in the water — Mark 5 / Luke 8.",
     COMMONS,
-    commons("The Miracle of the Gadarene Swine - Google Art Project.jpg")
+    commons("Mosaic of the exorcism of the Gerasene demoniac from the Basilica of Sant'Apollinare Nuovo.jpg")
   ),
   python: photo(
     "python.jpg",
@@ -495,9 +495,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "prince-persia": photo(
     "prince-persia.jpg",
-    "Relief from Persepolis. Achaemenid stonework from the land Daniel names; not a portrait of the prince of Persia.",
+    "Persepolis, Apadana stair: Achaemenid tribute-bearers in Persian dress. Stone from the empire Daniel names; not a portrait of the prince of Persia.",
     COMMONS,
-    commons("Persepolis relief.jpg")
+    commons("Apadana Persepolis Iran.JPG")
   ),
   ashtoreth: photo(
     "ashtoreth.jpg",
@@ -555,9 +555,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "crowley-aiwass": photo(
     "crowley-aiwass.jpg",
-    "The Stele of Ankh-ef-en-Khonsu (Stele of Revealing), Cairo Museum, with the modern ‘666’ tag in the display. Egyptian funerary stele later used by Crowley; not a photograph of Aiwass.",
+    "The Stele of Ankh-ef-en-Khonsu (Stele of Revealing): Ra-Horakhty seated, the priest before the offering table, a winged sun above. Egyptian funerary stele later used by Crowley; not a photograph of Aiwass.",
     COMMONS,
-    commons("666-Stele of revealing- tag from Cairo Museum.jpg")
+    commons("Stelae of Ankh-af-na-khonsu.jpg")
   ),
   "watchers-genesis": photo(
     "watchers-genesis.jpg",
@@ -603,9 +603,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   shedim: photo(
     "shedim.jpg",
-    "Assyrian Pazuzu figurine. A Mesopotamian wind-demon type later compared with shedim; Deuteronomy 32:17 names shedim, this object is not lettered with that word.",
+    "Bronze Pazuzu: canine-faced Mesopotamian wind-demon with wings. A catalogued type later compared with shedim; Deuteronomy 32:17 names shedim, this object is not lettered with that word.",
     COMMONS,
-    commons("Pazuzu.jpg")
+    commons("Pazuzu bronze AO 6692.jpg")
   ),
   rahab: photo(
     "rahab.jpg",

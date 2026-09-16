@@ -29,8 +29,14 @@ holidays/ — photographs and published plates of the named item (museum objects
   sun-cross.jpg — solar-cross diagram (equal-armed cross in a circle)
   uraeus.jpg — Met 50.198.3, object 546039
   winged-sun.jpg — Egyptian winged sun disk with uraei
-  zodiac-wheel.jpg — Beth Alpha synagogue zodiac mosaic
+  zodiac-wheel.jpg — labeled twelve-sign zodiac wheel diagram
   janus-door.jpg — Vatican two-faced Janus bust
+  weekdays.jpg — English weekday names beside the gods they still carry
+  legion.jpg — Sant’Apollinare Nuovo mosaic of the Gerasene demoniac and swine
+  belial.jpg — Qumran War Scroll (1QM), the manuscript that names Belial
+  crowley-aiwass.jpg — Stele of Ankh-ef-en-Khonsu (Stele of Revealing)
+  prince-persia.jpg — Persepolis Apadana tribute relief
+  shedim.jpg — bronze Pazuzu figurine
 
 holidays/ — additional unique plates (one file per Holidays item; Commons or Internet Archive, as captioned on the card):
   traditions, remaining symbols, and names use published coins, mosaics, paintings, stele, manuscripts, and title pages.
