@@ -17,12 +17,14 @@ export default function SymbolPhoto({ id, title, className = "", showCaption = f
   }
 
   return (
-    <figure className={`m-0 flex h-full w-full flex-col ${className}`}>
-      <img
-        src={photo.src}
-        alt={photo.caption || title || ""}
-        className="h-full w-full rounded-xl bg-[#f3e9c8] object-contain"
-      />
+    <figure className={`m-0 w-full ${className}`}>
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-[#f3e9c8]">
+        <img
+          src={photo.src}
+          alt={photo.caption || title || ""}
+          className="absolute inset-0 h-full w-full object-contain"
+        />
+      </div>
       {showCaption ? (
         <figcaption className="mt-2 text-[11px] leading-relaxed text-[#5b5142]">
           {photo.caption} {photo.credit}.{" "}
