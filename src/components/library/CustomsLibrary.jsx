@@ -177,7 +177,7 @@ function CustomDetail({ item, onBack }) {
                 to={`/customs/symbol/${s.id}`}
                 className="p-3 rounded-xl border border-[#e8ddc7] bg-white/70 hover:border-[#b08d3c]/60"
               >
-                <div className="aspect-square mb-2 overflow-hidden rounded-lg">
+                <div className="mb-2 overflow-hidden rounded-lg">
                   <SymbolPhoto id={s.id} title={s.title} />
                 </div>
                 <p className="font-display text-sm text-[#2b2620]">{s.title}</p>
@@ -274,7 +274,7 @@ function SymbolCard({ item, onClick }) {
       onClick={onClick}
       className="flex flex-col items-stretch text-left whitespace-normal p-4 rounded-2xl border border-[#e8ddc7] bg-white/70 hover:border-[#b08d3c]/60 hover:bg-white transition-colors"
     >
-      <div className="aspect-square mb-3 overflow-hidden rounded-lg">
+      <div className="mb-3 overflow-hidden rounded-lg">
         <SymbolPhoto id={item.id} title={item.title} />
       </div>
       <span className="font-display text-lg text-[#2b2620] mb-1">{item.title}</span>
