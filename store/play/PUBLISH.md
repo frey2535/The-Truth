@@ -15,7 +15,7 @@ This repository cannot create the Play developer account or click Submit. If you
 
 - Privacy, data safety, account deletion, Console answers: `/privacy`, `/data-safety`, `/account`, `/play-console`
 - Digital Asset Links: `public/.well-known/assetlinks.json`
-- Android TWA, package `org.currentflowconsulting.thetruth`, target / compile SDK **36**
+- Android TWA, package `com.currentflow.thetruth`, target / compile SDK **36**
 - No Play Billing, no advertising ID
 - Store listing and screenshots: `store/play/` and `fastlane/metadata/android/en-US/`
 - Console paste pack: `store/play/console/`
@@ -27,7 +27,7 @@ This repository cannot create the Play developer account or click Submit. If you
 1. Sign in with an existing Play developer account, or create one (Google’s one-time fee). Finish identity verification.
 2. Create the app:
    - Name: **The Truth**
-   - Package: `org.currentflowconsulting.thetruth`
+   - Package: `com.currentflow.thetruth`
    - Type: App
    - Category: Books & Reference
    - **Free** (not Paid). Do not add in-app products or subscriptions.

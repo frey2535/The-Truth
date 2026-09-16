@@ -24,7 +24,7 @@ assert.equal(metricsApiOrigin("192.168.1.20"), PUBLISHED_APP_URL);
 assert.equal(metricsApiOrigin("thetruth.currentflowconsulting.org"), PUBLISHED_APP_URL);
 assert.equal(metricsApiOrigin("frey2535.github.io"), PUBLISHED_APP_URL);
 
-assert.equal(launchedFromAndroidApp("android-app://org.currentflowconsulting.thetruth"), true);
+assert.equal(launchedFromAndroidApp("android-app://com.currentflow.thetruth"), true);
 assert.equal(launchedFromAndroidApp("https://thetruth.currentflowconsulting.org/"), false);
 assert.equal(
   displayLooksInstalled({
@@ -42,7 +42,7 @@ assert.equal(
 );
 assert.equal(
   detectInstallSource({
-    referrer: "android-app://org.currentflowconsulting.thetruth",
+    referrer: "android-app://com.currentflow.thetruth",
     matchMedia: () => ({ matches: false }),
     standalone: false,
   }),
