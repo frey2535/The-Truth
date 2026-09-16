@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "@/lib/AuthContext";
 import { GUEST_EMAIL } from "@/api/localAuth";
 import { Button } from "@/components/ui/button";
 import LegalDoc, { LegalH2, LegalP } from "@/components/LegalDoc";
+import { CONTACT_EMAIL, reportMailto } from "@/lib/contact";
 
 export default function Account() {
   const { user, deleteLocalAccount } = useAuth();
@@ -12,6 +12,11 @@ export default function Account() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const deleteMail = reportMailto({
+    path: "/account",
+    title: "Delete account",
+    message: "Please help me delete my The Truth account and any data you hold for this email:",
+  });
 
   async function onDelete() {
     if (!named || busy) return;
@@ -36,8 +41,9 @@ export default function Account() {
   return (
     <LegalDoc kicker="Your data" title="Delete account" updated="Google Play account-deletion URL">
       <LegalP>
-        Reader accounts for The Truth live in this browser or installed app, not on a central
-        membership server. Deleting here removes the named account from <em>this device</em>.
+        This page is how you delete a The Truth reader account. Accounts live in this browser or
+        the installed Play app, not on a central membership server. There is nothing to cancel and
+        no paid subscription.
       </LegalP>
 
       {done ? (
@@ -46,7 +52,7 @@ export default function Account() {
         </p>
       ) : named ? (
         <>
-          <LegalH2>Account on this device</LegalH2>
+          <LegalH2>Delete the account on this device</LegalH2>
           <p className="text-sm text-[#5b5142]">
             Signed in as <strong className="text-[#2b2620]">{user.email}</strong>
             {user.full_name ? ` (${user.full_name})` : ""}.
@@ -73,17 +79,26 @@ export default function Account() {
         </>
       ) : (
         <>
-          <LegalH2>No named account here</LegalH2>
+          <LegalH2>How to delete if you are not signed in here</LegalH2>
           <LegalP>
-            This device is using the local guest session. There is no email account to delete.
-            Create one from{" "}
-            <Link className="text-[#7a2e2e] underline" to="/register">
-              Create account
-            </Link>{" "}
-            only if you want a name on this device.
+            This browser or Play install is using the guest session, so there is no named account
+            on this device to erase. If you created an account on a phone or computer, open this
+            same page while signed in on that device and tap Delete. You can also clear site data
+            for thetruth.currentflowconsulting.org in Chrome or Android settings.
           </LegalP>
         </>
       )}
+
+      <LegalH2>Request deletion by email</LegalH2>
+      <LegalP>
+        Anyone can request help deleting an account without installing the app. Email{" "}
+        <a className="text-[#7a2e2e] underline" href={deleteMail}>
+          {CONTACT_EMAIL}
+        </a>{" "}
+        with the address you used. Reader accounts are stored on the device that created them. We
+        do not keep a central membership list. Install counts are anonymous device events and are
+        not tied to your email.
+      </LegalP>
 
       <LegalH2>Other ways to clear data</LegalH2>
       <p className="text-sm text-[#5b5142] leading-relaxed">
@@ -97,7 +112,7 @@ export default function Account() {
         >
           Google account permissions
         </a>
-        . Install counts are anonymous and are not tied to your email.
+        .
       </p>
     </LegalDoc>
   );

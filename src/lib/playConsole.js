@@ -94,19 +94,19 @@ export const PLAY_DATA_SAFETY = {
       type: "App info and performance → Other app performance data",
       collected: true,
       shared: false,
-      optional: true,
+      optional: false,
       ephemeral: false,
       purpose: "Analytics (anonymous install count)",
-      stored: "This site; not linked to name or email",
+      stored: "This site; not linked to name or email. The app still works if the report fails.",
     },
     {
       type: "Device or other IDs",
       collected: true,
       shared: false,
-      optional: true,
+      optional: false,
       ephemeral: false,
       purpose: "Analytics / App functionality (random install device id)",
-      stored: "Random install device id on this site",
+      stored: "Random install device id on this site. Not an advertising ID.",
     },
     {
       type: "Personal info → Email address, Name",
@@ -117,15 +117,6 @@ export const PLAY_DATA_SAFETY = {
       purpose: "App functionality (Continue with Google only)",
       stored: "On the device after Google returns the profile. Not uploaded to a reader server.",
     },
-    {
-      type: "Photos and videos → Photos",
-      collected: false,
-      shared: true,
-      optional: true,
-      ephemeral: false,
-      purpose: "App functionality (Google profile picture URL only)",
-      stored: "On the device. The app does not request photo or camera permission.",
-    },
   ],
   doNotDeclare: [
     "Location",
@@ -133,6 +124,7 @@ export const PLAY_DATA_SAFETY = {
     "Health and fitness",
     "Messages, contacts, calendar",
     "Files and docs",
+    "Photos and videos",
     "Audio, microphone, camera",
     "Advertising or marketing IDs",
     "Other user-generated content (notes stay on the device)",
@@ -163,7 +155,7 @@ export const PLAY_IARC = {
     "Location sharing": "No.",
     "Digital purchases": "No. The app is free and has no in-app products.",
     "Unrestricted internet":
-      "No. The Play app is a Trusted Web Activity for thetruth.currentflowconsulting.org only.",
+      "No general-purpose browser. The Play wrapper opens this site. A few study pages open a specific source, map, or museum link in the system browser.",
     "Age": "Not directed at children under 13.",
   },
 };
@@ -172,11 +164,15 @@ export const PLAY_REVIEW_NOTES = `The app is free. There is no checkout, paid un
 
 Demo: open the app. Reading the library works without creating an account.
 
+Ask / Assistant is not a generative-AI chatbot. It searches texts stored in this app and quotes them. It does not call OpenAI or any paid model.
+
 Optional sign-in: Create account on the device (email/password). Continue with Google is optional and may be unavailable if a Google client ID is not bound.
+
+Account deletion: https://thetruth.currentflowconsulting.org/account — works in the app and in a browser. Accounts are stored on the device, not on a membership server.
 
 Do not use /owner — that is the platform operator page.
 
-Research, Investigate, Assistant, and Word Study search only texts stored in the app. They do not search the live internet, invent archives, or require a paid API.
+After the first upload, add the Play App Signing SHA-256 to public/.well-known/assetlinks.json so the Trusted Web Activity does not show a Chrome URL bar.
 
 Paste pack for every Console question: ${PLAY_CONSOLE_ANSWERS_URL}`;
 
@@ -313,12 +309,23 @@ export const PLAY_QUESTIONNAIRE = [
     title: "Policy → App content → AI-generated content",
     items: [
       qa("Is a generative-AI chatbot a central feature?", "No"),
+      qa(
+        "Does Ask / Assistant generate new text with a large language model?",
+        "No",
+        "Ask searches texts stored in this app and quotes them. The chat-like page is retrieval, not a generative model."
+      ),
       qa("Does the app generate images, voice, or video from prompts?", "No"),
+      qa(
+        "Does Listen synthesize speech from user prompts?",
+        "No",
+        "Listen reads stored wording with the device speech engine. Phones do not download an extra voice model."
+      ),
       qa(
         "Do Research, Investigate, Assistant, and Word Study use a paid AI API?",
         "No",
         "Those tools search texts stored in the app. They do not require OpenAI or any paid API."
       ),
+      qa("In-app AI content reporting UI required?", "No. The app is not a generative-AI product."),
       qa("Store listing graphics AI label", "Do not check. Assets are not generative AI."),
     ],
   },
@@ -357,11 +364,11 @@ export const PLAY_QUESTIONNAIRE = [
       qa("Committed to Play Families Policy?", "No"),
       qa(
         "App info and performance → Other app performance data",
-        "Collected: Yes. Shared: No. Optional: Yes. Ephemeral: No. Purpose: Analytics."
+        "Collected: Yes. Shared: No. Optional: No. Ephemeral: No. Purpose: Analytics."
       ),
       qa(
         "Device or other IDs",
-        "Collected: Yes. Shared: No. Optional: Yes. Ephemeral: No. Purpose: Analytics (random install device id)."
+        "Collected: Yes. Shared: No. Optional: No. Ephemeral: No. Purpose: Analytics (random install device id, not an advertising ID)."
       ),
       qa(
         "Personal info → Email address, Name",
@@ -369,7 +376,7 @@ export const PLAY_QUESTIONNAIRE = [
       ),
       qa(
         "Photos and videos → Photos",
-        "Collected by our servers: No. Shared: Yes, Google profile picture URL only if Continue with Google. Optional. The app does not request the Android photos permission."
+        "Do not declare. A Google profile picture URL may be stored on the device after optional Google sign-in. The app never requests the Android photos or videos permission."
       ),
       qa("Location, financial, health, messages, files, audio, advertising IDs", "Do not declare."),
       qa("Notes and highlights", "Do not declare. They stay on the device."),
@@ -397,7 +404,10 @@ export const PLAY_QUESTIONNAIRE = [
       qa("Public user-generated content / social feed?", "No"),
       qa("Shares the user’s location?", "No"),
       qa("Digital purchases or in-app products?", "No"),
-      qa("Unrestricted internet / open web browser?", "No. TWA is locked to this site."),
+      qa(
+        "Unrestricted internet / open web browser?",
+        "No. The Play wrapper opens this site only. A few study pages open a specific source, map, or museum link. There is no general URL bar or open web browser."
+      ),
       qa("Primarily directed at children under 13?", "No"),
       qa("Expected rating", `${PLAY_IARC.expectedRating}. Not Designed for Families.`),
     ],

@@ -121,6 +121,10 @@ export default function Login() {
           <Link to="/privacy" className="text-primary font-medium hover:underline">
             Privacy
           </Link>
+          {" · "}
+          <Link to="/account" className="text-primary font-medium hover:underline">
+            Delete account
+          </Link>
         </>
       }
     >

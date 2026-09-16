@@ -100,9 +100,17 @@ Use these exact answers. The listing is free. Do not add ads or in-app products.
 
 **No**
 
+### Does Ask / Assistant generate new text with a large language model?
+
+**No.** Ask searches texts stored in this app and quotes them. The chat-like page is retrieval, not a generative model.
+
 ### Does the app generate images, voice, or video from prompts?
 
 **No**
+
+### Does Listen synthesize speech from user prompts?
+
+**No.** Listen reads stored wording with the device speech engine.
 
 ### Do Research, Investigate, Assistant, and Word Study use a paid AI API?
 
@@ -190,11 +198,11 @@ _Those tools search texts stored in the app. They do not require OpenAI or any p
 
 ### App info and performance → Other app performance data
 
-**Collected: Yes. Shared: No. Optional: Yes. Ephemeral: No. Purpose: Analytics.**
+**Collected: Yes. Shared: No. Optional: No. Ephemeral: No. Purpose: Analytics.**
 
 ### Device or other IDs
 
-**Collected: Yes. Shared: No. Optional: Yes. Ephemeral: No. Purpose: Analytics (random install device id).**
+**Collected: Yes. Shared: No. Optional: No. Ephemeral: No. Purpose: Analytics (random install device id, not an advertising ID).**
 
 ### Personal info → Email address, Name
 
@@ -202,7 +210,7 @@ _Those tools search texts stored in the app. They do not require OpenAI or any p
 
 ### Photos and videos → Photos
 
-**Collected by our servers: No. Shared: Yes, Google profile picture URL only if Continue with Google. Optional. The app does not request the Android photos permission.**
+**Do not declare.** A Google profile picture URL may be stored on the device after optional Google sign-in. The app never requests the Android photos or videos permission.
 
 ### Location, financial, health, messages, files, audio, advertising IDs
 
@@ -288,7 +296,7 @@ _Those tools search texts stored in the app. They do not require OpenAI or any p
 
 ### Unrestricted internet / open web browser?
 
-**No. TWA is locked to this site.**
+**No.** The Play wrapper opens this site only. A few study pages open a specific source, map, or museum link. There is no general URL bar or open web browser.
 
 ### Primarily directed at children under 13?
 
