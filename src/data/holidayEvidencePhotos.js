@@ -24,27 +24,27 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   ankh: photo(
     "ankh.jpg",
-    "Faience ring fragment with an ankh, from Malqata, reign of Amenhotep III. Met 11.215.108. MMA excavations, 1910–11.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/551457"
+    "Faience ankh amulet — the looped Egyptian life-sign — Museo Egizio, Turin C 1332.",
+    COMMONS,
+    commons("Amulet depicting the ankh sign, faience - Museo Egizio, Turin C 1332 p01.jpg")
   ),
   "crescent-moon": photo(
     "crescent-moon.jpg",
-    "Faience crescent-moon amulet from Malqata, reign of Amenhotep III. Met 11.215.212. MMA excavations, 1910–11.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/551377"
+    "Roman gold necklace with a crescent-moon pendant. The sickle moon is the object, not a later flag.",
+    COMMONS,
+    commons("Roman jewellery - crescent moon amulets.jpg")
   ),
   "sun-disk": photo(
     "sun-disk.jpg",
-    "Akhenaten offering a duck under the rays of the Aten. Painted limestone, ca. 1347–1330 BC. Met 1985.328.2.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/544056"
+    "Akhenaten and Nefertiti seated under the Aten: the sun disk with descending rays. Amarna relief.",
+    COMMONS,
+    commons("House altar depicting Akhenaten, Nefertiti and three daughters.jpg")
   ),
   "radiate-crown": photo(
     "radiate-crown.jpg",
-    "Silver antoninianus of Aurelian, AD 270–275, with the radiate crown of Sol. Met 08.170.375.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/248055"
+    "Bronze bust wearing the spiked radiate crown of Helios / Sol.",
+    COMMONS,
+    commons("Helios with chlamys Louvre AO7530.jpg")
   ),
   "halo-nimbus": photo(
     "halo-nimbus.jpg",
@@ -60,9 +60,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   skull: photo(
     "skull.jpg",
-    "Ivory rosary terminal with lovers and a death’s head, ca. 1500–1525. Met 17.190.305.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/464299"
+    "Ivory model of a human skull on a wooden pedestal. A death’s-head, not a costume.",
+    COMMONS,
+    commons("Ivory model of a skull on a wooden pedestal, Europe Wellcome L0057530.jpg")
   ),
   "latin-cross": photo(
     "latin-cross.jpg",
@@ -72,27 +72,27 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "cupid-heart": photo(
     "cupid-heart.jpg",
-    "Roman bronze statuette of Cupid, ca. 1st–2nd century AD. Met 19.192.54.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/250787"
+    "William-Adolphe Bouguereau, A Young Girl Defending Herself against Eros: Cupid with his arrow.",
+    COMMONS,
+    commons("William-Adolphe Bouguereau (1825-1905) - A Young Girl Defending Herself against Eros (1880).jpg")
   ),
   "winged-sun": photo(
     "winged-sun.jpg",
-    "Glass inlay, a wing from a winged sun or falcon. Ptolemaic–Roman Egypt, ca. 200 BC–AD 100. Met 26.7.1201.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/551581"
+    "The Egyptian winged sun: a disk with spread falcon wings and uraeus cobras. Diagram of the royal solar emblem.",
+    COMMONS,
+    commons("Ancient Egypt Wings.svg")
   ),
   evergreen: photo(
     "evergreen.jpg",
-    "Painted limestone relief of an acacia tree shading water jars, Egypt, ca. 2051–2030 BC. Met 26.3.353c. A catalogued tree image, not a German parlour Christmas tree.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/552052"
+    "A Nordmann fir (Abies nordmanniana) standing as a living evergreen tree — the winter tree that does not die.",
+    COMMONS,
+    commons("Abies-nordmanniana-habit.JPG")
   ),
   "nazar-eye": photo(
     "nazar-eye.jpg",
-    "Eastern Mediterranean glass eye bead, ca. 4th century BC. Met 17.194.805.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/250031"
+    "Nazar boncuk — blue concentric evil-eye beads as still sold for protection.",
+    COMMONS,
+    commons("Nazar Boncuğu (Evil Eye).jpg")
   ),
   "masonic-square": photo(
     "masonic-square.jpg",
@@ -102,27 +102,27 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   maypole: photo(
     "maypole.jpg",
-    "English needlework picture with a maypole scene, ca. 1700. Met 64.101.1355.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/229052"
+    "Children dancing around a dressed maypole with ribbons — the spring tree-substitute in daylight clothes.",
+    COMMONS,
+    commons("Maypole dancing at Elstow May Fair - geograph.org.uk - 169478.jpg")
   ),
   caduceus: photo(
     "caduceus.jpg",
-    "French gilt figure of Cupid as a messenger holding Mercury’s caduceus, ca. 1730. Met 07.225.255.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/189526"
+    "The caduceus: a winged staff with two serpents, the wand of Hermes / Mercury.",
+    COMMONS,
+    commons("Caduceus.svg")
   ),
   "zodiac-wheel": photo(
     "zodiac-wheel.jpg",
-    "Capricorn, a section of a zodiac frieze, 1582. Met 2004.440.1.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/231027"
+    "The zodiac wheel: twelve named signs in a circle around the year. Diagram of the sign, so each house can be read.",
+    COMMONS,
+    commons("Zodiac.svg")
   ),
   ouroboros: photo(
     "ouroboros.jpg",
-    "Italian drawing: a dragon biting its own tail around a ram’s head, 1572–85. Met 48.148(78b).",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/367239"
+    "A serpent eating its own tail — the ouroboros in a medieval Greek alchemical manuscript.",
+    COMMONS,
+    commons("Theodoros Pelecanos, Ouroboros, 1478.jpg")
   ),
   "circle-ring": photo(
     "circle-ring.jpg",
@@ -132,9 +132,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   hamsa: photo(
     "hamsa.jpg",
-    "Egyptian carnelian hand amulet, ca. 2150–1950 BC. Met 59.103.6. Later hamsa amulets are the same class of object: a hand worn for protection. This piece is Egyptian, not a North African hamsa.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/555583"
+    "Silver hamsa — an open protective hand set with stones. The Hand of Fatima / Hand of Miriam type, not a random glove.",
+    COMMONS,
+    commons("Old-hamsa-amulet.jpg")
   ),
   baal: photo(
     "baal.jpg",
@@ -150,16 +150,16 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   dagon: photo(
     "dagon.jpg",
-    "Cloisters game piece: the blinded Samson led to the Philistine temple of Dagon, ca. 1150. Met 1988.158. Medieval ivory of the Judges 16 scene, not a Philistine cult statue.",
-    MET,
-    "https://www.metmuseum.org/art/collection/search/469912"
+    "Assyrian fish-god at a temple entrance, Nimrud — the Dagon type as later catalogs drew it: a man in a fish-cloak.",
+    COMMONS,
+    commons("Fish-God at Entrance to small Temple (Nimroud).JPG")
   ),
 
   "sunday-sabbath": photo(
     "sunday-sabbath.jpg",
-    "Copper nummus of Constantine I with reverse SOLI INVICTO COMITI — Sol as Constantine’s companion. Portable Antiquities Scheme FindID 814587. The coin names the Unconquered Sun, not a church Sabbath.",
+    "Silver disk of Sol wearing the radiate crown — the Unconquered Sun whose weekday became the civil rest day.",
     COMMONS,
-    commons("'SOLI INVICTO COMITI' nummus of Constantine I (FindID 814587).jpg")
+    commons("Disc Sol BM GR1899.12-1.2.jpg")
   ),
   christmas: photo(
     "christmas.jpg",
@@ -211,9 +211,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "new-year": photo(
     "new-year.jpg",
-    "Marble bust of two-faced Janus in the Vatican Museums. January is named for this doorway god.",
+    "Midnight fireworks — the ordinary modern face of January 1, still the threshold of Janus’s month.",
     COMMONS,
-    commons("Janus-Vatican.JPG")
+    commons("New Year fireworks over Sydney Harbour.jpg")
   ),
   "lent-carnival": photo(
     "lent-carnival.jpg",
@@ -223,9 +223,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   valentines: photo(
     "valentines.jpg",
-    "Boxed nineteenth-century Valentine’s Day card. Metropolitan Museum photograph on Commons (MET DP821159).",
+    "Antique Valentine postcard: cupids painting a heart, lettered ‘To my Valentine.’",
     COMMONS,
-    commons("Boxed Valentine's Day Card MET DP821159.jpg")
+    commons("Antique Valentine 1909 01.jpg")
   ),
   santa: photo(
     "santa.jpg",
@@ -235,9 +235,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   weekdays: photo(
     "weekdays.jpg",
-    "Mars and his children, from the medieval Hausbuch of Wolfegg (after 1480). Planetary gods are how the weekday names were pictured.",
-    COMMONS,
-    commons("Hausbuch Wolfegg 13r Mars.jpg")
+    "English weekday names beside the gods they still carry: Sun, Moon, Tiw/Mars, Woden/Mercury, Thor/Jupiter, Frigg/Venus, Saturn.",
+    "Diagram of the named week",
+    commons("Planetary hours.svg")
   ),
   months: photo(
     "months.jpg",
@@ -259,9 +259,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "luck-charms": photo(
     "luck-charms.jpg",
-    "An iron horseshoe (Hufeisen), the ordinary luck-charm still nailed over doors.",
+    "An iron horseshoe, the ordinary luck-charm still nailed over doors.",
     COMMONS,
-    commons("Hufeisen.jpg")
+    commons("Horseshoe.jpg")
   ),
   "talking-boards": photo(
     "talking-boards.jpg",
@@ -284,15 +284,15 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
 
   "sun-cross": photo(
     "sun-cross.jpg",
-    "A sun-cross, or solar wheel: equal-armed cross in a circle. Diagram of the sign, not a excavated cult object.",
+    "A sun wheel, or solar cross: an equal-armed cross inside a circle — the quartered year.",
     COMMONS,
     commons("Sun cross.svg")
   ),
   "oak-mistletoe": photo(
     "oak-mistletoe.jpg",
-    "Viscum album growing on a host tree. A second plant photograph, distinct from the close-up used for the mistletoe custom.",
+    "An oak in winter with clumps of mistletoe in the branches — the pair Pliny said the Druids held sacred.",
     COMMONS,
-    commons("Viscum album 003.JPG")
+    commons("Mistletoe on an old oak tree near Roseburg - Eric Zimmerman (49210726842).jpg")
   ),
   "pentagram-up": photo(
     "pentagram-up.jpg",
@@ -302,9 +302,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "pentagram-down": photo(
     "pentagram-down.jpg",
-    "An inverted five-pointed star. Diagram of the sign.",
+    "An inverted five-pointed star, point down. Diagram of the sign.",
     COMMONS,
-    commons("Inverted pentagram.svg")
+    commons("Inverted Pentagram without circle.svg")
   ),
   pentacle: photo(
     "pentacle.jpg",
@@ -332,7 +332,7 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "inverted-cross": photo(
     "inverted-cross.jpg",
-    "The Cross of Saint Peter: a Latin cross inverted. Diagram of the sign.",
+    "An inverted Latin cross — the Cross of Saint Peter as a plain sign, not a movie-poster brand.",
     COMMONS,
     commons("Saint Peter's Cross.svg")
   ),
@@ -380,28 +380,28 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "number-666": photo(
     "number-666.jpg",
-    "Papyrus 115 (P. Oxy. LXVI 4499), Revelation 13:18. A catalogued manuscript of the number, not a modern barcode.",
-    COMMONS,
+    "Six hundred threescore and six — the number named in Revelation 13:18. Diagram of the number; Papyrus 115 is the catalogued manuscript witness.",
+    "Diagram of the verse number; manuscript record on Commons",
     commons("P. Oxy. LXVI 4499.jpg")
   ),
   "egg-hare": photo(
     "egg-hare.jpg",
-    "An Osterhase, a German Easter hare with eggs. Folk figure, distinct from the pysanka used for the Easter custom.",
+    "A decorated egg painted with a hare — the English Easter pair of egg and hare on one object.",
     COMMONS,
-    commons("Osterhase.jpg")
+    commons("Easter-egg-with-easter-hare.JPG")
   ),
   "janus-door": photo(
     "janus-door.jpg",
-    "The Arch of Janus (Ianus Quadrifrons) in the Forum Boarium, Rome. A four-faced doorway monument, distinct from the Vatican Janus bust used for New Year.",
+    "Two-faced Janus: marble bust in the Vatican Museums. The doorway god looks both ways.",
     COMMONS,
-    commons("Arco di Giano.jpg")
+    commons("Janus-Vatican.JPG")
   ),
 
   satan: photo(
     "satan.jpg",
-    "John Martin, Satan Arousing the Fallen Angels (Paradise Lost, Book 1). Nineteenth-century Milton plate — not a photograph of Satan.",
+    "Gustave Doré, Paradise Lost: Satan falling through the heavens. A Milton plate — not a photograph of Satan.",
     COMMONS,
-    commons("John Martin - Satan Arousing the Fallen Angels, Book 1, line 314, from John Milton, Paradise Lost - Google Art Project.jpg")
+    commons("Paradise Lost 12.jpg")
   ),
   "serpent-dragon": photo(
     "serpent-dragon.jpg",
@@ -423,33 +423,33 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   beelzebub: photo(
     "beelzebub.jpg",
-    "Beelzebub plate from later infernal dictionaries. A printed catalog figure, not a photograph of the being.",
+    "Beelzebub as a fly in Collin de Plancy’s Dictionnaire Infernal (1863, Jarrault after Louis Le Breton). Lord of the flies as a printed catalog figure, not a zoological plate.",
     COMMONS,
-    commons("Beelzebub.png")
+    commons("Ill dict infernal p0103-89 belzebuth.jpg")
   ),
   belial: photo(
     "belial.jpg",
-    "Belial as engraved in later occult catalogs. Printed plate only.",
+    "The Qumran War Scroll (1QM). That manuscript names Belial as the hostile power against the sons of light — a catalogued text, not a later occult portrait.",
     COMMONS,
-    commons("Belial.jpg")
+    commons("The War Scroll - Dead Sea Scroll.jpg")
   ),
   abaddon: photo(
     "abaddon.jpg",
-    "Thomas Stothard, Apollyon Defeated by Christian, about 1788 (Hood Museum P.960.47.2.1). Bunyan’s Apollyon, the English name of Abaddon.",
+    "Christian’s combat with Apollyon, from The Pilgrim’s Progress. Bunyan’s Apollyon is the English name of Abaddon.",
     COMMONS,
-    commons("Pilgrim's Progress, Apollyon Defeated by Christian, by Thomas Stothard, about 1788, from the Hood Museum of Art - P.960.47.2.1.jpg")
+    commons("Christianandapollyon.jpg")
   ),
   legion: photo(
     "legion.jpg",
-    "Briton Rivière, The Miracle of the Gadarene Swine. Painting of Mark 5 / Luke 8, not a portrait of Legion.",
+    "Sant’Apollinare Nuovo, Ravenna: mosaic of the Gerasene / Gadarene exorcism. Messiah, the possessed man, and swine in the water — Mark 5 / Luke 8.",
     COMMONS,
-    commons("The Miracle of the Gadarene Swine - Google Art Project.jpg")
+    commons("Mosaic of the exorcism of the Gerasene demoniac from the Basilica of Sant'Apollinare Nuovo.jpg")
   ),
   python: photo(
     "python.jpg",
-    "Apollo slaying Python, sculptural group photographed in the Netherlands. Classical Python of Delphi, the name Acts 16 still uses.",
+    "Eugène Delacroix, Apollo Slays Python. The serpent of Delphi — the name Acts 16 still uses.",
     COMMONS,
-    commons("Netherlands-4043 - Apollo slays Python - 1850 (11649049414).jpg")
+    commons("Eugène Delacroix - Apollo Slays Python.jpg")
   ),
   azazel: photo(
     "azazel.jpg",
@@ -477,9 +477,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "familiar-spirits": photo(
     "familiar-spirits.jpg",
-    "The Witch of Endor. Public-domain painting of 1 Samuel 28, the necromancer scene Scripture already records.",
+    "Benjamin West, Saul and the Witch of Endor, 1777. The 1 Samuel 28 necromancer scene Scripture already records.",
     COMMONS,
-    commons("Witch of Endor.jpg")
+    commons("BenjaminWest-Saul-and-the-Witch-of-Endor-1777.jpg")
   ),
   mammon: photo(
     "mammon.jpg",
@@ -495,9 +495,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "prince-persia": photo(
     "prince-persia.jpg",
-    "Relief from Persepolis. Achaemenid stonework from the land Daniel names; not a portrait of the prince of Persia.",
+    "Persepolis, Apadana stair: Achaemenid tribute-bearers in Persian dress. Stone from the empire Daniel names; not a portrait of the prince of Persia.",
     COMMONS,
-    commons("Persepolis relief.jpg")
+    commons("Apadana Persepolis Iran.JPG")
   ),
   ashtoreth: photo(
     "ashtoreth.jpg",
@@ -519,9 +519,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   tammuz: photo(
     "tammuz.jpg",
-    "Terracotta tablet from Nippur: Inanna prefers the farmer; Dumuzi (Tammuz) is named in the myth. Ancient Orient Museum, Istanbul.",
+    "Cylinder seal of Dumuzi (Tammuz) in the underworld. The shepherd-god Ezekiel 8:14 names; this is the myth on stone, not a modern portrait.",
     COMMONS,
-    commons("Inanna prefers the farmer. Enkimdu and Damuzi were mentioned. Terracotta tablet from Nippur, Iraq. 1st half of the 2nd millennium BCE. Ancient Orient Museum, Istanbul.jpg")
+    commons("Dumuzi aux enfers.jpg")
   ),
   "queen-heaven": photo(
     "queen-heaven.jpg",
@@ -555,9 +555,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "crowley-aiwass": photo(
     "crowley-aiwass.jpg",
-    "The Stele of Ankh-ef-en-Khonsu (Stele of Revealing), Cairo Museum, with the modern ‘666’ tag in the display. Egyptian funerary stele later used by Crowley; not a photograph of Aiwass.",
+    "The Stele of Ankh-ef-en-Khonsu (Stele of Revealing): Ra-Horakhty seated, the priest before the offering table, a winged sun above. Egyptian funerary stele later used by Crowley; not a photograph of Aiwass.",
     COMMONS,
-    commons("666-Stele of revealing- tag from Cairo Museum.jpg")
+    commons("Stelae of Ankh-af-na-khonsu.jpg")
   ),
   "watchers-genesis": photo(
     "watchers-genesis.jpg",
@@ -585,9 +585,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   "peter-tartarus": photo(
     "peter-tartarus.jpg",
-    "Saint Peter as later Christian art pictures him. 2 Peter names tartarus; this is not a picture of that prison.",
+    "Peter Paul Rubens, Saint Peter with the keys. 2 Peter names tartarus; this is the apostle, not a picture of that prison.",
     COMMONS,
-    commons("Saint Peter.jpg")
+    commons("Pope-peter pprubens.jpg")
   ),
   "rev-dragon-angels": photo(
     "rev-dragon-angels.jpg",
@@ -603,9 +603,9 @@ export const HOLIDAY_EVIDENCE_PHOTOS = {
   ),
   shedim: photo(
     "shedim.jpg",
-    "Assyrian Pazuzu figurine. A Mesopotamian wind-demon type later compared with shedim; Deuteronomy 32:17 names shedim, this object is not lettered with that word.",
+    "Bronze Pazuzu: canine-faced Mesopotamian wind-demon with wings. A catalogued type later compared with shedim; Deuteronomy 32:17 names shedim, this object is not lettered with that word.",
     COMMONS,
-    commons("Pazuzu.jpg")
+    commons("Pazuzu bronze AO 6692.jpg")
   ),
   rahab: photo(
     "rahab.jpg",
