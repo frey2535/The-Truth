@@ -116,6 +116,7 @@ assert.doesNotMatch(accountPage, /Create account/);
 assert.match(readFileSync("src/pages/Assistant.jsx", "utf8"), /Not a generative AI chatbot/);
 assert.match(readFileSync("store/play/console/IARC.md", "utf8"), /no general URL bar/i);
 assert.match(readFileSync("src/pages/Login.jsx", "utf8"), /Delete account/);
+assert.match(readFileSync("store/play/console/CLOSED_TESTING.md", "utf8"), /organization account/);
 assert.match(readFileSync("store/play/console/CLOSED_TESTING.md", "utf8"), /Google Group/);
 assert.match(redirects, /^\/play-console\s+\/index\.html\s+200/m);
 const questionnaireIds = PLAY_QUESTIONNAIRE.map((section) => section.id);
@@ -148,6 +149,10 @@ assert.equal(
 assert.match(
   PLAY_QUESTIONNAIRE.find((section) => section.id === "ai").items[0].a,
   /No/
+);
+assert.match(
+  PLAY_QUESTIONNAIRE.find((section) => section.id === "closed-test").items[0].a,
+  /organization Play account/
 );
 assert.match(readFileSync(".github/workflows/play-bundle.yml", "utf8"), /bundleRelease/);
 
