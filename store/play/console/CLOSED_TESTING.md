@@ -1,6 +1,8 @@
-# Closed testing at no cost
+# Closed testing — not required for this listing
 
-New personal Play developer accounts created after 13 November 2023 cannot go straight to production. Organization accounts can usually apply after review.
+**This Play developer account is an organization account.** Skip this page. Upload the `.aab` under Test and release → Production and submit for review.
+
+The 12-tester / 14-day closed test applies only to **new personal** Play accounts created after 13 November 2023. Keep the steps below only if Play later treats the account as personal and blocks production.
 
 Do **not** pay testers or a testing service.
 

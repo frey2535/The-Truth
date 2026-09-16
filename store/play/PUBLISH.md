@@ -20,7 +20,7 @@ This repository cannot create the Play developer account or click Submit. If you
 - Store listing and screenshots: `store/play/` and `fastlane/metadata/android/en-US/`
 - Console paste pack: `store/play/console/`
 - Reviewer notes: `store/play/console/REVIEW_NOTES.txt`
-- Closed-test steps (free Google Group): `store/play/console/CLOSED_TESTING.md`
+- This listing is an **organization** Play account: skip closed testing and upload the `.aab` to Production. Personal-account closed-test notes (not used here): `store/play/console/CLOSED_TESTING.md`
 
 ## What you still do in Play Console
 
@@ -38,8 +38,8 @@ This repository cannot create the Play developer account or click Submit. If you
 7. Data safety: `store/play/console/DATA_SAFETY.md` (same as `/data-safety`).
 8. IARC questionnaire: `store/play/console/IARC.md` (expect Teen; not Designed for Families).
 9. Review notes: `store/play/console/REVIEW_NOTES.txt`.
-10. Upload the signed Android App Bundle (`.aab`).
-11. If this is a **personal** developer account created after 13 November 2023, run a **closed test** with at least **12 testers opted in for 14 continuous days**, then apply for production access on the Dashboard. Use a free Google Group — see `store/play/console/CLOSED_TESTING.md`. Internal testing does not count. Organization accounts can usually go to production after review.
+10. Upload the signed Android App Bundle (`.aab`) under **Test and release → Production**.
+11. This Play developer account is an **organization** account. Do **not** run the 12-tester / 14-day closed test. Create a production release, upload `thetruth-play-1.0.0.aab` (or `android/app/build/outputs/bundle/release/app-release.aab`), and submit for review. Closed testing is only for new personal accounts after 13 November 2023 — see `store/play/console/CLOSED_TESTING.md` if Play ever asks for it.
 
 ## Build the App Bundle
 
