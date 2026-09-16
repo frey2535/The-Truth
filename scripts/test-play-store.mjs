@@ -42,7 +42,7 @@ assert.match(PLAY_FULL_DESCRIPTION, /independent/i);
 assert.doesNotMatch(PLAY_FULL_DESCRIPTION, /OpenAI/i);
 assert.ok(PLAY_FULL_DESCRIPTION.length > 200);
 assert.ok(PLAY_FULL_DESCRIPTION.length <= 4000);
-assert.equal(PLAY_PACKAGE_ID, "org.currentflowconsulting.thetruth");
+assert.equal(PLAY_PACKAGE_ID, "com.currentflow.thetruth");
 assert.match(PLAY_START_URL, /^https:\/\/thetruth\.currentflowconsulting\.org\/$/);
 assert.equal(PRIVACY_POLICY_URL, `https://${PLAY_HOST}/privacy`);
 assert.equal(DATA_SAFETY_URL, `https://${PLAY_HOST}/data-safety`);
@@ -73,7 +73,7 @@ assert.ok(links[0].target.sha256_cert_fingerprints.length >= 1);
 const gradle = readFileSync("android/app/build.gradle", "utf8");
 assert.match(gradle, /targetSdk 36/);
 assert.match(gradle, /compileSdk 36/);
-assert.match(gradle, /applicationId "org\.currentflowconsulting\.thetruth"/);
+assert.match(gradle, /applicationId "com\.currentflow\.thetruth"/);
 assert.match(readFileSync("android/build.gradle", "utf8"), /8\.11\.1/);
 assert.doesNotMatch(gradle, /billingclient|play-billing|com\.android\.vending\.BILLING/i);
 

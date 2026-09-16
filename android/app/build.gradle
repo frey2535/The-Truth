@@ -16,11 +16,11 @@ def hasEnvSigning = envStoreFile && file(envStoreFile).exists() && envStorePassw
 def hasFileSigning = keystoreFile.exists() && keystoreProperties["storeFile"]
 
 android {
-    namespace "org.currentflowconsulting.thetruth"
+    namespace "com.currentflow.thetruth"
     compileSdk 36
 
     defaultConfig {
-        applicationId "org.currentflowconsulting.thetruth"
+        applicationId "com.currentflow.thetruth"
         minSdk 26
         targetSdk 36
         versionCode 1

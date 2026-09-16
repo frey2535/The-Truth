@@ -1,5 +1,5 @@
 /** Google Play / TWA identity. The live origin is Cloudflare, not GitHub Pages. */
-export const PLAY_PACKAGE_ID = "org.currentflowconsulting.thetruth";
+export const PLAY_PACKAGE_ID = "com.currentflow.thetruth";
 export const PLAY_HOST = "thetruth.currentflowconsulting.org";
 export const PLAY_START_URL = "https://thetruth.currentflowconsulting.org/";
 export const PRIVACY_POLICY_URL = "https://thetruth.currentflowconsulting.org/privacy";

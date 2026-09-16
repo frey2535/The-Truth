@@ -5,7 +5,7 @@
     ],
     "target": {
       "namespace": "android_app",
-      "package_name": "org.currentflowconsulting.thetruth",
+      "package_name": "com.currentflow.thetruth",
       "sha256_cert_fingerprints": [
         "00:49:C2:85:0D:C7:C5:BA:24:BC:94:E4:66:E6:82:9A:20:C0:30:58:AF:61:0B:E2:76:72:5B:27:48:0C:43:C3"
       ]
