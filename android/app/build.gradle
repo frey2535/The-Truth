@@ -8,6 +8,12 @@ if (keystoreFile.exists()) {
     keystoreFile.withInputStream { keystoreProperties.load(it) }
 }
 
+def releaseStoreFile = System.getenv("ANDROID_UPLOAD_STORE_FILE") ?: keystoreProperties["storeFile"]
+def releaseStorePassword = System.getenv("ANDROID_UPLOAD_STORE_PASSWORD") ?: keystoreProperties["storePassword"]
+def releaseKeyAlias = System.getenv("ANDROID_UPLOAD_KEY_ALIAS") ?: keystoreProperties["keyAlias"]
+def releaseKeyPassword = System.getenv("ANDROID_UPLOAD_KEY_PASSWORD") ?: keystoreProperties["keyPassword"]
+def hasReleaseSigning = [releaseStoreFile, releaseStorePassword, releaseKeyAlias, releaseKeyPassword].every { it }
+
 android {
     namespace "org.currentflowconsulting.thetruth"
     compileSdk 36
@@ -22,12 +28,13 @@ android {
     }
 
     signingConfigs {
-        if (keystoreFile.exists()) {
-            release {
-                storeFile rootProject.file(keystoreProperties["storeFile"] ?: "upload.keystore")
-                storePassword keystoreProperties["storePassword"]
-                keyAlias keystoreProperties["keyAlias"]
-                keyPassword keystoreProperties["keyPassword"]
+        release {
+            if (hasReleaseSigning) {
+                def store = new File(releaseStoreFile)
+                storeFile store.isAbsolute() ? store : rootProject.file(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
             }
         }
     }
@@ -35,8 +42,10 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            if (keystoreFile.exists()) {
+            if (hasReleaseSigning) {
                 signingConfig signingConfigs.release
+            } else {
+                logger.warn("Release signing is not configured. Set ANDROID_UPLOAD_* env vars or android/keystore.properties.")
             }
         }
         debug {
@@ -54,4 +63,16 @@ android {
 dependencies {
     implementation "com.google.androidbrowserhelper:androidbrowserhelper:2.6.2"
     implementation "androidx.appcompat:appcompat:1.7.0"
+}
+
+tasks.register("validateReleaseSigning") {
+    doLast {
+        if (!hasReleaseSigning) {
+            throw new GradleException("Release signing is missing. Set ANDROID_UPLOAD_STORE_FILE, ANDROID_UPLOAD_STORE_PASSWORD, ANDROID_UPLOAD_KEY_ALIAS, and ANDROID_UPLOAD_KEY_PASSWORD, or create untracked android/keystore.properties.")
+        }
+    }
+}
+
+tasks.matching { it.name == "bundleRelease" }.configureEach {
+    dependsOn("validateReleaseSigning")
 }

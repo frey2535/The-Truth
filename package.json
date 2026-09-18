@@ -23,8 +23,11 @@
     "test:storage": "node scripts/test-storage-chat.mjs",
     "test:search": "node scripts/test-search-all-verses.mjs",
     "play:assets": "python3 scripts/play/generate-store-assets.py",
+    "play:legal": "node scripts/play/write-legal-html.mjs",
     "play:assetlinks": "node scripts/play/write-assetlinks.mjs",
+    "play:keystore": "bash scripts/play/create-upload-keystore.sh",
     "play:bundle": "cd android && ./gradlew bundleRelease",
+    "android:bundle:release": "cd android && ./gradlew bundleRelease && node ../scripts/play/copy-release-aab.mjs",
     "vendor-catalog": "node scripts/vendor-catalog-texts.mjs"
   },
   "dependencies": {

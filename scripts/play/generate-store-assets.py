@@ -23,8 +23,16 @@ WINE = (122, 46, 46)
 
 
 def font(size, bold=False):
-    name = "DejaVuSerif-Bold.ttf" if bold else "DejaVuSerif.ttf"
-    return ImageFont.truetype(f"/usr/share/fonts/truetype/dejavu/{name}", size)
+    candidates = [
+        "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
+        "/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf" if bold else "/System/Library/Fonts/Supplemental/Times New Roman.ttf",
+        "/Library/Fonts/Times New Roman.ttf",
+        "/System/Library/Fonts/NewYork.ttf",
+    ]
+    for path in candidates:
+        if Path(path).exists():
+            return ImageFont.truetype(path, size)
+    return ImageFont.load_default()
 
 
 def rounded(im, radius):
@@ -118,6 +126,10 @@ def main():
     feature_graphic(icon)
     play_icon(icon)
     maskable(icon)
+    if "--mock-screenshots" not in __import__("sys").argv:
+        print("skipping phone mockups (pass --mock-screenshots to regenerate). Keep real Play shots.")
+        android_icons(icon)
+        return
     phone_shot(
         icon,
         "Read",

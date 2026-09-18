@@ -55,7 +55,7 @@ GitHub Actions can create a KV namespace named **thetruth-installs**. Bind it as
 
 There is a quiet **Platform owner** link at the bottom of the Install page. The live count is stored on the Cloudflare site, so GitHub Pages installs report there too.
 
-Privacy policy: [https://thetruth.currentflowconsulting.org/privacy](https://thetruth.currentflowconsulting.org/privacy). Play data-safety answers and on-device account deletion: `/data-safety` and `/account`.
+Privacy policy: [https://thetruth.currentflowconsulting.org/privacy](https://thetruth.currentflowconsulting.org/privacy). Play data-safety answers and on-device account deletion: `/data-safety` and `/account`. The Play listing is **free** with full access — see [`store/play/PUBLISH.md`](store/play/PUBLISH.md) and [`store/play/console.md`](store/play/console.md).
 
 ## Publish
 
@@ -116,11 +116,11 @@ npm run test:play
 
 `npm run share` builds a production copy and serves it on your LAN at port **4174** so phones can open and install it.
 
-Play Store (Android App Bundle on a machine with the Android SDK):
+Play Store (free Android App Bundle):
 
 ```bash
-bash scripts/play/create-upload-keystore.sh
-cd android && ./gradlew bundleRelease
+npm run play:keystore
+npm run android:bundle:release
 ```
 
-See [`store/play/PUBLISH.md`](store/play/PUBLISH.md). After Play App Signing is on, put the signing-cert SHA-256 in `public/.well-known/assetlinks.json` with `npm run play:assetlinks` and deploy the site.
+Or run GitHub Actions **Build Android App Bundle**. See [`store/play/PUBLISH.md`](store/play/PUBLISH.md). After Play App Signing is on, put the signing-cert SHA-256 in `public/.well-known/assetlinks.json` with `npm run play:assetlinks` and merge to `main`.

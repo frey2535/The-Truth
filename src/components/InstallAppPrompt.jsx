@@ -129,6 +129,13 @@ export default function InstallAppPrompt() {
     setOpen(false);
   };
 
+  if (
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).has("play-shot")
+  ) {
+    return null;
+  }
+
   if (!open || onAuth || isStandaloneDisplay()) return null;
 
   return (

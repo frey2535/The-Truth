@@ -12,7 +12,7 @@ Free. Do not add in-app products or subscriptions. This choice is usually perman
 
 ## Short description (80)
 
-Free Scripture research. Read and investigate claims from stored texts.
+Read Scripture and investigate claims using texts stored in the app.
 
 ## Full description (4000)
 
@@ -53,6 +53,8 @@ Privacy policy: https://thetruth.currentflowconsulting.org/privacy
 
 ## Graphics in this folder
 
-- `icon-512.png` — high-res icon, 512×512, no transparency
-- `feature-graphic.png` — 1024×500
-- `screenshots/phone-*.png` — phone shots, 1080×1920
+- `icon-512.png` — high-res icon, 512×512
+- `feature-graphic.png` — 1024×500, no transparency
+- `screenshots/phone-*.png` — phone shots, 1080×1920 (must show the real app)
+
+Play Console form answers: [`console.md`](console.md).

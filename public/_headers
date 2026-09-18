@@ -4,3 +4,15 @@
 
 /privacy
   X-Robots-Tag: all
+  Content-Type: text/html; charset=utf-8
+
+/privacy.html
+  X-Robots-Tag: all
+
+/data-safety
+  X-Robots-Tag: all
+  Content-Type: text/html; charset=utf-8
+
+/account
+  X-Robots-Tag: all
+  Content-Type: text/html; charset=utf-8

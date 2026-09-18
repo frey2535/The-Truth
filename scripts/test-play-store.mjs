@@ -18,7 +18,7 @@ import {
 assert.equal(PLAY_IS_FREE, true);
 assert.equal(PLAY_TITLE.length <= 30, true, "Play title must be 30 characters or fewer");
 assert.equal(PLAY_SHORT_DESCRIPTION.length <= 80, true, "Play short description must be 80 characters or fewer");
-assert.match(PLAY_SHORT_DESCRIPTION, /Free/i);
+assert.doesNotMatch(PLAY_SHORT_DESCRIPTION, /\bFree\b|Install now|#1/i);
 assert.match(PLAY_FULL_DESCRIPTION, /free/i);
 assert.match(PLAY_FULL_DESCRIPTION, /no in-app purchases/i);
 assert.ok(PLAY_FULL_DESCRIPTION.length > 200);
@@ -41,6 +41,9 @@ assert.equal(manifest.prefer_related_applications, false);
 const redirects = readFileSync("public/_redirects", "utf8");
 assert.match(redirects, /^\/login\s+\/index\.html\s+200/m);
 assert.match(redirects, /^\/owner\s+\/index\.html\s+200/m);
+assert.match(redirects, /^\/privacy\s+\/privacy\.html\s+200/m);
+assert.match(redirects, /^\/data-safety\s+\/data-safety\.html\s+200/m);
+assert.match(redirects, /^\/account\s+\/account\.html\s+200/m);
 assert.ok(manifest.screenshots?.length >= 2);
 assert.ok(manifest.icons.some((icon) => icon.purpose === "maskable"));
 
@@ -60,6 +63,17 @@ assert.equal(/<uses-permission[^>]*BILLING/i.test(manifestXml), false);
 assert.match(readFileSync("store/play/listing.md", "utf8"), /Pricing[\s\S]*Free/i);
 
 assert.match(redirects, /\.well-known/);
+assert.match(manifestXml, /<queries>/);
+
+const privacyHtml = readFileSync("public/privacy.html", "utf8");
+assert.match(privacyHtml, /in-app purchase/i);
+assert.match(privacyHtml, /Privacy policy/);
+assert.doesNotMatch(privacyHtml, /<script/i);
+assert.match(readFileSync("public/data-safety.html", "utf8"), /Data safety/);
+assert.match(readFileSync("public/account.html", "utf8"), /Delete account/);
+assert.match(readFileSync("store/play/console.md", "utf8"), /Free or paid:\s+\*\*Free\*\*/);
+assert.equal(existsSync(".github/workflows/build-android-aab.yml"), true);
+assert.equal(existsSync("scripts/play/copy-release-aab.mjs"), true);
 
 for (const file of [
   "store/play/feature-graphic.png",

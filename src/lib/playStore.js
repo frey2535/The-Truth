@@ -13,9 +13,9 @@ export const PLAY_TITLE = "The Truth";
 /** Play Console: create the app as Free. Do not add in-app products. */
 export const PLAY_IS_FREE = true;
 
-/** Play Console short description — 80 characters max. */
+/** Play Console short description — 80 characters max. Do not put “Free” here; Play treats that as promo text. */
 export const PLAY_SHORT_DESCRIPTION =
-  "Free Scripture research. Read and investigate claims from stored texts.";
+  "Read Scripture and investigate claims using texts stored in the app.";
 
 export const PLAY_FULL_DESCRIPTION = `The Truth is a free Scripture research app. There is no paid download and no in-app purchases. Read the King James Bible, the 1611 Apocrypha, Dead Sea Scrolls English already stored here, Enoch, early church fathers, Josephus, and other published records that ship with the app.
 

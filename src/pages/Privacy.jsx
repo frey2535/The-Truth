@@ -9,7 +9,7 @@ import {
 
 export default function Privacy() {
   return (
-    <LegalDoc kicker="Legal" title="Privacy policy" updated="Effective 7 September 2026">
+    <LegalDoc kicker="Legal" title="Privacy policy" updated="Effective 10 September 2026">
       <LegalP>
         This policy is for <strong>The Truth</strong>, the Scripture research app at{" "}
         <a className="text-[#7a2e2e] underline" href={PRIVACY_POLICY_URL}>
