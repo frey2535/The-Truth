@@ -6,6 +6,7 @@ import {
   ownerLogin,
   revokeCursorToken,
   saveGoogleClientId,
+  sendOwnerAgentChat,
 } from "@/lib/installStats";
 import { clearOwnerSession, readOwnerSession, writeOwnerSession } from "@/lib/ownerSession";
 
@@ -46,5 +47,9 @@ export const localOwner = {
 
   async revokeCursorToken(id) {
     return revokeCursorToken(id);
+  },
+
+  async agentChat(payload) {
+    return sendOwnerAgentChat(payload);
   },
 };

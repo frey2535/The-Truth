@@ -4,6 +4,7 @@ import { emptyLedger } from "../src/lib/installLedger.js";
 import { handleInstallHit, handleInstallsRequest, handleOwnerLogin, readOwnerCredentials } from "../src/lib/installsApi.js";
 import { handleMcpHttp, handleMcpTokensRequest } from "../src/lib/mcpApi.js";
 import { emptyMcpTokenStore } from "../src/lib/mcpStore.js";
+import { handleOwnerAgentChat } from "../src/lib/ownerAgentChatApi.js";
 
 function send(res, status, body) {
   res.statusCode = status;
@@ -68,7 +69,8 @@ export function installsDevPlugin(rootDir) {
       url !== "/api/owner-login" &&
       url !== "/api/install-hit" &&
       url !== "/api/mcp" &&
-      url !== "/api/mcp-tokens"
+      url !== "/api/mcp-tokens" &&
+      url !== "/api/owner-agent-chat"
     ) {
       next();
       return;
@@ -98,6 +100,27 @@ export function installsDevPlugin(rootDir) {
       }
       const creds = credentials();
       const origin = `http://${req.headers.host || "truth.localhost:5174"}`;
+      if (url === "/api/owner-agent-chat") {
+        const response = await handleOwnerAgentChat({
+          request: new Request(`${origin}${url}`, {
+            method: req.method,
+            headers: {
+              Authorization: req.headers.authorization || "",
+              "Content-Type": "application/json",
+              Origin: req.headers.origin || origin,
+            },
+            body: req.method === "POST" ? JSON.stringify(body) : undefined,
+          }),
+          env: process.env,
+          load,
+          save,
+          allowLocalFallback: true,
+        });
+        res.statusCode = response.status;
+        response.headers.forEach((value, key) => res.setHeader(key, value));
+        res.end(await response.text());
+        return;
+      }
       const result =
         url === "/api/owner-login"
           ? await handleOwnerLogin({

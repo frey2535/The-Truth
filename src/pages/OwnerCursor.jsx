@@ -7,7 +7,7 @@ import PageTools from "@/components/PageTools";
 import { publishedApiOrigin } from "@/lib/appOrigin";
 import { cursorMcpSnippet, mcpEndpoint } from "@/lib/mcpConfig";
 import { useOwner } from "@/lib/OwnerContext";
-import { Check, Copy, KeyRound, Loader2, Sparkles } from "lucide-react";
+import { Bot, Check, Copy, KeyRound, Loader2, Send, Sparkles } from "lucide-react";
 
 function formatWhen(iso) {
   if (!iso) return "Never used";
@@ -16,6 +16,14 @@ function formatWhen(iso) {
   } catch {
     return iso;
   }
+}
+
+function chatMessage(role, text) {
+  return {
+    id: `owner-chat-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    role,
+    text,
+  };
 }
 
 export default function OwnerCursor() {
@@ -27,6 +35,9 @@ export default function OwnerCursor() {
   const [name, setName] = useState("Cursor on this computer");
   const [freshToken, setFreshToken] = useState("");
   const [copied, setCopied] = useState("");
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatDraft, setChatDraft] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
   const endpoint = useMemo(
     () => mcpEndpoint(publishedApiOrigin() || (typeof window !== "undefined" ? window.location.origin : "")),
     []
@@ -91,6 +102,37 @@ export default function OwnerCursor() {
       window.setTimeout(() => setCopied(""), 2000);
     } catch {
       setCopied("");
+    }
+  }
+
+  async function sendOwnerChat(event) {
+    event.preventDefault();
+    const text = chatDraft.trim();
+    if (!text || chatLoading) return;
+    const userMessage = chatMessage("user", text);
+    const history = chatMessages.slice(-8).map((row) => ({ role: row.role, text: row.text }));
+    setChatDraft("");
+    setChatMessages((current) => [...current, userMessage]);
+    setChatLoading(true);
+    try {
+      const data = await base44.owner.agentChat({
+        message: text,
+        history,
+        context: {
+          page: "/owner/cursor",
+          endpoint,
+          issuedCursorTokens: tokens.length,
+          hasFreshToken: Boolean(freshToken),
+        },
+      });
+      setChatMessages((current) => [...current, chatMessage("assistant", data.answer || "The owner assistant did not return an answer.")]);
+    } catch (err) {
+      setChatMessages((current) => [
+        ...current,
+        chatMessage("assistant", `I couldn't connect to the owner AI service: ${err.message}. No change was made.`),
+      ]);
+    } finally {
+      setChatLoading(false);
     }
   }
 
@@ -196,6 +238,67 @@ export default function OwnerCursor() {
               Copy MCP snippet
             </Button>
           </div>
+        </div>
+
+        <div className="rounded-2xl border border-[#e8c97a]/35 bg-[#faf6ef]/92 backdrop-blur-md p-6 mb-5">
+          <div className="flex items-start gap-3 mb-3">
+            <span className="w-10 h-10 rounded-lg bg-[#f3e9c8] flex items-center justify-center shrink-0">
+              <Bot className="w-5 h-5 text-[#7a2e2e]" />
+            </span>
+            <div>
+              <h2 className="font-display text-xl text-[#2b2620]">Owner assistant</h2>
+              <p className="text-sm text-[#5b5142] mt-1">
+                Ask operational questions about this owner page and Cursor connection. Study questions should
+                still use the in-app Assistant, Research, Investigate, or Word Study tools.
+              </p>
+            </div>
+          </div>
+          <div className="rounded-xl border border-[#e8ddc7] bg-white/70 p-3 max-h-64 overflow-y-auto space-y-2 mb-3">
+            {!chatMessages.length ? (
+              <p className="text-sm text-[#8a7f6f]">
+                No owner-assistant messages yet. The browser sends only this page's limited owner context.
+              </p>
+            ) : (
+              chatMessages.map((row) => (
+                <p
+                  key={row.id}
+                  className={`whitespace-pre-wrap rounded-xl px-3 py-2 text-sm ${
+                    row.role === "user"
+                      ? "ml-8 bg-[#2b2620] text-[#f3e9c8]"
+                      : "mr-8 bg-[#f0e6d2] text-[#2b2620]"
+                  }`}
+                >
+                  {row.text}
+                </p>
+              ))
+            )}
+            {chatLoading ? (
+              <p className="inline-flex items-center gap-2 rounded-xl bg-[#f0e6d2] px-3 py-2 text-sm text-[#8a7f6f]">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Thinking…
+              </p>
+            ) : null}
+          </div>
+          <form onSubmit={sendOwnerChat} className="grid gap-3 sm:grid-cols-[1fr_auto]">
+            <label className="text-sm text-[#2b2620]">
+              Question
+              <textarea
+                value={chatDraft}
+                onChange={(e) => setChatDraft(e.target.value)}
+                rows={3}
+                placeholder="Ask about Cursor tokens, owner setup, or this page…"
+                className="mt-1 w-full rounded-md border border-[#e8ddc7] bg-white px-3 py-2"
+              />
+            </label>
+            <Button
+              type="submit"
+              className="h-11 self-end bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]"
+              disabled={!chatDraft.trim() || chatLoading}
+            >
+              {chatLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
+              Send
+            </Button>
+          </form>
         </div>
 
         <div className="rounded-2xl border border-[#e8c97a]/35 bg-[#faf6ef]/92 backdrop-blur-md p-6">

@@ -326,3 +326,25 @@ export async function revokeCursorToken(id) {
   if (!res.ok) throw new Error(data.error || "Could not revoke that Cursor token");
   return data;
 }
+
+export async function sendOwnerAgentChat({ message, history, context }) {
+  const origin = installMetricsOrigin();
+  const res = await fetch(`${origin}/api/owner-agent-chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...ownerAuthHeaders(),
+    },
+    body: JSON.stringify({ message, history, context }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const hint = res.status === 429 ? "AI provider quota was reached. Try again later."
+      : res.status === 503 ? "A required function setting is missing."
+      : res.status === 502 ? "AI provider request failed; inspect function logs."
+      : res.status === 504 ? "AI provider timed out or could not connect."
+      : "Inspect the function logs and browser network request.";
+    throw new Error(data.error || hint);
+  }
+  return data;
+}

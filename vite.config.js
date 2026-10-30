@@ -205,6 +205,12 @@ export default defineConfig(({ mode }) => {
   if (env.GOOGLE_CLIENT_SECRET) process.env.GOOGLE_CLIENT_SECRET = env.GOOGLE_CLIENT_SECRET;
   if (env.PLATFORM_OWNER_EMAIL) process.env.PLATFORM_OWNER_EMAIL = env.PLATFORM_OWNER_EMAIL;
   if (env.PLATFORM_OWNER_PASSWORD) process.env.PLATFORM_OWNER_PASSWORD = env.PLATFORM_OWNER_PASSWORD;
+  if (env.GEMINI_API_KEY) process.env.GEMINI_API_KEY = env.GEMINI_API_KEY;
+  if (env.GOOGLE_AI_API_KEY) process.env.GOOGLE_AI_API_KEY = env.GOOGLE_AI_API_KEY;
+  if (env.TRUTH_AGENT_MODEL) process.env.TRUTH_AGENT_MODEL = env.TRUTH_AGENT_MODEL;
+  if (env.TRUTH_AGENT_OWNER_EMAILS) process.env.TRUTH_AGENT_OWNER_EMAILS = env.TRUTH_AGENT_OWNER_EMAILS;
+  if (env.TRUTH_APP_ORIGIN) process.env.TRUTH_APP_ORIGIN = env.TRUTH_APP_ORIGIN;
+  if (env.TRUTH_APP_ORIGINS) process.env.TRUTH_APP_ORIGINS = env.TRUTH_APP_ORIGINS;
 
   const truthBuildId = new Date().toISOString();
   const pagesRepo = process.env.GITHUB_REPOSITORY || "frey2535/The-Truth";

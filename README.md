@@ -59,6 +59,8 @@ There is a quiet **Platform owner** link at the bottom of the Install page. The 
 
 Sign in at **/owner**, then open **/owner/cursor**. That page mints a hashed `mcp_` token and a Cursor MCP snippet. Paste it in **Cursor Settings → MCP** (or copy `.cursor/mcp.json.example`). Cloud agents should use `https://thetruth.currentflowconsulting.org/api/mcp`. The token is owner-level: list downloads, record a past install, and read Google / page status. It does not send study questions to the internet.
 
+The same owner page has an optional owner-assistant chat for operational questions about the owner/Cursor setup. It uses a server-side Gemini key only when `GEMINI_API_KEY` is bound on Cloudflare Pages. Optional settings are `TRUTH_AGENT_MODEL` (default `gemini-2.5-flash`), `TRUTH_APP_ORIGIN`, `TRUTH_APP_ORIGINS`, and `TRUTH_AGENT_OWNER_EMAILS` for extra owner emails; the app owner and backup admin remain allowed by default. This chat is not for study questions — Research, Investigate, Assistant, and Word Study still use stored app texts only.
+
 Privacy policy: [https://thetruth.currentflowconsulting.org/privacy](https://thetruth.currentflowconsulting.org/privacy). Play data-safety answers, the full Console paste pack, and on-device account deletion: `/data-safety`, `/play-console`, and `/account`.
 
 ## Publish
