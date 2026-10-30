@@ -19,6 +19,7 @@
     "test:mcp": "node scripts/test-mcp.mjs",
     "test:spa": "node scripts/test-spa-routes.mjs",
     "test:installs": "node scripts/test-install-ledger.mjs && node scripts/test-install-metrics.mjs",
+    "test:owner-agent-chat": "node scripts/test-owner-agent-chat.mjs",
     "test:play": "node scripts/test-play-store.mjs",
     "test:assistant": "node scripts/test-assistant-understand.mjs",
     "test:storage": "node scripts/test-storage-chat.mjs",
