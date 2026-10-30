@@ -11,6 +11,22 @@ import { shouldStartNewChat } from "@/lib/assistantChat";
 import { askHistory, loadableMessages, persistableMessages } from "@/lib/assistantSafety";
 
 const QUOTE_BATCH = 24;
+const PASSAGE_SOURCE_ORDER = [
+  "canon",
+  "apocrypha",
+  "enoch",
+  "dead_sea_scrolls",
+  "fathers",
+  "josephus",
+  "philo",
+  "other",
+  "user",
+  "archaeology",
+  "science",
+  "government",
+  "vatican",
+  "modern",
+];
 
 class AssistantTurnBoundary extends React.Component {
   constructor(props) {
@@ -35,7 +51,7 @@ class AssistantTurnBoundary extends React.Component {
 }
 
 function StoredWording({ passages }) {
-  const rows = Array.isArray(passages) ? passages : [];
+  const rows = orderedPassages(passages);
   const [shown, setShown] = useState(Math.min(QUOTE_BATCH, rows.length));
 
   useEffect(() => {
@@ -71,6 +87,24 @@ function StoredWording({ passages }) {
   );
 }
 
+function sourceRank(source) {
+  const i = PASSAGE_SOURCE_ORDER.indexOf(source);
+  return i < 0 ? PASSAGE_SOURCE_ORDER.length : i;
+}
+
+function orderedPassages(passages) {
+  if (!Array.isArray(passages)) return [];
+  return [...passages].sort((a, b) => {
+    const src = sourceRank(a.source) - sourceRank(b.source);
+    if (src) return src;
+    return (
+      String(a.book || "").localeCompare(String(b.book || "")) ||
+      Number(a.chapter) - Number(b.chapter) ||
+      Number(a.verse) - Number(b.verse)
+    );
+  });
+}
+
 export default function Assistant() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -84,6 +118,7 @@ export default function Assistant() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const hasMessages = messages.length > 0;
 
   useLayoutEffect(() => {
     if (loading) return;
@@ -207,17 +242,19 @@ export default function Assistant() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto flex flex-col h-[calc(100dvh-12rem)] md:h-[calc(100dvh-13rem)] min-h-0">
-      <header className="mb-4">
+    <div className="max-w-3xl mx-auto flex h-[calc(100dvh-9.5rem)] min-h-0 flex-col md:h-[calc(100dvh-13rem)]">
+      <header className="mb-2 sm:mb-4 shrink-0">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h1 className="font-display text-4xl text-[#2b2620]">Truth Assistant</h1>
-            <p className="inline-flex items-center gap-1.5 text-xs text-[#7a2e2e] mt-1">
-              <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
-              <span>
-                Not a generative AI chatbot. It searches texts stored in this app and quotes them.
-              </span>
-            </p>
+            <h1 className="font-display text-3xl leading-none text-[#2b2620] sm:text-4xl">Truth Assistant</h1>
+            {!hasMessages ? (
+              <p className="inline-flex items-center gap-1.5 text-xs text-[#7a2e2e] mt-1">
+                <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                <span>
+                  Not a generative AI chatbot. It searches texts stored in this app and quotes them.
+                </span>
+              </p>
+            ) : null}
           </div>
           <div className="flex gap-2 shrink-0">
             <Button
@@ -244,10 +281,10 @@ export default function Assistant() {
 
       <div
         ref={listRef}
-        className="flex-1 min-h-0 overflow-y-auto rounded-2xl border border-[#e8ddc7] bg-white/60 p-4 space-y-4"
+        className="flex-1 min-h-0 overflow-y-auto rounded-xl border border-[#e8ddc7] bg-white/60 p-3 space-y-3 sm:rounded-2xl sm:p-4 sm:space-y-4"
       >
         {messages.length === 0 && (
-          <div className="text-center text-[#8a7f6f] py-16">
+          <div className="text-center text-[#8a7f6f] py-12 sm:py-16">
             <p className="font-display text-2xl text-[#2b2620] mb-2">Ask a question.</p>
             <p>
               Yes or No is used only when you ask a yes-or-no question. The Assistant reads the meaning
@@ -266,7 +303,7 @@ export default function Assistant() {
               className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`rounded-2xl px-4 py-3 ${
+                className={`rounded-2xl px-3 py-3 sm:px-4 ${
                   m.role === "user"
                     ? "max-w-[85%] bg-[#2b2620] text-[#f3e9c8]"
                     : "w-full bg-[#f0e6d2] text-[#2b2620]"
@@ -307,13 +344,13 @@ export default function Assistant() {
         )}
       </div>
 
-      <div className="flex flex-wrap gap-2 mt-4 mb-2">
+      <div className="-mx-1 mt-2 mb-2 flex shrink-0 flex-nowrap gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mt-4">
         {SEARCH_CORPORA.map((item) => (
           <button
             key={item.id}
             type="button"
             onClick={() => setCorpus(item.id)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium border ${
+            className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border ${
               corpus === item.id
                 ? "bg-[#2b2620] text-[#f3e9c8] border-[#2b2620]"
                 : "bg-white/70 text-[#5b5142] border-[#e8ddc7]"
