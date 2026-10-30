@@ -207,19 +207,31 @@ function escapeMd(s) {
   return String(s || "").trim();
 }
 
+const SOURCE_ORDER = [
+  "canon",
+  "apocrypha",
+  "enoch",
+  "dead_sea_scrolls",
+  "fathers",
+  "josephus",
+  "philo",
+  "other",
+  "user",
+  "archaeology",
+  "science",
+  "government",
+  "vatican",
+  "modern",
+];
+
+function sourceRank(source) {
+  const i = SOURCE_ORDER.indexOf(source);
+  return i < 0 ? SOURCE_ORDER.length : i;
+}
+
 function sortPassages(rows) {
-  const rank = [
-    "canon",
-    "apocrypha",
-    "enoch",
-    "dead_sea_scrolls",
-    "fathers",
-    "josephus",
-    "philo",
-    "other",
-  ];
   return [...(rows || [])].sort((a, b) => {
-    const src = rank.indexOf(a.source) - rank.indexOf(b.source);
+    const src = sourceRank(a.source) - sourceRank(b.source);
     if (src) return src;
     return (
       String(a.book || "").localeCompare(String(b.book || "")) ||

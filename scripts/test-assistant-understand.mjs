@@ -148,6 +148,34 @@ assert.ok(built.related.some((row) => row.reference === "John 3:16"));
 assert.doesNotMatch(built.markdown, /baptism doth also now save us/);
 assert.match(writeAssistantAnswer("What must I do to be saved?", samples, savedAsk), /baptism doth also now save us/);
 
+const mixedSourceAsk = {
+  question: "What do stored writings say about wonders?",
+  topics: ["wonders"],
+  words: ["wonders"],
+  yesNo: false,
+  kind: "topic-family",
+  extraSearches: [],
+};
+const mixedSourceRows = [
+  {
+    source: "government",
+    reference: "Pliny The Younger, Letters §113",
+    text: "If there were reports of belief in wonders, we should long since have heard of them.",
+  },
+  {
+    source: "canon",
+    book: "Acts",
+    chapter: 2,
+    verse: 22,
+    reference: "Acts 2:22",
+    text: "Jesus of Nazareth, a man approved of God among you by miracles and wonders and signs.",
+  },
+];
+const mixedSourceBuilt = buildAssistantAnswer(mixedSourceAsk.question, mixedSourceRows, mixedSourceAsk);
+assert.equal(mixedSourceBuilt.related[0].source, "canon");
+const mixedSourceAnswer = writeAssistantAnswer(mixedSourceAsk.question, mixedSourceRows, mixedSourceAsk);
+assert.ok(mixedSourceAnswer.indexOf("#### King James") < mixedSourceAnswer.indexOf("#### government document stored in this app"));
+
 assert.ok(clipPassageText("a".repeat(2000)).endsWith("…"));
 assert.ok(clipPassageText("a".repeat(2000)).length < 910);
 assert.ok(slimPassage({ source: "canon", reference: "John 3:16", text: "x".repeat(2000) }).text.length < 910);
