@@ -67,7 +67,7 @@ export default function CatalogBrowser({ onOpenWork }) {
             setQuery(e.target.value);
             if (e.target.value.trim()) setSectionId(null);
           }}
-          placeholder="Search titles, alternate names, or labels"
+          placeholder="Search books, documents, fragments, codices, alternate names, or labels"
           className="h-11 bg-white border-[#e8ddc7]"
         />
       </div>
@@ -139,6 +139,11 @@ export default function CatalogBrowser({ onOpenWork }) {
               </button>
             ))}
           </div>
+          {works.length === 0 ? (
+            <p className="rounded-2xl border border-[#e8ddc7] bg-white/70 p-4 text-sm text-[#8a7f6f]">
+              No stored book, document, fragment, or codex matches that search.
+            </p>
+          ) : null}
         </div>
       )}
     </div>

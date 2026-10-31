@@ -140,6 +140,7 @@ export default function Library() {
       <ManuscriptReader
         group={active.group}
         corpus={active.key}
+        initialWorkId={params.get("work") || undefined}
         onBack={() => {
           setActive(null);
           navigate("/library");
@@ -150,6 +151,9 @@ export default function Library() {
   if (active?.kind === "apocrypha_unified") {
     return (
       <ApocryphaLibrary
+        initialBook={params.get("book") || params.get("work") || undefined}
+        initialChapter={params.get("chapter") || undefined}
+        initialVerse={params.get("verse") || undefined}
         onBack={() => {
           setActive(null);
           navigate("/library");

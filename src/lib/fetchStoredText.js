@@ -1,4 +1,4 @@
-import { publicUrl } from "@/lib/publicUrl";
+import { publicUrl } from "./publicUrl.js";
 
 /** Detect the SPA shell so a 200 HTML fallback is never treated as a stored book. */
 

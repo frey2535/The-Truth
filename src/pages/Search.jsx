@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Search as SearchIcon } from "lucide-react";
+import { BookOpenText, Loader2, Search as SearchIcon } from "lucide-react";
 import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
 import ListenControl from "@/components/ListenControl";
 import HighlightedText from "@/components/search/HighlightedText";
@@ -191,6 +191,12 @@ export default function Search() {
               forms={forms}
               exact={exact}
             />
+            <Link
+              to={libraryHref({ book: m.book, chapter: m.chapter, source: m.source, reference: m.reference })}
+              className="mt-3 inline-flex items-center gap-1.5 text-sm text-[#7a2e2e] hover:underline"
+            >
+              <BookOpenText className="w-4 h-4" /> Read in context
+            </Link>
           </article>
         ))}
       </div>

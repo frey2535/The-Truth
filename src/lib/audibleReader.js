@@ -194,6 +194,7 @@ let index = 0;
 let token = 0;
 let speakAbort = null;
 let keepAliveTimer = null;
+let completion = null;
 
 function snapshot() {
   return {
@@ -207,6 +208,12 @@ function snapshot() {
 function emit() {
   const snap = snapshot();
   for (const fn of listeners) fn(snap);
+}
+
+function defer(fn) {
+  if (typeof fn !== "function") return;
+  const timer = typeof window !== "undefined" ? window.setTimeout : setTimeout;
+  timer(fn, 0);
 }
 
 export function getAudibleState() {
@@ -279,9 +286,12 @@ function speakNext(myToken) {
   const speech = synth();
   if (!speech || myToken !== token) return;
   if (index >= queue.length) {
+    const done = completion;
+    completion = null;
     clearKeepAlive();
     state = idleState();
     emit();
+    defer(done);
     return;
   }
   state = { ...state, currentVerse: verseMarks[index] || "", preparing: "" };
@@ -311,8 +321,9 @@ function speakNext(myToken) {
   speech.speak(utterance);
 }
 
-function beginQueue(text, { id = "", title = "", verses, book, chapter } = {}) {
+function beginQueue(text, { id = "", title = "", verses, book, chapter, onComplete } = {}) {
   const human = isHumanVoice(prefs.voiceURI) && canUseHumanTts();
+  completion = typeof onComplete === "function" ? onComplete : null;
   if (Array.isArray(verses) && verses.length) {
     const parts = chapterSpeakParts(book, chapter, verses);
     queue = parts.map((part) => part.text);
@@ -353,8 +364,11 @@ async function speakHumanQueue(myToken, id, title) {
       },
     });
     if (myToken !== token || signal.aborted) return;
+    const done = completion;
+    completion = null;
     state = idleState();
     emit();
+    defer(done);
   } catch {
     markHumanTtsFailed();
     if (myToken !== token || signal.aborted) return;
@@ -370,7 +384,7 @@ async function speakHumanQueue(myToken, id, title) {
   }
 }
 
-export function speakText(text, { id = "", title = "" } = {}) {
+export function speakText(text, { id = "", title = "", verses, book, chapter, onComplete } = {}) {
   token += 1;
   const myToken = token;
   speakAbort?.abort();
@@ -379,8 +393,9 @@ export function speakText(text, { id = "", title = "" } = {}) {
   clearKeepAlive();
   const speech = synth();
   if (speech) speech.cancel();
-  const started = beginQueue(text, { id, title });
+  const started = beginQueue(text, { id, title, verses, book, chapter, onComplete });
   if (!queue.length) {
+    completion = null;
     state = idleState();
     emit();
     return false;
@@ -400,7 +415,10 @@ export function speakText(text, { id = "", title = "" } = {}) {
     });
     return true;
   }
-  if (!speech) return false;
+  if (!speech) {
+    completion = null;
+    return false;
+  }
   state = { status: "speaking", id: started.id, title: started.title, preparing: "", currentVerse: verseMarks[0] || "" };
   emit();
   const start = () => {
@@ -454,6 +472,7 @@ export function resumeAudible() {
 export function stopAudible() {
   token += 1;
   pendingRestart = false;
+  completion = null;
   speakAbort?.abort();
   speakAbort = null;
   stopHumanAudio();

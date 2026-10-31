@@ -11,6 +11,7 @@ import ReadingVerseList from "./ReadingVerseList";
 import { useStudyMarks } from "@/hooks/useStudyMarks";
 import { scrollReadingToTop } from "@/lib/scrollReading";
 import { saveReadingPosition } from "@/lib/readingSession";
+import { stopAudible } from "@/lib/audibleReader";
 
 export default function BibleReader({
   books,
@@ -36,6 +37,8 @@ export default function BibleReader({
   const { evidence, modern, scientific, government } = useChapterEvidence(book, chapter);
   const { highlights, favorites, reload } = useStudyMarks();
   const [bookQuery, setBookQuery] = useState("");
+  const [bookListQuery, setBookListQuery] = useState("");
+  const [autoListenKey, setAutoListenKey] = useState("");
   const version = bibleVersionById(versionId);
   const versionBooks = apocrypha
     ? books
@@ -82,8 +85,14 @@ export default function BibleReader({
     scrollReadingToTop();
   }, [book, chapter]);
 
-  function openChapter(nextBook, nextChapter) {
+  function bookTitleOf(entry) {
+    return typeof entry === "string" ? entry : entry.title;
+  }
+
+  function openChapter(nextBook, nextChapter, options = {}) {
     const next = Number(nextChapter) || 1;
+    if (!options.keepListening) stopAudible();
+    if (options.autoListen) setAutoListenKey(`chapter:${nextBook}:${next}`);
     setBook(nextBook);
     setChapter(next);
     const q = new URLSearchParams({
@@ -102,7 +111,22 @@ export default function BibleReader({
     });
   }
 
+  function handleChapterComplete() {
+    if (!book || loading) return;
+    if (chapter < chapterCount) {
+      openChapter(book, chapter + 1, { keepListening: true, autoListen: true });
+      return;
+    }
+    const availableBooks = (apocrypha ? books : versionBooks).map(bookTitleOf);
+    const currentIndex = availableBooks.indexOf(book);
+    const nextBook = currentIndex >= 0 ? availableBooks[currentIndex + 1] : "";
+    if (nextBook) {
+      openChapter(nextBook, 1, { keepListening: true, autoListen: true });
+    }
+  }
+
   function changeVersion(nextId) {
+    stopAudible();
     const next = bibleVersionById(nextId).id;
     const stillHasBook = book && booksForVersion(next).includes(book);
     setVersionId(next);
@@ -171,6 +195,13 @@ export default function BibleReader({
   const chapterCount = data?.chapters?.length || 0;
   const current = data?.chapters?.find((c) => String(c.chapter) === String(chapter));
   const verses = current?.verses || [];
+  const bookSearch = bookListQuery.trim().toLowerCase();
+  const shownBooks = (apocrypha ? books : versionBooks).filter((entry) => {
+    if (!bookSearch) return true;
+    const titleText = bookTitleOf(entry);
+    const descText = typeof entry === "object" ? entry.desc || "" : CANON_BOOK_INFO[titleText] || "";
+    return `${titleText} ${descText}`.toLowerCase().includes(bookSearch);
+  });
 
   if (!book) {
     return (
@@ -190,9 +221,22 @@ export default function BibleReader({
         >
           <Search className="w-4 h-4" /> Search inside {title}
         </Link>
+        <div className="max-w-xl mb-5">
+          <input
+            value={bookListQuery}
+            onChange={(e) => setBookListQuery(e.target.value)}
+            placeholder="Search for a book by name or description"
+            className="h-11 w-full rounded-xl border border-[#e8ddc7] bg-white px-4 text-sm"
+          />
+          {bookSearch ? (
+            <p className="mt-2 text-xs text-[#8a7f6f]">
+              {shownBooks.length} matching book{shownBooks.length === 1 ? "" : "s"}
+            </p>
+          ) : null}
+        </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {(apocrypha ? books : versionBooks).map((b) => {
-            const bookTitle = typeof b === "string" ? b : b.title;
+          {shownBooks.map((b) => {
+            const bookTitle = bookTitleOf(b);
             const description =
               (typeof b === "object" && b.desc) || CANON_BOOK_INFO[bookTitle] || "";
             return (
@@ -213,6 +257,7 @@ export default function BibleReader({
     <div>
       <button
         onClick={() => {
+          stopAudible();
           setBook(null);
           const q = new URLSearchParams({ corpus: apocrypha ? "apocrypha" : corpus });
           if (!apocrypha && versionId !== "kjv") q.set("version", versionId);
@@ -303,6 +348,9 @@ export default function BibleReader({
           highlights={highlights}
           favorites={favorites}
           onChanged={reload}
+          onChapterComplete={handleChapterComplete}
+          autoListenKey={autoListenKey}
+          onAutoListenStarted={() => setAutoListenKey("")}
         />
       )}
     </div>

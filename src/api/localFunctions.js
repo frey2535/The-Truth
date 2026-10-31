@@ -15,6 +15,7 @@ import { recordAssistantLearning } from "@/lib/assistantLearn";
 import { buildAssistantAnswer, slimPassage } from "@/lib/assistantAnswer";
 import { askHistory } from "@/lib/assistantSafety";
 import { understandQuestion } from "@/lib/questionUnderstand";
+import { topicTermsFrom } from "@/lib/questionTopics";
 import { ARCHIVE_NOTICE, searchArchive } from "@/data/inAppArchive";
 import { cleanStudyWord, hasStoredLexicon, studyCardFromLexicon, versesFromMatches } from "@/lib/wordStudy";
 import { looksLikeAppShell } from "@/lib/fetchStoredText";
@@ -31,6 +32,31 @@ function fail(message) {
   return { error: message };
 }
 
+function studyTopicQueries(topic) {
+  const out = [];
+  const seen = new Set();
+  const add = (value, requirePhrase = false) => {
+    const q = String(value || "").trim();
+    const key = q.toLowerCase();
+    if (!q || seen.has(key)) return;
+    seen.add(key);
+    out.push({ q, requirePhrase });
+  };
+  const terms = topicTermsFrom(topic);
+  if (terms.length) {
+    if (/\s/.test(String(topic || "").trim())) add(topic, true);
+    for (const term of terms) {
+      add(term);
+      for (const alias of KJV_TOPIC_ALIASES[String(term).toLowerCase()] || []) {
+        add(alias, /\s/.test(alias));
+      }
+    }
+  } else {
+    add(topic, /\s/.test(String(topic || "").trim()));
+  }
+  return out;
+}
+
 async function research_topic({ topic, plan_id }) {
   const planId = String(plan_id || "").trim();
   const t = String(topic || "").trim();
@@ -42,7 +68,11 @@ async function research_topic({ topic, plan_id }) {
 
   let found;
   try {
-    found = await searchCorpus(t);
+    found = await searchCorpusMany(studyTopicQueries(t), {
+      limit: Infinity,
+      mustHitAll: false,
+      clipLong: true,
+    });
   } catch (error) {
     await localEntities.StudyPlan.update(planId, {
       status: "failed",
@@ -57,7 +87,7 @@ async function research_topic({ topic, plan_id }) {
   if (!verses.length) {
     await localEntities.StudyPlan.update(planId, {
       status: "failed",
-      description: `No verse in the King James, Apocrypha, Dead Sea Scrolls, or 1 Enoch contains “${t}”. Try a different word or spelling.`,
+      description: `No stored Bible verse, manuscript passage, public record, or in-app archive text contains “${t}”. Try a different word or spelling.`,
     });
     return fail("No matching passages were found in the texts.");
   }
@@ -70,6 +100,9 @@ async function research_topic({ topic, plan_id }) {
         reference: String(v.reference || "").trim(),
         source: normalizeSource(v.source),
         text: String(v.text || "").trim(),
+        book: String(v.book || "").trim(),
+        chapter: v.chapter,
+        verse: v.verse,
         chronological_order: Number(v.chronological_order) || 0,
         era: String(v.era || "").trim(),
         context_note: String(v.context_note || "").trim(),
@@ -77,7 +110,15 @@ async function research_topic({ topic, plan_id }) {
       .filter((v) => v.reference && v.text)
   );
 
-  const summary = `${verses.length} passage${verses.length === 1 ? "" : "s"} quoted from the texts and records stored in this app. No internet search and no paid AI. Read the wording yourself.`;
+  const bySource = verses.reduce((counts, row) => {
+    const key = row.source || "stored text";
+    counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
+  const sourceSummary = Object.entries(bySource)
+    .map(([source, count]) => `${count} ${source}`)
+    .join("; ");
+  const summary = `Detailed study plan for “${t}”: ${verses.length} matching passage${verses.length === 1 ? "" : "s"} quoted from all stored texts and records in this app${sourceSummary ? ` (${sourceSummary})` : ""}. No internet search and no paid AI. Read every passage in context before drawing a conclusion.`;
 
   await localEntities.StudyPlan.update(planId, {
     status: "complete",

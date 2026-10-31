@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2, FlaskConical } from "lucide-react";
 import NotebookItemActions from "@/components/NotebookItemActions";
 import VerseCard from "@/components/study/VerseCard";
+import { SOURCE_LABEL } from "@/lib/localCorpusSearch";
 
 export default function StudyPlanView() {
   const { id } = useParams();
@@ -23,7 +24,7 @@ export default function StudyPlanView() {
         return;
       }
       setPlan(p);
-      const v = await base44.entities.StudyVerse.filter({ plan_id: id }, "chronological_order", 500);
+      const v = await base44.entities.StudyVerse.filter({ plan_id: id }, "chronological_order");
       setVerses(v || []);
     } catch {
       setNotFound(true);
@@ -71,6 +72,12 @@ export default function StudyPlanView() {
       </div>
     );
 
+  const sourceCounts = verses.reduce((counts, verse) => {
+    const label = SOURCE_LABEL[verse.source] || verse.source || "stored text";
+    counts[label] = (counts[label] || 0) + 1;
+    return counts;
+  }, {});
+
   return (
     <div>
       <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-[#8a7f6f] hover:text-[#2b2620] mb-4">
@@ -86,7 +93,7 @@ export default function StudyPlanView() {
             {verses.length} passage{verses.length === 1 ? "" : "s"}
           </span>
           <span>·</span>
-          <span>Ordered chronologically by event</span>
+          <span>Bible passages first, then other stored texts and records</span>
           <NotebookItemActions
             kind="Study plan"
             item={{
@@ -120,6 +127,20 @@ export default function StudyPlanView() {
           </div>
         )}
       </header>
+
+      {verses.length > 0 && (
+        <section className="mb-6 rounded-2xl border border-[#e8ddc7] bg-white/70 p-4">
+          <h2 className="font-display text-xl text-[#2b2620] mb-2">How to study this topic</h2>
+          <ol className="list-decimal pl-5 text-sm text-[#5b5142] space-y-1">
+            <li>Read every passage below, not only the first few matches.</li>
+            <li>Open “Read in context” on any verse or document before making a doctrine or history conclusion.</li>
+            <li>Keep Holy Bible scripture first; then compare Apocrypha, manuscripts, historians, and public records as witnesses.</li>
+          </ol>
+          <p className="mt-3 text-xs text-[#8a7f6f]">
+            Sources in this plan: {Object.entries(sourceCounts).map(([source, count]) => `${count} ${source}`).join(" · ")}
+          </p>
+        </section>
+      )}
 
       {plan.status === "researching" && (
         <div className="flex items-center gap-2 text-[#b08d3c] mb-6">

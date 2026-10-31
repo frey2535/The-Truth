@@ -6,7 +6,7 @@ import ReadingTypeSize from "./ReadingTypeSize";
 import ManuscriptPage from "./ManuscriptPage";
 import { useStudyMarks } from "@/hooks/useStudyMarks";
 import useAudibleReader from "@/hooks/useAudibleReader";
-import { chapterReadingText, stopAudible } from "@/lib/audibleReader";
+import { chapterReadingText, speakText } from "@/lib/audibleReader";
 import { itemsForVerse, useChapterEvidence } from "./useChapterEvidence";
 import {
   listeningVerseId,
@@ -28,6 +28,9 @@ export default function ReadingVerseList({
   onChanged,
   corpus = "bible",
   focusVerse = "",
+  onChapterComplete,
+  autoListenKey = "",
+  onAutoListenStarted,
 }) {
   const marks = useStudyMarks();
   const highlights = highlightsProp ?? marks.highlights;
@@ -47,8 +50,18 @@ export default function ReadingVerseList({
   }, [book, chapter, verses]);
 
   useEffect(() => {
-    stopAudible();
-  }, [book, chapter]);
+    const listenId = `chapter:${book}:${chapter}`;
+    if (!autoListenKey || autoListenKey !== listenId || !verses.length) return;
+    onAutoListenStarted?.();
+    speakText(chapterReadingText(book, chapter, verses), {
+      id: listenId,
+      title: `${book}${chapter ? ` ${chapter}` : ""}`,
+      verses,
+      book,
+      chapter,
+      onComplete: onChapterComplete,
+    });
+  }, [autoListenKey, book, chapter, verses, onAutoListenStarted, onChapterComplete]);
 
   useEffect(() => {
     const target = String(listeningVerse || focusVerse || "");
@@ -90,6 +103,7 @@ export default function ReadingVerseList({
             verses={verses}
             book={book}
             chapter={chapter}
+            onComplete={onChapterComplete}
           />
           <ListenSettings compact />
           <ReadingTypeSize

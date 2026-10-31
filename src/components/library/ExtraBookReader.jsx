@@ -5,6 +5,7 @@ import { manuscriptUrl, bibleBookUrl } from "./corpusData";
 import { textToNumberedVerses } from "@/lib/readingVerses";
 import { fetchStoredText } from "@/lib/fetchStoredText";
 import ReadingVerseList from "./ReadingVerseList";
+import { stopAudible } from "@/lib/audibleReader";
 
 function MarkdownBook({ book, onBack }) {
   const [text, setText] = useState("");
@@ -43,11 +44,15 @@ function MarkdownBook({ book, onBack }) {
   );
 }
 
-function WebBook({ book, onBack }) {
-  const [chapter, setChapter] = useState(1);
+function WebBook({ book, onBack, initialChapter, initialVerse }) {
+  const [chapter, setChapter] = useState(Number(initialChapter) || 1);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (initialChapter) setChapter(Number(initialChapter) || 1);
+  }, [initialChapter]);
 
   useEffect(() => {
     setLoading(true);
@@ -75,14 +80,20 @@ function WebBook({ book, onBack }) {
         <div className="flex items-center gap-2">
           <button
             disabled={chapter <= 1 || loading}
-            onClick={() => setChapter((c) => Math.max(1, c - 1))}
+            onClick={() => {
+              stopAudible();
+              setChapter((c) => Math.max(1, c - 1));
+            }}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-[#e8ddc7] text-sm disabled:opacity-40 hover:bg-[#f3e9c8]/40"
           >
             <ChevronLeft className="w-4 h-4" /> Prev
           </button>
           <button
             disabled={!data?.hasNext || loading}
-            onClick={() => setChapter((c) => c + 1)}
+            onClick={() => {
+              stopAudible();
+              setChapter((c) => c + 1);
+            }}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-[#e8ddc7] text-sm disabled:opacity-40 hover:bg-[#f3e9c8]/40"
           >
             Next <ChevronRight className="w-4 h-4" />
@@ -102,6 +113,7 @@ function WebBook({ book, onBack }) {
           chapter={chapter}
           verses={textToNumberedVerses(data.text)}
           corpus="apocrypha"
+          focusVerse={initialVerse || ""}
         />
       )}
     </div>
@@ -130,11 +142,15 @@ function InfoBook({ book, onBack }) {
   );
 }
 
-function KjvBook({ book, onBack }) {
-  const [chapter, setChapter] = useState(1);
+function KjvBook({ book, onBack, initialChapter, initialVerse }) {
+  const [chapter, setChapter] = useState(Number(initialChapter) || 1);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (initialChapter) setChapter(Number(initialChapter) || 1);
+  }, [initialChapter]);
 
   useEffect(() => {
     setLoading(true);
@@ -166,14 +182,20 @@ function KjvBook({ book, onBack }) {
         <div className="flex items-center gap-2">
           <button
             disabled={chapter <= 1 || loading}
-            onClick={() => setChapter((c) => Math.max(1, c - 1))}
+            onClick={() => {
+              stopAudible();
+              setChapter((c) => Math.max(1, c - 1));
+            }}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-[#e8ddc7] text-sm disabled:opacity-40 hover:bg-[#f3e9c8]/40"
           >
             <ChevronLeft className="w-4 h-4" /> Prev
           </button>
           <button
             disabled={chapter >= chapterCount || loading}
-            onClick={() => setChapter((c) => Math.min(chapterCount, c + 1))}
+            onClick={() => {
+              stopAudible();
+              setChapter((c) => Math.min(chapterCount, c + 1));
+            }}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md border border-[#e8ddc7] text-sm disabled:opacity-40 hover:bg-[#f3e9c8]/40"
           >
             Next <ChevronRight className="w-4 h-4" />
@@ -188,15 +210,21 @@ function KjvBook({ book, onBack }) {
       )}
       {error && <p className="text-[#7a2e2e] text-center py-10">{error}</p>}
       {!loading && !error && verses.length > 0 && (
-        <ReadingVerseList book={book.bookName || book.title} chapter={chapter} verses={verses} corpus="apocrypha" />
+        <ReadingVerseList
+          book={book.bookName || book.title}
+          chapter={chapter}
+          verses={verses}
+          corpus="apocrypha"
+          focusVerse={initialVerse || ""}
+        />
       )}
     </div>
   );
 }
 
-export default function ExtraBookReader({ book, onBack }) {
-  if (book.type === "kjv") return <KjvBook book={book} onBack={onBack} />;
+export default function ExtraBookReader({ book, onBack, initialChapter, initialVerse }) {
+  if (book.type === "kjv") return <KjvBook book={book} initialChapter={initialChapter} initialVerse={initialVerse} onBack={onBack} />;
   if (book.type === "markdown") return <MarkdownBook book={book} onBack={onBack} />;
-  if (book.type === "web") return <WebBook book={book} onBack={onBack} />;
+  if (book.type === "web") return <WebBook book={book} initialChapter={initialChapter} initialVerse={initialVerse} onBack={onBack} />;
   return <InfoBook book={book} onBack={onBack} />;
 }
