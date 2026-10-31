@@ -14,6 +14,7 @@ import { askHistory, clipPassageText, persistableMessages } from "../src/lib/ass
 import { familyHitsText, familyOf } from "../src/lib/wordFamilies.js";
 import { learningCannotManipulate, recordAssistantLearning } from "../src/lib/assistantLearn.js";
 import { topicTermsFrom } from "../src/lib/questionTopics.js";
+import { MAJOR_STUDY_TOPICS } from "../src/data/majorStudyTopics.js";
 
 const baptism = familyOf("baptism").map((w) => w.toLowerCase());
 for (const form of ["baptism", "baptize", "baptized", "baptizing", "baptise", "baptised", "baptising", "baptist"]) {
@@ -28,6 +29,9 @@ assert.deepEqual(topicTermsFrom("What must I do to be saved?"), ["saved"]);
 assert.deepEqual(topicTermsFrom("What does the Bible say about baptism?"), ["baptism"]);
 assert.ok(topicTermsFrom("Tell me about baptising").includes("baptising"));
 assert.deepEqual(topicTermsFrom("Is baptism required for salvation?").sort(), ["baptism", "salvation"]);
+assert.equal(MAJOR_STUDY_TOPICS.length, 10);
+assert.equal(new Set(MAJOR_STUDY_TOPICS.map((topic) => topic.id)).size, 10);
+assert.ok(MAJOR_STUDY_TOPICS.every((topic) => topic.title && topic.query && topic.description));
 
 assert.equal(isYesNoQuestion("Is baptism required for salvation?"), true);
 assert.equal(isYesNoQuestion("Must I be baptized to be saved?"), true);

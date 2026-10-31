@@ -39,7 +39,7 @@ export default function StudyPlanView() {
     try {
       await base44.entities.StudyPlan.update(id, { status: "researching" });
       setPlan({ ...plan, status: "researching" });
-      base44.functions.invoke("research_topic", { topic: plan.topic, plan_id: id }).catch(() => {});
+      base44.functions.invoke("research_topic", { topic: plan.study_query || plan.topic, plan_id: id }).catch(() => {});
     } finally {
       setRetrying(false);
     }
