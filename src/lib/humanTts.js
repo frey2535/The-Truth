@@ -25,11 +25,10 @@ export function humanVoiceId(uri) {
 
 export function humanTtsAllowed({ userAgent = "", deviceMemory, webAssembly = true, skip = false } = {}) {
   if (!webAssembly || skip) return false;
-  if (/Android|iPhone|iPad|iPod|Mobile|webOS|BlackBerry/i.test(String(userAgent))) return false;
   const memory = Number(deviceMemory);
-  // The spoken model plus WASM is too large for phones and for browsers that
-  // do not report enough memory. Those devices keep Listen on the system voice.
-  if (!Number.isFinite(memory) || memory < 8) return false;
+  // Prefer the human voice model wherever the browser can reasonably attempt it.
+  // If the device cannot load it, the failure is remembered for this session.
+  if (Number.isFinite(memory) && memory < 4) return false;
   return true;
 }
 

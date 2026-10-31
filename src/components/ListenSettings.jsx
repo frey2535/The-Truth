@@ -51,8 +51,8 @@ export default function ListenSettings({ dark = false, compact = false, classNam
                   Voice and speed
                 </h2>
                 <p className="text-sm text-[#5b5142] mt-1">
-                  Listen uses a voice on this device. Spoken-English voices that sound like a person appear here
-                  only when this computer can run them. Scripture is not uploaded.
+                  Listen uses human-like spoken English on this device. Robotic and mechanical voices are hidden.
+                  Scripture is not uploaded.
                 </p>
               </div>
               <button type="button" onClick={() => setOpen(false)} className="text-[#8a7f6f]" aria-label="Close">
@@ -65,8 +65,10 @@ export default function ListenSettings({ dark = false, compact = false, classNam
                 value={voiceURI}
                 onChange={(event) => setAudibleVoice(event.target.value)}
                 className="mt-1 w-full h-10 rounded-lg border border-[#e8ddc7] bg-white px-3 text-sm"
+                disabled={!voices.length}
               >
-                {["Spoken English — sounds like a person", "This device", "Mechanical system voices"].map((group) => {
+                {!voices.length ? <option value="">No human-like voice available</option> : null}
+                {["Spoken English — sounds like a person", "Human-like voices on this device"].map((group) => {
                   const rows = voices.filter((voice) => (voice.group || "This device") === group);
                   if (!rows.length) return null;
                   return (

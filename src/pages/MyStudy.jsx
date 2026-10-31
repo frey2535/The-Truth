@@ -8,6 +8,7 @@ import PlanCard from "@/components/study/PlanCard";
 import { BookMarked, BookOpenText, Highlighter, Star, StickyNote } from "lucide-react";
 import { libraryHref } from "@/lib/libraryLinks";
 import { downloadText, notebookItemText, printText } from "@/lib/notebookExport";
+import { runStudyResearch } from "@/lib/studyPlanResearch";
 
 const TABS = [
   { id: "plans", label: "Study plans", icon: BookMarked },
@@ -59,14 +60,9 @@ export default function MyStudy() {
   }
 
   async function removePlan(id) {
-    const verses = await base44.entities.StudyVerse.filter({ plan_id: id }).catch(() => []);
-    await Promise.all((verses || []).map((verse) => base44.entities.StudyVerse.delete(verse.id)));
+    await base44.entities.StudyVerse.deleteMatching({ plan_id: id }).catch(() => {});
     await base44.entities.StudyPlan.delete(id);
     await load();
-  }
-
-  function runStudyResearch(plan, query) {
-    base44.functions.invoke("research_topic", { topic: query || plan.study_query || plan.topic, plan_id: plan.id }).catch(() => {});
   }
 
   async function createMajorPlan(topicDef, { open = false } = {}) {
@@ -82,6 +78,7 @@ export default function MyStudy() {
       status: "researching",
       description: topicDef.description,
     });
+    // Queue only — do not await the corpus scan here so Create all 10 stays snappy.
     runStudyResearch(created, topicDef.query);
     if (open) navigate(`/plan/${created.id}`);
     return created;
@@ -93,6 +90,8 @@ export default function MyStudy() {
     try {
       for (const topicDef of MAJOR_STUDY_TOPICS) {
         await createMajorPlan(topicDef);
+        // Let React paint between plan creates.
+        await new Promise((resolve) => setTimeout(resolve, 0));
       }
       await load();
     } finally {

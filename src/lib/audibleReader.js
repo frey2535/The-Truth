@@ -10,7 +10,7 @@ import {
   speakHumanText,
   stopHumanAudio,
 } from "./humanTts.js";
-import { bestDeviceVoice, isRoboticVoiceName, rankDeviceVoices } from "./voiceQuality.js";
+import { bestDeviceVoice, humanLikeDeviceVoices } from "./voiceQuality.js";
 
 const DEVICE_CHUNK = 900;
 const HUMAN_CHUNK = 380;
@@ -116,20 +116,19 @@ export function ratePresetLabel(rate) {
 }
 
 export function listVoiceChoices(voices = []) {
-  return rankDeviceVoices(
-    [...voices]
-      .map((voice) => ({
-        uri: String(voice.voiceURI || voice.name || ""),
-        name: String(voice.name || "Voice"),
-        lang: String(voice.lang || ""),
-        localService: voice.localService,
-      }))
-      .filter((voice) => voice.uri)
+  return humanLikeDeviceVoices(
+    [...voices].map((voice) => ({
+      uri: String(voice.voiceURI || voice.name || ""),
+      voiceURI: String(voice.voiceURI || voice.name || ""),
+      name: String(voice.name || "Voice"),
+      lang: String(voice.lang || ""),
+      localService: voice.localService,
+    }))
   ).map((voice) => ({
     uri: voice.uri,
-    name: isRoboticVoiceName(voice.name, voice.uri) ? `${voice.name} (mechanical)` : voice.name,
+    name: voice.name,
     lang: voice.lang,
-    group: isRoboticVoiceName(voice.name, voice.uri) ? "Mechanical system voices" : "This device",
+    group: "Human-like voices on this device",
   }));
 }
 
@@ -149,7 +148,7 @@ export function listenVoiceOptions(voices = [], { includeHuman } = {}) {
 }
 
 export function defaultListenPrefs() {
-  return { voiceURI: "", rate: 1 };
+  return { voiceURI: canUseHumanTts() ? HUMAN_VOICES[0].uri : "", rate: 1 };
 }
 
 export function loadListenPrefs(storage) {
@@ -159,6 +158,9 @@ export function loadListenPrefs(storage) {
     if (!raw) return fallback;
     const parsed = JSON.parse(raw);
     const voiceURI = String(parsed.voiceURI || "");
+    if (!voiceURI && canUseHumanTts()) {
+      return { voiceURI: HUMAN_VOICES[0].uri, rate: normalizeRate(parsed.rate) };
+    }
     return {
       voiceURI: isHumanVoice(voiceURI) && !canUseHumanTts() ? "" : voiceURI,
       rate: normalizeRate(parsed.rate),
@@ -243,7 +245,7 @@ function pickVoice(speech) {
   const voices = speech.getVoices?.() || [];
   if (prefs.voiceURI && !isHumanVoice(prefs.voiceURI)) {
     const chosen = voices.find((voice) => (voice.voiceURI || voice.name) === prefs.voiceURI);
-    if (chosen) return chosen;
+    if (chosen && bestDeviceVoice([chosen])) return chosen;
   }
   return bestDeviceVoice(voices);
 }
@@ -298,7 +300,13 @@ function speakNext(myToken) {
   emit();
   const utterance = new SpeechSynthesisUtterance(queue[index]);
   const voice = pickVoice(speech);
-  if (voice) utterance.voice = voice;
+  if (!voice) {
+    clearKeepAlive();
+    state = idleState();
+    emit();
+    return;
+  }
+  utterance.voice = voice;
   utterance.lang = voice?.lang || "en-US";
   utterance.rate = prefs.rate;
   utterance.pitch = 1;

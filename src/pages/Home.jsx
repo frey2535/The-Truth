@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import PlanCard from "@/components/study/PlanCard";
 import { loadReadingPosition, readingHref, readingLabel } from "@/lib/readingSession";
+import { runStudyResearch } from "@/lib/studyPlanResearch";
 
 const ACTIONS = [
   { to: "/library", label: "Read", desc: "Open the wording stored in this published app — the same library for every reader", icon: BookOpenText },
@@ -66,7 +67,7 @@ export default function Home() {
     try {
       const created = await base44.entities.StudyPlan.create({ topic: t, status: "researching" });
       navigate(`/plan/${created.id}`);
-      base44.functions.invoke("research_topic", { topic: t, plan_id: created.id }).catch(() => {});
+      runStudyResearch(created, t);
     } catch (err) {
       setError(err.message || "Could not start research. Please try again.");
       setBusy(false);

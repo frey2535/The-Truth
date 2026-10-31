@@ -26,7 +26,19 @@ export function rankDeviceVoices(voices = []) {
   return [...voices].sort((a, b) => scoreDeviceVoice(b) - scoreDeviceVoice(a) || String(a.name).localeCompare(String(b.name)));
 }
 
+export function isHumanLikeDeviceVoice(voice = {}) {
+  const name = String(voice.name || "");
+  const uri = String(voice.voiceURI || voice.uri || "");
+  const lang = String(voice.lang || "");
+  if (!/^en/i.test(lang)) return false;
+  if (isRoboticVoiceName(name, uri)) return false;
+  return HUMANISH.test(name) || HUMANISH.test(uri) || /google/i.test(name) || /google/i.test(uri) || voice.localService === false;
+}
+
+export function humanLikeDeviceVoices(voices = []) {
+  return rankDeviceVoices(voices).filter(isHumanLikeDeviceVoice);
+}
+
 export function bestDeviceVoice(voices = []) {
-  const ranked = rankDeviceVoices(voices).filter((voice) => !isRoboticVoiceName(voice.name, voice.voiceURI || voice.uri));
-  return ranked[0] || rankDeviceVoices(voices)[0] || null;
+  return humanLikeDeviceVoices(voices)[0] || null;
 }

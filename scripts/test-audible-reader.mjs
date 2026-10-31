@@ -16,6 +16,7 @@ import {
 } from "../src/lib/audibleReader.js";
 import { isRoboticVoiceName, scoreDeviceVoice } from "../src/lib/voiceQuality.js";
 import { HUMAN_VOICES, canUseHumanTts, humanTtsAllowed, humanTtsSupported, isHumanVoice } from "../src/lib/humanTts.js";
+import { humanLikeDeviceVoices } from "../src/lib/voiceQuality.js";
 import {
   listeningVerseId,
   loadFontScale,
@@ -103,17 +104,19 @@ const voices = listVoiceChoices([
   { voiceURI: "robot", name: "eSpeak NG", lang: "en-GB" },
 ]);
 assert.equal(voices[0].name, "Google US English");
-assert.match(voices.at(-1).name, /eSpeak|mechanical/i);
+assert.equal(voices.length, 1);
+assert.equal(humanLikeDeviceVoices([{ voiceURI: "robot", name: "eSpeak NG", lang: "en-GB" }]).length, 0);
 
 assert.equal(listenVoiceOptions([]).some((voice) => isHumanVoice(voice.uri)), false);
 const options = listenVoiceOptions([], { includeHuman: true });
 assert.equal(options[0].uri, HUMAN_VOICES[0].uri);
 assert.match(options[0].group, /person/i);
 
-assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)", deviceMemory: 8 }), false);
-assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Linux; Android 14)", deviceMemory: 8 }), false);
-assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 4 }), false);
-assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", deviceMemory: undefined }), false);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X)", deviceMemory: 8 }), true);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Linux; Android 14)", deviceMemory: 8 }), true);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 4 }), true);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", deviceMemory: undefined }), true);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 2 }), false);
 assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 8 }), true);
 assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 8, skip: true }), false);
 

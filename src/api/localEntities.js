@@ -176,6 +176,23 @@ function createEntityApi(name) {
       return { ok: true };
     },
 
+    /** Delete every owned record matching query in one save (study-plan cleanup). */
+    async deleteMatching(query) {
+      const { db, user } = requireUser();
+      if (name === "User") throw httpError("User delete is not supported");
+      if (!db.entities[name]) return { deleted: 0 };
+      const before = db.entities[name].length;
+      db.entities[name] = db.entities[name].filter((r) => {
+        if (!matchesQuery(r, query)) return true;
+        if (user.role === "admin" || GLOBAL_ENTITIES.has(name)) return false;
+        if (r.created_by_id === user.id || r.owner_id === user.id) return false;
+        return true;
+      });
+      const deleted = before - db.entities[name].length;
+      if (deleted) saveDb(db);
+      return { deleted };
+    },
+
     async deleteMany(query) {
       const { db, user } = requireUser();
       if (user.role !== "admin") throw httpError("Admin access required", 403);
@@ -186,10 +203,24 @@ function createEntityApi(name) {
     },
 
     async bulkCreate(records) {
+      const { db, user } = requireUser();
+      if (name === "User") throw httpError("Create users through registration");
       const created = [];
+      const now = new Date().toISOString();
+      if (!db.entities[name]) db.entities[name] = [];
       for (const data of records || []) {
-        created.push(await this.create(data));
+        const record = {
+          ...sanitizeEntityData(name, data),
+          id: newId(name.toLowerCase()),
+          created_date: now,
+          updated_date: now,
+          created_by_id: user.id,
+          created_by: user.email,
+        };
+        db.entities[name].push(record);
+        created.push(record);
       }
+      if (created.length) saveDb(db);
       return created;
     },
 
