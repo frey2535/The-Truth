@@ -69,4 +69,36 @@ export const MAJOR_STUDY_TOPICS = [
     description:
       "All stored wording about the coming of the Lord, the day of the Lord, last days, tribulation, antichrist, judgment, and Revelation.",
   },
+  {
+    id: "marriage",
+    title: "Marriage",
+    query:
+      "marriage marry married wife husband wedlock one flesh cleave leave father mother betrothed espoused bride bridegroom",
+    description:
+      "All stored wording about marriage, husband and wife, cleaving as one flesh, betrothal, and the bride and bridegroom.",
+  },
+  {
+    id: "divorce",
+    title: "Divorce",
+    query:
+      "divorce divorcement put away writing of divorcement bill of divorcement hard hearted hardness of heart except for fornication",
+    description:
+      "All stored wording about divorce, putting away, the writing of divorcement, hardness of heart, and the stated exception for fornication.",
+  },
+  {
+    id: "tithing",
+    title: "Tithing",
+    query:
+      "tithe tithes tithing tenth tenth part firstfruits offering offerings storehouse Melchizedek Abraham Levi",
+    description:
+      "All stored wording about the tithe, the tenth, firstfruits, offerings, the storehouse, and related examples in the stored texts.",
+  },
+  {
+    id: "forgiveness",
+    title: "Forgiveness",
+    query:
+      "forgive forgiveness forgiven forgiving trespasses debts debtors mercy pardon remit remitted seventy times seven",
+    description:
+      "All stored wording about forgiving others, being forgiven, trespasses, debts, mercy, pardon, and remitting sins.",
+  },
 ];

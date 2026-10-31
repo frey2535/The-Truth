@@ -23,7 +23,13 @@ assert.match(myStudy, /from "@\/lib\/studyPlanResearch"/);
 assert.match(myStudy, /MAJOR_STUDY_TOPICS/);
 assert.match(myStudy, /from "@\/data\/majorStudyTopics"/);
 assert.match(myStudy, /Loader2/);
+assert.match(myStudy, /Create all \{MAJOR_STUDY_TOPICS\.length\}/);
 assert.doesNotMatch(myStudy, /functions\.invoke\("research_topic"/);
+
+const majorTopics = readFileSync(join(root, "src/data/majorStudyTopics.js"), "utf8");
+for (const id of ["marriage", "divorce", "tithing", "forgiveness"]) {
+  assert.match(majorTopics, new RegExp(`id: "${id}"`));
+}
 
 const errorBoundary = readFileSync(join(root, "src/components/AppErrorBoundary.jsx"), "utf8");
 assert.match(errorBoundary, /location\.assign\(homeUrl\(\)\)|assign\(homeUrl/);
