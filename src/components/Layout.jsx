@@ -10,6 +10,7 @@ import { CUSTOMS_NAV_LABEL } from "@/data/inheritedCustoms";
 import AppUpdateBanner from "@/components/AppUpdateBanner";
 import AudibleBar from "@/components/AudibleBar";
 import InstallAppPrompt from "@/components/InstallAppPrompt";
+import PageErrorBoundary from "@/components/PageErrorBoundary";
 import PageTools from "@/components/PageTools";
 import { fitHeaderBar } from "@/lib/fitHeaderBar";
 import { stopAudible } from "@/lib/audibleReader";
@@ -211,7 +212,9 @@ export default function Layout() {
           isHome ? "pt-0" : "pt-6 sm:pt-8"
         }`}
       >
-        <Outlet />
+        <PageErrorBoundary resetKey={pathname}>
+          <Outlet />
+        </PageErrorBoundary>
       </main>
       <footer className="relative z-10 border-t border-[#e8ddc7]/70 bg-[#faf6ef]/70 backdrop-blur-md py-6 mb-[calc(4.25rem+env(safe-area-inset-bottom))] md:mb-0">
         <div className="max-w-6xl mx-auto px-5 text-center text-xs text-[#8a7f6f]">

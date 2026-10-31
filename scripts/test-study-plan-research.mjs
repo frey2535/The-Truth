@@ -20,7 +20,14 @@ assert.match(planView, /deleteMatching/);
 
 const myStudy = readFileSync(join(root, "src/pages/MyStudy.jsx"), "utf8");
 assert.match(myStudy, /from "@\/lib\/studyPlanResearch"/);
+assert.match(myStudy, /MAJOR_STUDY_TOPICS/);
+assert.match(myStudy, /from "@\/data\/majorStudyTopics"/);
+assert.match(myStudy, /Loader2/);
 assert.doesNotMatch(myStudy, /functions\.invoke\("research_topic"/);
+
+const errorBoundary = readFileSync(join(root, "src/components/AppErrorBoundary.jsx"), "utf8");
+assert.match(errorBoundary, /location\.assign\(homeUrl\(\)\)|assign\(homeUrl/);
+assert.doesNotMatch(errorBoundary, /location\.reload\(\)/);
 
 let chain = Promise.resolve();
 const order = [];
