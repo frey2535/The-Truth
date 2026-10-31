@@ -58,6 +58,81 @@ function studyTopicQueries(topic) {
   return out;
 }
 
+const STUDY_SCRIPTURE_SOURCES = ["canon", "apocrypha"];
+const STUDY_EXTENDED_SOURCES = [
+  "enoch",
+  "dead_sea_scrolls",
+  "fathers",
+  "josephus",
+  "philo",
+  "other",
+  "archaeology",
+  "science",
+  "government",
+  "vatican",
+  "modern",
+  "user",
+];
+
+function passageKey(row) {
+  return `${row.source || ""}|${row.reference || ""}|${String(row.text || "").slice(0, 80)}`;
+}
+
+function uniqueMatchRows(rows) {
+  const seen = new Set();
+  const out = [];
+  for (const row of rows || []) {
+    const key = passageKey(row);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(row);
+  }
+  return out;
+}
+
+function studyVerseRecords(verses, planId, ownerId, orderStart = 0) {
+  return verses
+    .map((v, i) => ({
+      plan_id: planId,
+      owner_id: ownerId,
+      reference: String(v.reference || "").trim(),
+      source: normalizeSource(v.source),
+      text: String(v.text || "").trim(),
+      book: String(v.book || "").trim(),
+      chapter: v.chapter,
+      verse: v.verse,
+      chronological_order: orderStart + i + 1,
+      era: String(v.era || "").trim(),
+      context_note: String(v.context_note || "").trim(),
+    }))
+    .filter((v) => v.reference && v.text);
+}
+
+async function writeStudyVerses(rows) {
+  // Defer localStorage saves until the whole batch is in memory — stringify is the slow part.
+  const WRITE_CHUNK = 1000;
+  for (let i = 0; i < rows.length; i += WRITE_CHUNK) {
+    await localEntities.StudyVerse.bulkCreate(rows.slice(i, i + WRITE_CHUNK), { save: false });
+    await yieldToBrowser();
+  }
+  if (rows.length) await localEntities.StudyVerse.persist();
+}
+
+function studySummary(topic, verses, { partial = false } = {}) {
+  const bySource = verses.reduce((counts, row) => {
+    const key = row.source || "stored text";
+    counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
+  const sourceSummary = Object.entries(bySource)
+    .map(([source, count]) => `${count} ${source}`)
+    .join("; ");
+  if (partial) {
+    return `Found ${verses.length} scripture passage${verses.length === 1 ? "" : "s"} so far${sourceSummary ? ` (${sourceSummary})` : ""}. Still reading the remaining stored texts and records…`;
+  }
+  return `Detailed study plan for “${topic}”: ${verses.length} matching passage${verses.length === 1 ? "" : "s"} quoted from all stored texts and records in this app${sourceSummary ? ` (${sourceSummary})` : ""}. No internet search and no paid AI. Read every passage in context before drawing a conclusion.`;
+}
+
 async function research_topic({ topic, plan_id }) {
   const planId = String(plan_id || "").trim();
   const t = String(topic || "").trim();
@@ -66,11 +141,35 @@ async function research_topic({ topic, plan_id }) {
 
   const plan = await localEntities.StudyPlan.get(planId);
   const ownerId = plan?.created_by_id || "";
+  const queries = studyTopicQueries(t);
 
-  let found;
+  let scriptureFound;
+  let extendedFound;
   try {
-    found = await searchCorpusMany(studyTopicQueries(t), {
+    // Phase 1: King James + Apocrypha first so the plan becomes useful quickly.
+    scriptureFound = await searchCorpusMany(queries, {
       limit: Infinity,
+      sources: STUDY_SCRIPTURE_SOURCES,
+      mustHitAll: false,
+      clipLong: false,
+      preferCanon: true,
+    });
+    const scriptureVerses = matchesToResearchVerses(scriptureFound.matches);
+    if (scriptureVerses.length) {
+      await writeStudyVerses(studyVerseRecords(scriptureVerses, planId, ownerId));
+      await localEntities.StudyPlan.update(planId, {
+        status: "researching",
+        verse_count: scriptureVerses.length,
+        description: studySummary(t, scriptureVerses, { partial: true }),
+        derivatives: (scriptureFound.forms || []).join(", "),
+      });
+      await yieldToBrowser();
+    }
+
+    // Phase 2: remaining stored manuscripts and records.
+    extendedFound = await searchCorpusMany(queries, {
+      limit: Infinity,
+      sources: STUDY_EXTENDED_SOURCES,
       mustHitAll: false,
       clipLong: true,
     });
@@ -82,8 +181,9 @@ async function research_topic({ topic, plan_id }) {
     return fail(error.message);
   }
 
-  const verses = matchesToResearchVerses(found.matches);
-  const derivatives = found.forms;
+  const merged = uniqueMatchRows([...(scriptureFound?.matches || []), ...(extendedFound?.matches || [])]);
+  const verses = matchesToResearchVerses(merged);
+  const derivatives = [...new Set([...(scriptureFound?.forms || []), ...(extendedFound?.forms || [])])];
 
   if (!verses.length) {
     await localEntities.StudyPlan.update(planId, {
@@ -93,39 +193,15 @@ async function research_topic({ topic, plan_id }) {
     return fail("No matching passages were found in the texts.");
   }
 
-  const rows = verses
-    .map((v) => ({
-      plan_id: planId,
-      owner_id: ownerId,
-      reference: String(v.reference || "").trim(),
-      source: normalizeSource(v.source),
-      text: String(v.text || "").trim(),
-      book: String(v.book || "").trim(),
-      chapter: v.chapter,
-      verse: v.verse,
-      chronological_order: Number(v.chronological_order) || 0,
-      era: String(v.era || "").trim(),
-      context_note: String(v.context_note || "").trim(),
-    }))
-    .filter((v) => v.reference && v.text);
-
-  // Chunk writes so a huge plan cannot freeze Notebook while localStorage updates.
-  const WRITE_CHUNK = 250;
-  for (let i = 0; i < rows.length; i += WRITE_CHUNK) {
-    await localEntities.StudyVerse.bulkCreate(rows.slice(i, i + WRITE_CHUNK));
-    await yieldToBrowser();
+  const already = scriptureFound?.matches?.length
+    ? new Set((scriptureFound.matches || []).map(passageKey))
+    : new Set();
+  const extra = matchesToResearchVerses(merged.filter((row) => !already.has(passageKey(row))));
+  if (extra.length) {
+    await writeStudyVerses(studyVerseRecords(extra, planId, ownerId, already.size));
   }
 
-  const bySource = verses.reduce((counts, row) => {
-    const key = row.source || "stored text";
-    counts[key] = (counts[key] || 0) + 1;
-    return counts;
-  }, {});
-  const sourceSummary = Object.entries(bySource)
-    .map(([source, count]) => `${count} ${source}`)
-    .join("; ");
-  const summary = `Detailed study plan for “${t}”: ${verses.length} matching passage${verses.length === 1 ? "" : "s"} quoted from all stored texts and records in this app${sourceSummary ? ` (${sourceSummary})` : ""}. No internet search and no paid AI. Read every passage in context before drawing a conclusion.`;
-
+  const summary = studySummary(t, verses);
   await localEntities.StudyPlan.update(planId, {
     status: "complete",
     verse_count: verses.length,

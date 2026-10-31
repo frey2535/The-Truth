@@ -202,7 +202,7 @@ function createEntityApi(name) {
       return { deleted: before - db.entities[name].length };
     },
 
-    async bulkCreate(records) {
+    async bulkCreate(records, { save = true } = {}) {
       const { db, user } = requireUser();
       if (name === "User") throw httpError("Create users through registration");
       const created = [];
@@ -220,8 +220,14 @@ function createEntityApi(name) {
         db.entities[name].push(record);
         created.push(record);
       }
-      if (created.length) saveDb(db);
+      if (created.length && save !== false) saveDb(db);
       return created;
+    },
+
+    async persist() {
+      const { db } = requireUser();
+      saveDb(db);
+      return { ok: true };
     },
 
     async bulkUpdate(updates) {
