@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import CopyTextButton from "@/components/CopyTextButton";
 import ListenControl from "@/components/ListenControl";
 import ListenSettings from "@/components/ListenSettings";
 import VerseStudyRow from "./VerseStudyRow";
@@ -104,6 +105,12 @@ export default function ReadingVerseList({
             book={book}
             chapter={chapter}
             onComplete={onChapterComplete}
+          />
+          <CopyTextButton
+            variant="chapter"
+            label="Copy chapter"
+            title="Copy this chapter"
+            text={() => chapterReadingText(book, chapter, verses)}
           />
           <ListenSettings compact />
           <ReadingTypeSize

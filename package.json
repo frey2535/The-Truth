@@ -44,7 +44,8 @@
     "test:map-labels": "node scripts/test-map-labels.mjs",
     "test:header": "node scripts/test-fit-header.mjs",
     "test:home-title": "node scripts/test-home-title.mjs",
-    "test:nav-history": "node scripts/test-nav-history.mjs"
+    "test:nav-history": "node scripts/test-nav-history.mjs",
+    "test:clipboard": "node scripts/test-clipboard-text.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Loader2, ShieldCheck, Square, History, PlusCircle } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import CopyTextButton from "@/components/CopyTextButton";
 import ListenControl from "@/components/ListenControl";
+import PasteTextButton from "@/components/PasteTextButton";
 import HistoryDialog from "@/components/assistant/HistoryDialog";
 import GroupedPassageList from "@/components/study/GroupedPassageList";
 import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
@@ -295,7 +297,7 @@ export default function Assistant() {
                 {m.role === "assistant" ? (
                   <AssistantTurnBoundary>
                     <div className="text-[#3a3328] leading-relaxed space-y-2 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:text-[#2b2620] [&_h2]:mt-0 [&_h3]:font-display [&_h3]:text-xl [&_h3]:text-[#2b2620] [&_h4]:font-display [&_h4]:text-lg [&_h4]:text-[#7a2e2e] [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_a]:text-[#7a2e2e] [&_a]:underline">
-                      <div className="flex justify-end">
+                      <div className="flex justify-end gap-2">
                         <ListenControl
                           variant="verse"
                           id={`assistant:${i}`}
@@ -305,6 +307,17 @@ export default function Assistant() {
                             m.content,
                             ...(Array.isArray(m.passages) ? m.passages.map((p) => `${p.reference}. ${p.text || ""}`) : []),
                           ].join(" ")}
+                        />
+                        <CopyTextButton
+                          variant="verse"
+                          label="Copy"
+                          title="Copy this answer"
+                          text={[
+                            m.content,
+                            ...(Array.isArray(m.passages)
+                              ? m.passages.map((p) => `${p.reference}\n${p.text || ""}`)
+                              : []),
+                          ].join("\n\n")}
                         />
                       </div>
                       <ReactMarkdown>{m.content}</ReactMarkdown>
@@ -343,22 +356,29 @@ export default function Assistant() {
           </button>
         ))}
       </div>
-      <form onSubmit={send} className="flex gap-3">
+      <form onSubmit={send} className="flex flex-col gap-2 sm:flex-row sm:items-center">
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about any passage, topic, or word…"
           className="flex-1 h-12 bg-white border-[#e8ddc7]"
         />
-        {loading ? (
-          <Button type="button" onClick={stop} className="h-12 px-5 bg-[#7a2e2e] hover:bg-[#6a2424] text-[#f3e9c8]">
-            <Square className="w-4 h-4" fill="currentColor" />
-          </Button>
-        ) : (
-          <Button type="submit" disabled={!input.trim()} className="h-12 px-5 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]">
-            <Send className="w-4 h-4" />
-          </Button>
-        )}
+        <div className="flex gap-2 shrink-0">
+          <PasteTextButton
+            disabled={loading}
+            onPaste={(text) => setInput((current) => (current ? `${current.trim()} ${text}` : text))}
+            className="h-12 px-3 rounded-md border border-[#e8ddc7] bg-white text-sm hover:bg-[#f3e9c8]/40 disabled:opacity-60 inline-flex items-center gap-1"
+          />
+          {loading ? (
+            <Button type="button" onClick={stop} className="h-12 px-5 bg-[#7a2e2e] hover:bg-[#6a2424] text-[#f3e9c8]">
+              <Square className="w-4 h-4" fill="currentColor" />
+            </Button>
+          ) : (
+            <Button type="submit" disabled={!input.trim()} className="h-12 px-5 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]">
+              <Send className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
       </form>
 
       <HistoryDialog

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
+import CopyTextButton from "@/components/CopyTextButton";
 import ListenControl from "@/components/ListenControl";
 import ListenSettings from "@/components/ListenSettings";
 import NotebookItemActions from "@/components/NotebookItemActions";
@@ -179,6 +180,12 @@ export default function MyStudy() {
           id={`notebook-list:${tab}`}
           title={TABS.find((entry) => entry.id === tab)?.label || "Notebook"}
           label="Listen to this list"
+          text={() => exportTab().text}
+        />
+        <CopyTextButton
+          variant="chapter"
+          label="Copy this list"
+          title="Copy this list"
           text={() => exportTab().text}
         />
         <ListenSettings compact />
