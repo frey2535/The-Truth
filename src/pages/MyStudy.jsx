@@ -5,7 +5,7 @@ import ListenControl from "@/components/ListenControl";
 import ListenSettings from "@/components/ListenSettings";
 import NotebookItemActions from "@/components/NotebookItemActions";
 import PlanCard from "@/components/study/PlanCard";
-import { BookMarked, Highlighter, Star, StickyNote } from "lucide-react";
+import { BookMarked, BookOpenText, Highlighter, Star, StickyNote } from "lucide-react";
 import { libraryHref } from "@/lib/libraryLinks";
 import { downloadText, notebookItemText, printText } from "@/lib/notebookExport";
 
@@ -80,6 +80,17 @@ export default function MyStudy() {
 
   const shownNotes = topicFilter === "all" ? notes : notes.filter((n) => n.topic === topicFilter);
   const shownFavs = topicFilter === "all" ? favorites : favorites.filter((n) => n.topic === topicFilter);
+  const readHref = (row) => libraryHref({
+    book: row.book,
+    chapter: row.chapter,
+    source: row.source || "canon",
+    reference: row.reference,
+  });
+  const readLink = (row) => (
+    <Link to={readHref(row)} className="inline-flex items-center gap-1.5 text-xs text-[#7a2e2e] hover:underline">
+      <BookOpenText className="w-3.5 h-3.5" /> Read in context
+    </Link>
+  );
 
   return (
     <div>
@@ -221,6 +232,7 @@ export default function MyStudy() {
               </div>
               <p className="text-sm text-[#6b6155] mt-1">{n.text}</p>
               <p className="text-[#2b2620] mt-2 whitespace-pre-wrap">{n.body}</p>
+              <div className="mt-3">{readLink(n)}</div>
             </article>
           ))}
         </div>
@@ -238,6 +250,7 @@ export default function MyStudy() {
                 <NotebookItemActions kind="Highlight" item={h} onDelete={() => remove("Highlight", h.id)} />
               </div>
               <p className="text-[#2b2620] mt-1 leading-relaxed">{h.text}</p>
+              <div className="mt-3">{readLink(h)}</div>
             </article>
           ))}
         </div>
@@ -256,6 +269,7 @@ export default function MyStudy() {
                 <NotebookItemActions kind="Favorite" item={f} onDelete={() => remove("Favorite", f.id)} />
               </div>
               <p className="text-[#2b2620] mt-1 leading-relaxed">{f.text}</p>
+              <div className="mt-3">{readLink(f)}</div>
             </article>
           ))}
         </div>

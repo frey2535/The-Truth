@@ -1,9 +1,12 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { BookOpenText } from "lucide-react";
 import ListenControl from "@/components/ListenControl";
 import SourceBadge from "./SourceBadge";
 import EvidenceModal from "./EvidenceModal";
 import CrossReferenceModal from "./CrossReferenceModal";
 import ModernFulfillmentModal from "./ModernFulfillmentModal";
+import { libraryHref } from "@/lib/libraryLinks";
 
 export default function VerseCard({ verse, index, topic }) {
   return (
@@ -30,6 +33,12 @@ export default function VerseCard({ verse, index, topic }) {
           label="Listen"
           text={`${verse.reference}. ${verse.text || ""}`}
         />
+        <Link
+          to={libraryHref({ book: verse.book, chapter: verse.chapter, source: verse.source, reference: verse.reference })}
+          className="verse-tool"
+        >
+          <BookOpenText className="w-3.5 h-3.5" /> Read in context
+        </Link>
         <EvidenceModal reference={verse.reference} topic={topic} />
         <CrossReferenceModal reference={verse.reference} topic={topic} />
         <ModernFulfillmentModal reference={verse.reference} topic={topic} />

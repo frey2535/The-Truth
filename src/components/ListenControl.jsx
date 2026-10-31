@@ -13,6 +13,7 @@ export default function ListenControl({
   verses,
   book,
   chapter,
+  onComplete,
 }) {
   const { status, id: activeId, supported } = useAudibleReader();
   if (!supported) return null;
@@ -24,7 +25,7 @@ export default function ListenControl({
   function onPlay() {
     if (speaking) pauseAudible();
     else if (paused) resumeAudible();
-    else toggleAudible(typeof text === "function" ? text() : text, { id: key, title: title || label, verses, book, chapter });
+    else toggleAudible(typeof text === "function" ? text() : text, { id: key, title: title || label, verses, book, chapter, onComplete });
   }
 
   if (variant === "icon") {

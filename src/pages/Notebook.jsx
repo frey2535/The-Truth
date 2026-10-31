@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { BookMarked, Highlighter, Star, StickyNote } from "lucide-react";
+import { BookMarked, BookOpenText, Highlighter, Star, StickyNote } from "lucide-react";
+import { libraryHref } from "@/lib/libraryLinks";
 
 const TABS = [
   { id: "plans", label: "Study plans", icon: BookMarked },
@@ -37,6 +38,17 @@ export default function Notebook() {
     const hay = `${item.topic || ""} ${item.reference || ""} ${item.body || ""} ${item.text || ""}`.toLowerCase();
     return hay.includes(topic.toLowerCase());
   };
+  const readHref = (row) => libraryHref({
+    book: row.book,
+    chapter: row.chapter,
+    source: row.source || "canon",
+    reference: row.reference,
+  });
+  const readLink = (row) => (
+    <Link to={readHref(row)} className="mt-3 inline-flex items-center gap-1.5 text-xs text-[#7a2e2e] hover:underline">
+      <BookOpenText className="w-3.5 h-3.5" /> Read in context
+    </Link>
+  );
 
   return (
     <div>
@@ -87,6 +99,7 @@ export default function Notebook() {
             <article key={n.id} className="truth-card p-4">
               <p className="text-xs text-[#b08d3c]">{n.reference} {n.topic ? `· ${n.topic}` : ""}</p>
               <p className="mt-1 text-[#2b2620] whitespace-pre-wrap">{n.body}</p>
+              {readLink(n)}
             </article>
           ))}
           {notes.filter(matchTopic).length === 0 && <p className="text-center text-[#8a7f6f]">No notes yet. Add one beside a verse while reading.</p>}
@@ -98,6 +111,7 @@ export default function Notebook() {
             <article key={h.id} className="truth-card p-4 bg-[#f3e9c8]/70">
               <p className="text-xs text-[#b08d3c]">{h.reference}</p>
               <p className="mt-1 text-[#2b2620]">{h.text}</p>
+              {readLink(h)}
             </article>
           ))}
           {highlights.filter(matchTopic).length === 0 && <p className="text-center text-[#8a7f6f]">No highlights yet.</p>}
@@ -109,6 +123,7 @@ export default function Notebook() {
             <article key={f.id} className="truth-card p-4">
               <p className="text-xs text-[#b08d3c]">{f.reference} {f.topic ? `· ${f.topic}` : ""}</p>
               <p className="mt-1 text-[#2b2620]">{f.text}</p>
+              {readLink(f)}
             </article>
           ))}
           {favorites.filter(matchTopic).length === 0 && <p className="text-center text-[#8a7f6f]">No favorites yet.</p>}

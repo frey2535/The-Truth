@@ -10,9 +10,33 @@ import { textToNumberedVerses } from "@/lib/readingVerses";
 import { fetchStoredText, looksLikeHtmlDocument } from "@/lib/fetchStoredText";
 import { extractCatalogSection } from "@/lib/catalogExtract";
 import ReadingVerseList from "./ReadingVerseList";
+import { stopAudible } from "@/lib/audibleReader";
 
 function itemKey(item) {
   return item.id || item.slug || item.title;
+}
+
+function itemMatches(item, query) {
+  if (!query) return true;
+  const q = String(query || "").toLowerCase();
+  return `${item?.title || ""} ${item?.desc || ""} ${item?.catalog || ""} ${item?.slug || ""} ${item?.id || ""}`
+    .toLowerCase()
+    .includes(q);
+}
+
+function findGroupItem(group, id) {
+  const key = String(id || "").trim().toLowerCase();
+  if (!key) return null;
+  const sections = group.sections?.length
+    ? group.sections
+    : [{ heading: null, intro: null, items: group.items || [] }];
+  for (const section of sections) {
+    const found = (section.items || []).find((item) =>
+      [item.id, item.slug, item.title].some((value) => String(value || "").toLowerCase() === key)
+    );
+    if (found) return found;
+  }
+  return null;
 }
 
 function isLeonLevyGroup(group, item) {
@@ -132,6 +156,7 @@ function ScriptureReader({ item, group, groupTitle, onBack, corpus }) {
 
   useEffect(() => {
     setChapter(1);
+    stopAudible();
   }, [book]);
 
   useEffect(() => {
@@ -197,7 +222,15 @@ function ScriptureReader({ item, group, groupTitle, onBack, corpus }) {
             ))}
           </select>
         )}
-        <ChapterNav chapter={chapter} chapterCount={chapterCount} onChange={setChapter} loading={loading} />
+        <ChapterNav
+          chapter={chapter}
+          chapterCount={chapterCount}
+          onChange={(next) => {
+            stopAudible();
+            setChapter(next);
+          }}
+          loading={loading}
+        />
       </div>
       {loading && (
         <div className="flex justify-center py-16">
@@ -249,7 +282,10 @@ function WebReader({ item, group, groupTitle, onBack, corpus }) {
         <ChapterNav
           chapter={chapter}
           chapterCount={data?.hasNext ? chapter + 1 : chapter}
-          onChange={setChapter}
+          onChange={(next) => {
+            stopAudible();
+            setChapter(next);
+          }}
           loading={loading}
         />
       </div>
@@ -335,8 +371,9 @@ function MarkdownReader({ item, group, groupTitle, onBack, corpus }) {
   );
 }
 
-export default function ManuscriptReader({ group, onBack, corpus = "other" }) {
+export default function ManuscriptReader({ group, onBack, corpus = "other", initialWorkId }) {
   const [selected, setSelected] = useState(null);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     scrollReadingToTop();
@@ -344,6 +381,20 @@ export default function ManuscriptReader({ group, onBack, corpus = "other" }) {
   const sections = group.sections?.length
     ? group.sections
     : [{ heading: null, intro: null, items: group.items || [] }];
+
+  useEffect(() => {
+    const found = findGroupItem(group, initialWorkId);
+    if (found) setSelected(found);
+  }, [group, initialWorkId]);
+
+  const q = query.trim();
+  const filteredSections = sections
+    .map((section) => ({
+      ...section,
+      items: (section.items || []).filter((item) => itemMatches(item, q)),
+    }))
+    .filter((section) => section.items.length);
+  const resultCount = filteredSections.reduce((sum, section) => sum + section.items.length, 0);
 
   if (!selected) {
     return (
@@ -357,12 +408,25 @@ export default function ManuscriptReader({ group, onBack, corpus = "other" }) {
         </button>
         <h1 className="font-display text-3xl text-[#2b2620] mb-1">{group.title}</h1>
         <p className="text-[#8a7f6f] mb-4 max-w-3xl">{group.desc}</p>
+        <div className="max-w-xl mb-6">
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search this collection by book, document, fragment, or catalog id"
+            className="h-11 w-full rounded-xl border border-[#e8ddc7] bg-white px-4 text-sm"
+          />
+          {q ? (
+            <p className="mt-2 text-xs text-[#8a7f6f]">
+              {resultCount} matching document{resultCount === 1 ? "" : "s"}
+            </p>
+          ) : null}
+        </div>
         {isLeonLevyGroup(group) && (
           <div className="mb-8">
             <LeonLevyButton href={group.sourceUrl} />
           </div>
         )}
-        {sections.map((section) => (
+        {filteredSections.map((section) => (
           <section key={section.heading || "main"} className="mb-10">
             {section.heading && (
               <h2 className="font-display text-xl text-[#2b2620] mb-2">{section.heading}</h2>
@@ -380,6 +444,11 @@ export default function ManuscriptReader({ group, onBack, corpus = "other" }) {
             </div>
           </section>
         ))}
+        {q && resultCount === 0 ? (
+          <p className="rounded-2xl border border-[#e8ddc7] bg-white/70 p-4 text-sm text-[#8a7f6f]">
+            No stored document in this collection matches that search.
+          </p>
+        ) : null}
       </div>
     );
   }
