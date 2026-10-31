@@ -95,7 +95,6 @@ export default function Assistant() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const listRef = useRef(null);
   const turnRef = useRef(null);
   const reqId = useRef(0);
 
@@ -108,10 +107,10 @@ export default function Assistant() {
 
   useLayoutEffect(() => {
     if (loading) return;
-    const pane = listRef.current;
     const turn = turnRef.current;
-    if (!pane || !turn) return;
-    pane.scrollTop = Math.max(0, turn.offsetTop);
+    if (!turn) return;
+    // Use document scroll so the mouse wheel is never trapped in a nested pane.
+    turn.scrollIntoView({ block: "start", behavior: "auto" });
   }, [messages.length, loading]);
 
   async function loadConversations() {
@@ -228,8 +227,8 @@ export default function Assistant() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto flex h-[calc(100dvh-9.5rem)] min-h-0 flex-col md:h-[calc(100dvh-13rem)]">
-      <header className="mb-2 sm:mb-4 shrink-0">
+    <div className="max-w-3xl mx-auto flex flex-col">
+      <header className="mb-2 sm:mb-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h1 className="font-display text-3xl leading-none text-[#2b2620] sm:text-4xl">Truth Assistant</h1>
@@ -237,7 +236,8 @@ export default function Assistant() {
               <p className="inline-flex items-center gap-1.5 text-xs text-[#7a2e2e] mt-1">
                 <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
                 <span>
-                  Not a generative AI chatbot. It searches texts stored in this app and quotes them.
+                  Not a generative AI chatbot. It reads the question, searches texts stored in this app,
+                  understands and compares their wording, then answers with quotes.
                 </span>
               </p>
             ) : null}
@@ -265,18 +265,15 @@ export default function Assistant() {
         </div>
       </header>
 
-      <div
-        ref={listRef}
-        className="flex-1 min-h-0 overflow-y-auto rounded-xl border border-[#e8ddc7] bg-white/60 p-3 space-y-3 sm:rounded-2xl sm:p-4 sm:space-y-4"
-      >
+      <div className="rounded-xl border border-[#e8ddc7] bg-white/60 p-3 space-y-3 sm:rounded-2xl sm:p-4 sm:space-y-4">
         {messages.length === 0 && (
           <div className="text-center text-[#8a7f6f] py-12 sm:py-16">
             <p className="font-display text-2xl text-[#2b2620] mb-2">Ask a question.</p>
             <p>
-              Yes or No is used only when you ask a yes-or-no question. The Assistant reads the meaning
-              of every stored writing that belongs to the question, answers from that whole-literature
-              understanding, then quotes the passages. A new chat starts when you change the topic.
-              Nothing is invented or taken from the internet.
+              The Assistant reads your question, gathers every related stored writing, identifies what
+              those texts teach, compares them when needed, explains the combined meaning, and quotes
+              the passages. Yes or No is used only when you ask a yes-or-no question. A new chat starts
+              when you change the topic. Nothing is invented or taken from the internet.
             </p>
           </div>
         )}

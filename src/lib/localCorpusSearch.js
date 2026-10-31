@@ -49,8 +49,8 @@ export const KJV_TOPIC_ALIASES = {
   rapture: ["caught up"],
   "holy spirit": ["holy ghost"],
   spirit: ["holy ghost"],
-  forgive: ["forgiveness", "remission"],
-  forgiveness: ["remission"],
+  forgive: ["forgiveness", "remission", "forgiven", "forgiving"],
+  forgiveness: ["forgive", "remission", "forgiven", "forgiving"],
   baptize: ["baptism", "baptist", "baptise", "baptised"],
   baptism: ["baptize", "baptized", "baptist", "baptise", "baptised"],
   baptise: ["baptize", "baptism", "baptist"],
@@ -59,6 +59,13 @@ export const KJV_TOPIC_ALIASES = {
   sabbath: ["seventh day"],
   sheol: ["grave", "hell"],
   hell: ["sheol", "grave"],
+  marriage: ["marry", "married", "wife", "husband", "wedlock", "bride", "bridegroom", "one flesh"],
+  marry: ["marriage", "married", "wife", "husband"],
+  divorce: ["divorcement", "put away", "writing of divorcement", "bill of divorcement"],
+  divorcement: ["divorce", "put away"],
+  tithing: ["tithe", "tithes", "tenth", "tenth part", "firstfruits", "storehouse"],
+  tithe: ["tithes", "tithing", "tenth", "tenth part"],
+  tithes: ["tithe", "tithing", "tenth"],
 };
 
 const bookCache = new Map();

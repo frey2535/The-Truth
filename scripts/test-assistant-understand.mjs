@@ -16,6 +16,7 @@ import { learningCannotManipulate, recordAssistantLearning } from "../src/lib/as
 import { topicTermsFrom } from "../src/lib/questionTopics.js";
 import { MAJOR_STUDY_TOPICS } from "../src/data/majorStudyTopics.js";
 import { groupPassagesByDocument, passageDocumentTitle, shouldGroupPassages } from "../src/lib/passageGrouping.js";
+import { questionIntent, reasonFromLiterature, writeReasonedAnswer } from "../src/lib/askReasoning.js";
 
 const baptism = familyOf("baptism").map((w) => w.toLowerCase());
 for (const form of ["baptism", "baptize", "baptized", "baptizing", "baptise", "baptised", "baptising", "baptist"]) {
@@ -215,5 +216,70 @@ const saved = persistableMessages(hugeHistory);
 assert.ok(saved[1].passages.length <= 40);
 assert.ok(saved[1].content.length < hugeHistory[1].content.length);
 assert.doesNotMatch(saved[1].content, /quote\nquote\nquote/);
+
+const divorceAsk = {
+  question: "Is divorce allowed?",
+  topics: ["divorce"],
+  words: ["divorce"],
+  yesNo: true,
+  kind: "topic-family",
+  intent: "yesno",
+  extraSearches: [],
+};
+const divorceRows = [
+  {
+    source: "canon",
+    book: "Matthew",
+    chapter: 19,
+    verse: 8,
+    reference: "Matthew 19:8",
+    text: "He saith unto them, Moses because of the hardness of your hearts suffered you to put away your wives: but from the beginning it was not so.",
+  },
+  {
+    source: "canon",
+    book: "Matthew",
+    chapter: 19,
+    verse: 9,
+    reference: "Matthew 19:9",
+    text: "And I say unto you, Whosoever shall put away his wife, except it be for fornication, and shall marry another, committeth adultery: and whoso marrieth her which is put away doth commit adultery.",
+  },
+];
+const divorceReading = reasonFromLiterature(divorceRows, divorceAsk);
+assert.ok(["No", "Qualified"].includes(divorceReading.verdict), divorceReading.verdict);
+assert.ok(divorceReading.assertions.length >= 1);
+const divorceLines = [];
+writeReasonedAnswer(divorceLines, divorceRows, divorceAsk);
+assert.match(divorceLines.join("\n"), /Matthew 19/);
+
+const compareAsk = {
+  question: "Compare faith and works",
+  topics: ["faith", "works"],
+  words: ["faith", "works"],
+  yesNo: false,
+  kind: "topic-family",
+  intent: "compare",
+  extraSearches: [],
+};
+const compareRows = [
+  {
+    source: "canon",
+    book: "Ephesians",
+    chapter: 2,
+    verse: 8,
+    reference: "Ephesians 2:8",
+    text: "For by grace are ye saved through faith; and that not of yourselves: it is the gift of God:",
+  },
+  {
+    source: "canon",
+    book: "James",
+    chapter: 2,
+    verse: 24,
+    reference: "James 2:24",
+    text: "Ye see then how that by works a man is justified, and not by faith only.",
+  },
+];
+const compareBuilt = buildAssistantAnswer(compareAsk.question, compareRows, compareAsk);
+assert.match(compareBuilt.markdown, /Understanding of the literature/);
+assert.match(compareBuilt.markdown, /Comparison from the stored writings|According to the stored literature, compared|faith|works/i);
 
 console.log("assistant understanding ok");

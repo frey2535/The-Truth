@@ -1,10 +1,11 @@
 import { extraSearchesForKind, isYesNoQuestion, questionKind } from "./assistantAnswer.js";
 import { expandWithLearning } from "./assistantLearn.js";
+import { questionIntent } from "./askReasoning.js";
 import { extractReferencesFromQuestion, KJV_TOPIC_ALIASES, SEARCH_CORPORA } from "./localCorpusSearch.js";
 import { familyOf } from "./wordFamilies.js";
 import { topicTermsFrom } from "./questionTopics.js";
 
-export { isYesNoQuestion, questionKind };
+export { isYesNoQuestion, questionKind, questionIntent };
 
 export { topicTermsFrom };
 
@@ -58,6 +59,7 @@ function restrictFromCorpusId(corpus) {
 
 function isComparisonQuestion(question, topics) {
   const q = String(question || "");
+  if (questionIntent(q) === "compare") return topics.length >= 2;
   if (!/^\s*(?:is|are|was|were)\s+.+\s+the\s+.+/i.test(q) && !/\b(?:same as|instead of|rather than)\b/i.test(q)) {
     return false;
   }
@@ -109,6 +111,7 @@ export function understandQuestion(question, { history = [], corpus = "all" } = 
   const topics = parsed?.topics?.length ? parsed.topics : fallback;
   const boost = parsed?.boost || [];
   const kind = questionKind(q, topics);
+  const intent = questionIntent(q);
   const asked = {
     question: q,
     topics,
@@ -118,10 +121,11 @@ export function understandQuestion(question, { history = [], corpus = "all" } = 
     refs,
     yesNo: isYesNoQuestion(q),
     kind,
+    intent,
     extraSearches: extraSearchesForKind(kind),
-    preferSpeech: Boolean(parsed?.preferSpeech),
+    preferSpeech: Boolean(parsed?.preferSpeech) || intent === "explain" || intent === "define",
     leadSource: leadSourceFromQuestion(q),
-    comparison: isComparisonQuestion(q, topics),
+    comparison: isComparisonQuestion(q, topics) || intent === "compare",
     restrictSources: restrictFromCorpusId(corpus) || restrictFromQuestion(q),
     families: Object.fromEntries(topics.map((t) => [t, expandWithLearning(t)])),
   };
@@ -144,6 +148,7 @@ export function understandQuestion(question, { history = [], corpus = "all" } = 
     refs: asked.refs.length ? asked.refs : prior.refs,
     yesNo: asked.yesNo,
     kind: mergedKind,
+    intent: asked.intent !== "general" ? asked.intent : prior.intent || "general",
     extraSearches: extraSearchesForKind(mergedKind),
     preferSpeech: asked.preferSpeech || prior.preferSpeech,
     leadSource: asked.leadSource !== "canon" ? asked.leadSource : prior.leadSource || "canon",

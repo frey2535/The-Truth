@@ -31,7 +31,7 @@ const ACTIONS = [
   { to: "/prophecy", label: "Prophecy", desc: "Dated records, in-process signs, and end-time setup stored beside the verses", icon: Sparkles },
   { to: "/evidence", label: "Evidence", desc: "Empirical finds only — inscriptions, excavations, and measured science", icon: ScrollText },
   { to: "/investigate", label: "Investigate", desc: "Quote every stored text and record for a claim", icon: Search },
-  { to: "/assistant", label: "Ask", desc: "Answers quote only what is stored in this app", icon: Sparkles },
+  { to: "/assistant", label: "Ask", desc: "Reads your question, understands the stored writings, and answers with quotes", icon: Sparkles },
 ];
 
 export default function Home() {
