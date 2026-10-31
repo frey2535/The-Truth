@@ -186,7 +186,8 @@
 
 .truth-header-link,
 .truth-header-ask,
-.truth-header-account {
+.truth-header-account,
+.truth-header-back {
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
@@ -199,10 +200,15 @@
 }
 
 .truth-header-link svg,
-.truth-header-ask svg {
+.truth-header-ask svg,
+.truth-header-back svg {
   width: clamp(0.75rem, 1.25vw, 1rem);
   height: clamp(0.75rem, 1.25vw, 1rem);
   flex-shrink: 0;
+}
+
+.truth-header-back {
+  margin-right: clamp(0.1rem, 0.4vw, 0.35rem);
 }
 
 .truth-header-label {
@@ -280,7 +286,8 @@
 
 .truth-header-bar.truth-header--icons .truth-header-link,
 .truth-header-bar.truth-header--icons .truth-header-ask,
-.truth-header-bar.truth-header--icons .truth-header-account {
+.truth-header-bar.truth-header--icons .truth-header-account,
+.truth-header-bar.truth-header--icons .truth-header-back {
   padding-inline: 0.35rem;
 }
 
