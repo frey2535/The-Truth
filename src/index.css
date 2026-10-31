@@ -90,12 +90,15 @@
 
   html {
     min-height: 100dvh;
+    scroll-behavior: auto;
+    overscroll-behavior-y: none;
   }
 
   body {
     @apply bg-background text-foreground font-body;
     min-height: 100dvh;
     -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
   }
 
   #root {
@@ -290,14 +293,16 @@
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  contain: paint;
+  transform: translateZ(0);
 }
 
 .truth-heaven-paint {
   position: absolute;
-  inset: -3%;
+  inset: 0;
   background:
     #0c0806 url("/ui/truth-heaven-war.jpg") center 28% / cover no-repeat;
-  animation: truth-heaven-drift 48s ease-in-out infinite alternate;
+  /* No continuous transform animation — it fought the mouse wheel on every page. */
 }
 
 .truth-heaven-veil {
@@ -316,24 +321,8 @@
     );
 }
 
-@keyframes truth-heaven-drift {
-  from {
-    transform: scale(1.03) translate3d(0, 0, 0);
-  }
-  to {
-    transform: scale(1.08) translate3d(0, -1.5%, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .truth-heaven-paint {
-    animation: none;
-  }
-}
-
 @media (max-width: 768px) {
   .truth-heaven-paint {
-    animation: none;
     background-position: center 22%;
   }
 }
@@ -370,6 +359,8 @@
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  contain: paint;
+  transform: translateZ(0);
 }
 
 .truth-papyrus-sheet {

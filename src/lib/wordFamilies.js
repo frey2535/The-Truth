@@ -49,6 +49,9 @@ const EXTRA_FAMILIES = [
   ["crucify", "crucified", "cross"],
   ["kingdom", "kingdoms", "reign", "reigneth", "reigned"],
   ["sabbath", "sabbaths"],
+  ["marriage", "marry", "married", "marrying", "wife", "wives", "husband", "husbands", "wedlock", "bride", "bridegroom"],
+  ["divorce", "divorced", "divorcement", "divorcements"],
+  ["tithe", "tithes", "tithing", "tenth"],
 ];
 
 function clean(word) {

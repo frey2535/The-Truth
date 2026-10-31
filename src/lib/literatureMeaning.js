@@ -1,3 +1,4 @@
+import { reasonedYesNoOpening, writeReasonedAnswer, writeReasonedUnderstanding } from "./askReasoning.js";
 import { familyHitsText } from "./wordFamilies.js";
 
 const GOSPELS = new Set(["Matthew", "Mark", "Luke", "John"]);
@@ -322,15 +323,18 @@ export function understandLiterature(passages, asked) {
 
 export function yesNoOpening(asked, passages) {
   if (!asked?.yesNo) return "";
-  const reading = understandLiterature(passages, asked);
-  if (!reading.verdict) return "";
-  if (asked.kind === "baptism-salvation" && reading.verdict === "Yes") {
+  if (asked.kind === "baptism-salvation" || asked.kind === "salvation-duty") {
+    const reading = understandLiterature(passages, asked);
+    if (!reading.verdict) return "";
+    if (asked.kind === "baptism-salvation" && reading.verdict === "Yes") {
+      return `**Yes.** ${reading.verdictReason}`;
+    }
+    if (reading.verdict === "No") {
+      return `**No.** ${reading.verdictReason}`;
+    }
     return `**Yes.** ${reading.verdictReason}`;
   }
-  if (reading.verdict === "No") {
-    return `**No.** ${reading.verdictReason}`;
-  }
-  return `**Yes.** ${reading.verdictReason}`;
+  return reasonedYesNoOpening(asked, passages);
 }
 
 function lineWithRefs(label, meaning, refs) {
@@ -340,23 +344,20 @@ function lineWithRefs(label, meaning, refs) {
 
 export function writeUnderstanding(lines, passages, asked) {
   const reading = understandLiterature(passages, asked);
-  const { claims } = reading;
   const kind = asked?.kind || "topic-family";
 
-  lines.push("### Understanding of the literature");
-  lines.push("");
-  lines.push(
-    "Every stored passage that belongs to this question was read for what it means, then the whole body of that literature was taken together. A verse that names one duty does not cancel a verse that names another. Nothing outside these writings was used."
-  );
-  lines.push("");
-
   if (kind === "salvation-duty" || kind === "baptism-salvation") {
+    lines.push("### Understanding of the literature");
+    lines.push("");
+    lines.push(
+      "Every stored passage that belongs to this question was read for what it means, then the whole body of that literature was taken together. A verse that names one duty does not cancel a verse that names another. Nothing outside these writings was used."
+    );
+    lines.push("");
     writeSalvationUnderstanding(lines, reading, asked);
     return reading;
   }
 
-  writeTopicUnderstanding(lines, passages, asked, claims);
-  return reading;
+  return writeReasonedUnderstanding(lines, passages, asked);
 }
 
 function writeSalvationUnderstanding(lines, reading, asked) {
@@ -511,34 +512,6 @@ function writeSalvationUnderstanding(lines, reading, asked) {
   }
 }
 
-function writeTopicUnderstanding(lines, passages, asked, claims) {
-  const topics = asked?.topics || asked?.words || [];
-  const topic = topics.join(", ") || "this question";
-  const specific = claims.filter((c) => c.direct && c.meaning);
-  if (specific.length) {
-    const seen = new Set();
-    let n = 0;
-    for (const claim of specific) {
-      const key = `${claim.id}|${claim.reference}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      lines.push(`- ${claim.reference}: ${claim.meaning}.`);
-      n += 1;
-      if (n >= 12) break;
-    }
-    lines.push("");
-    lines.push(`Read together, that is the meaning of the stored literature on ${topic}.`);
-    lines.push("");
-    return;
-  }
-
-  const sample = uniqueRefs(passages, 10);
-  lines.push(
-    `The stored writings that belong to this question speak of ${topic}. Their meaning is taken from their own sentences, which are quoted in full below${sample.length ? ` (including ${sample.join("; ")})` : ""}.`
-  );
-  lines.push("");
-}
-
 const DUTY_STEPS = [
   {
     id: "believe",
@@ -643,54 +616,5 @@ export function writeDetailedAnswer(lines, passages, asked) {
     return;
   }
 
-  const groups = groupTopicMeanings(passages, asked);
-  lines.push("According to the meaning of the stored literature:");
-  lines.push("");
-  let n = 1;
-  for (const group of groups) {
-    lines.push(`${n}. **${group.heading}.** ${group.meaning} ${group.references.join("; ")}.`);
-    n += 1;
-  }
-  lines.push("");
-  lines.push("Every stored passage used for this understanding is quoted below.");
-  lines.push("");
-}
-
-function groupTopicMeanings(passages, asked) {
-  const topics = asked?.topics || asked?.words || [];
-  const claims = (passages || []).flatMap((row) => readClaims(row));
-  const byId = new Map();
-  for (const claim of claims) {
-    if (!claim.direct) continue;
-    if (!byId.has(claim.id)) {
-      byId.set(claim.id, { heading: claim.meaning.split(" ")[0] || claim.id, meaning: claim.meaning, references: [] });
-    }
-    const g = byId.get(claim.id);
-    if (claim.reference && !g.references.includes(claim.reference) && g.references.length < 8) {
-      g.references.push(claim.reference);
-    }
-    g.heading = titleFromMeaning(claim.meaning);
-  }
-  if (byId.size) return [...byId.values()];
-  return [
-    {
-      heading: topics[0] || "The stored wording",
-      meaning: "The writings that belong to this question use the words you asked about in the sentences quoted below.",
-      references: uniqueRefs(passages, 8),
-    },
-  ];
-}
-
-function titleFromMeaning(meaning) {
-  const t = String(meaning || "");
-  if (/^baptism/i.test(t)) return "Baptism";
-  if (/^believ/i.test(t)) return "Believing";
-  if (/^whoever believes/i.test(t)) return "Believing";
-  if (/^repent/i.test(t)) return "Repenting";
-  if (/^confess/i.test(t)) return "Confessing";
-  if (/calling|calls on the name/i.test(t)) return "Calling on the name";
-  if (/grace/i.test(t)) return "Grace";
-  if (/Father|gospel|justif/i.test(t)) return "Obedience";
-  if (/born/i.test(t)) return "New birth";
-  return t.slice(0, 42);
+  writeReasonedAnswer(lines, passages, asked);
 }

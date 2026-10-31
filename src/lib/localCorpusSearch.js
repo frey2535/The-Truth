@@ -48,8 +48,8 @@ export const KJV_TOPIC_ALIASES = {
   rapture: ["caught up"],
   "holy spirit": ["holy ghost"],
   spirit: ["holy ghost"],
-  forgive: ["forgiveness", "remission"],
-  forgiveness: ["remission"],
+  forgive: ["forgiveness", "remission", "forgiven", "forgiving"],
+  forgiveness: ["forgive", "remission", "forgiven", "forgiving"],
   baptize: ["baptism", "baptist", "baptise", "baptised"],
   baptism: ["baptize", "baptized", "baptist", "baptise", "baptised"],
   baptise: ["baptize", "baptism", "baptist"],
@@ -58,6 +58,13 @@ export const KJV_TOPIC_ALIASES = {
   sabbath: ["seventh day"],
   sheol: ["grave", "hell"],
   hell: ["sheol", "grave"],
+  marriage: ["marry", "married", "wife", "husband", "wedlock", "bride", "bridegroom", "one flesh"],
+  marry: ["marriage", "married", "wife", "husband"],
+  divorce: ["divorcement", "put away", "writing of divorcement", "bill of divorcement"],
+  divorcement: ["divorce", "put away"],
+  tithing: ["tithe", "tithes", "tenth", "tenth part", "firstfruits", "storehouse"],
+  tithe: ["tithes", "tithing", "tenth", "tenth part"],
+  tithes: ["tithe", "tithing", "tenth"],
 };
 
 const bookCache = new Map();
@@ -420,11 +427,17 @@ export const SEARCH_CORPORA = [
 
 const JESUS_NAMES = new Set(["jesus", "christ", "messiah", "yeshua"]);
 const GOSPEL_BOOKS = new Set(["Matthew", "Mark", "Luke", "John"]);
-const SCAN_YIELD_EVERY = 200;
+const SCAN_YIELD_EVERY = 80;
 
-/** Let the browser paint and take clicks so a long stored-text scan cannot freeze the page. */
+/** Let the browser paint, scroll, and take clicks so a long stored-text scan cannot freeze the page. */
 export function yieldToBrowser() {
-  return new Promise((resolve) => setTimeout(resolve, 0));
+  return new Promise((resolve) => {
+    if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(() => setTimeout(resolve, 0));
+      return;
+    }
+    setTimeout(resolve, 0);
+  });
 }
 
 function prepareQuery(item) {

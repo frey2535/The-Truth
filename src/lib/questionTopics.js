@@ -12,7 +12,7 @@ const STOP = new Set([
 const WEAK = new Set([
   "say", "said", "saith", "saying", "says", "ask", "asked", "asking", "tell", "told",
   "mean", "means", "meaning", "please", "explain", "describe", "define", "defined",
-  "definition", "difference", "between", "versus", "compare", "related", "verse",
+  "definition", "difference", "between", "versus", "compare", "contrast", "related", "verse",
   "verses", "passage", "passages", "bible", "scripture", "scriptures", "text", "texts",
   "word", "words", "teach", "teaches", "taught", "teaching", "show", "shows", "shown",
   "really", "just", "like", "thing", "things", "someone", "something", "anything",
@@ -22,7 +22,9 @@ const WEAK = new Set([
   "finding", "looking", "know", "knew", "knows", "think", "thought", "people",
   "person", "give", "gives", "given", "make", "makes", "made", "come", "came",
   "going", "gone", "done", "doing", "true", "truth", "help", "helping",
-  "required", "require", "requires", "requirement",
+  "required", "require", "requires", "requirement", "identify", "identified",
+  "according", "regarding", "concerning", "allowed", "allow", "permit", "permitted",
+  "possible", "happen", "happens", "happened", "using", "based", "about",
 ]);
 
 export function topicTermsFrom(text) {
