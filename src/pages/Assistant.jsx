@@ -6,11 +6,11 @@ import { Send, Loader2, ShieldCheck, Square, History, PlusCircle } from "lucide-
 import ReactMarkdown from "react-markdown";
 import ListenControl from "@/components/ListenControl";
 import HistoryDialog from "@/components/assistant/HistoryDialog";
+import GroupedPassageList from "@/components/study/GroupedPassageList";
 import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
 import { shouldStartNewChat } from "@/lib/assistantChat";
 import { askHistory, loadableMessages, persistableMessages } from "@/lib/assistantSafety";
 
-const QUOTE_BATCH = 24;
 const PASSAGE_SOURCE_ORDER = [
   "canon",
   "apocrypha",
@@ -52,37 +52,23 @@ class AssistantTurnBoundary extends React.Component {
 
 function StoredWording({ passages }) {
   const rows = orderedPassages(passages);
-  const [shown, setShown] = useState(Math.min(QUOTE_BATCH, rows.length));
-
-  useEffect(() => {
-    setShown(Math.min(QUOTE_BATCH, rows.length));
-  }, [passages, rows.length]);
 
   if (!rows.length) return null;
-  let lastGroup = "";
   return (
-    <div className="mt-4 space-y-3">
-      {rows.slice(0, shown).map((p, i) => {
-        const group = SOURCE_LABEL[p.source] || p.source || "stored text";
-        const heading = group !== lastGroup;
-        lastGroup = group;
-        return (
-          <div key={`${p.source}|${p.reference}|${i}`}>
-            {heading ? <h4 className="font-display text-lg text-[#7a2e2e] mt-4 mb-2">{group}</h4> : null}
+    <div className="mt-4">
+      <GroupedPassageList
+        rows={rows}
+        sourceLabel={(source) => SOURCE_LABEL[source] || source || "stored text"}
+        className="space-y-3"
+        groupBodyClassName="space-y-3 px-3 pb-3"
+        itemKey={(p, i) => `${p.source}|${p.reference}|${i}`}
+        renderRow={(p) => (
+          <div>
             <p className="font-medium text-[#2b2620]">{p.reference}</p>
             <blockquote className="border-l-2 border-[#c4b59a] pl-3 my-1 text-[#3a3328]">{p.text}</blockquote>
           </div>
-        );
-      })}
-      {shown < rows.length ? (
-        <button
-          type="button"
-          onClick={() => setShown((n) => Math.min(n + QUOTE_BATCH, rows.length))}
-          className="text-sm text-[#7a2e2e] underline"
-        >
-          Show more stored wording ({shown} of {rows.length})
-        </button>
-      ) : null}
+        )}
+      />
     </div>
   );
 }

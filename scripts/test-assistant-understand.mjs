@@ -15,6 +15,7 @@ import { familyHitsText, familyOf } from "../src/lib/wordFamilies.js";
 import { learningCannotManipulate, recordAssistantLearning } from "../src/lib/assistantLearn.js";
 import { topicTermsFrom } from "../src/lib/questionTopics.js";
 import { MAJOR_STUDY_TOPICS } from "../src/data/majorStudyTopics.js";
+import { groupPassagesByDocument, passageDocumentTitle, shouldGroupPassages } from "../src/lib/passageGrouping.js";
 
 const baptism = familyOf("baptism").map((w) => w.toLowerCase());
 for (const form of ["baptism", "baptize", "baptized", "baptizing", "baptise", "baptised", "baptising", "baptist"]) {
@@ -32,6 +33,17 @@ assert.deepEqual(topicTermsFrom("Is baptism required for salvation?").sort(), ["
 assert.equal(MAJOR_STUDY_TOPICS.length, 10);
 assert.equal(new Set(MAJOR_STUDY_TOPICS.map((topic) => topic.id)).size, 10);
 assert.ok(MAJOR_STUDY_TOPICS.every((topic) => topic.title && topic.query && topic.description));
+assert.equal(passageDocumentTitle({ source: "canon", book: "John", reference: "John 3:16" }), "John");
+assert.equal(passageDocumentTitle({ source: "government", reference: "Pliny The Younger, Letters §113" }), "Pliny The Younger, Letters");
+assert.equal(
+  groupPassagesByDocument([
+    { source: "canon", book: "John", reference: "John 3:16" },
+    { source: "canon", book: "John", reference: "John 3:17" },
+    { source: "canon", book: "Acts", reference: "Acts 2:38" },
+  ]).length,
+  2
+);
+assert.equal(shouldGroupPassages(Array.from({ length: 4 }, (_, i) => ({ source: "canon", book: "John", reference: `John 3:${i + 1}` }))), true);
 
 assert.equal(isYesNoQuestion("Is baptism required for salvation?"), true);
 assert.equal(isYesNoQuestion("Must I be baptized to be saved?"), true);
