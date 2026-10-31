@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import PlanCard from "@/components/study/PlanCard";
 import { loadReadingPosition, readingHref, readingLabel } from "@/lib/readingSession";
-import { runStudyResearch } from "@/lib/studyPlanResearch";
+import { runStudyResearch, warmStudyCorpus } from "@/lib/studyPlanResearch";
 
 const ACTIONS = [
   { to: "/library", label: "Read", desc: "Open the wording stored in this published app — the same library for every reader", icon: BookOpenText },
@@ -56,6 +56,7 @@ export default function Home() {
   }
   useEffect(() => {
     loadPlans();
+    warmStudyCorpus();
   }, []);
 
   async function handleResearch(e) {

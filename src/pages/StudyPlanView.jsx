@@ -58,7 +58,8 @@ export default function StudyPlanView() {
 
   useEffect(() => {
     if (plan?.status !== "researching") return;
-    const t = setInterval(loadAll, 5000);
+    // Scripture hits land first; poll quickly so the plan fills while extended texts finish.
+    const t = setInterval(loadAll, 1200);
     return () => clearInterval(t);
   }, [plan?.status]);
 

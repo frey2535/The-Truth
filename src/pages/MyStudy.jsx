@@ -9,7 +9,7 @@ import { BookMarked, BookOpenText, Highlighter, Loader2, Star, StickyNote } from
 import { MAJOR_STUDY_TOPICS } from "@/data/majorStudyTopics";
 import { libraryHref } from "@/lib/libraryLinks";
 import { downloadText, notebookItemText, printText } from "@/lib/notebookExport";
-import { runStudyResearch } from "@/lib/studyPlanResearch";
+import { runStudyResearch, warmStudyCorpus } from "@/lib/studyPlanResearch";
 
 const TABS = [
   { id: "plans", label: "Study plans", icon: BookMarked },
@@ -45,6 +45,7 @@ export default function MyStudy() {
 
   useEffect(() => {
     load();
+    warmStudyCorpus();
   }, []);
 
   const topics = useMemo(() => {
