@@ -5,8 +5,7 @@ import ListenControl from "@/components/ListenControl";
 import ListenSettings from "@/components/ListenSettings";
 import NotebookItemActions from "@/components/NotebookItemActions";
 import PlanCard from "@/components/study/PlanCard";
-import { BookMarked, BookOpenText, Highlighter, Loader2, Star, StickyNote } from "lucide-react";
-import { MAJOR_STUDY_TOPICS } from "@/data/majorStudyTopics";
+import { BookMarked, BookOpenText, Highlighter, Star, StickyNote } from "lucide-react";
 import { libraryHref } from "@/lib/libraryLinks";
 import { downloadText, notebookItemText, printText } from "@/lib/notebookExport";
 
