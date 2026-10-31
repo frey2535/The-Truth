@@ -6,6 +6,9 @@ import { ArrowLeft, Loader2, FlaskConical } from "lucide-react";
 import NotebookItemActions from "@/components/NotebookItemActions";
 import VerseCard from "@/components/study/VerseCard";
 import { SOURCE_LABEL } from "@/lib/localCorpusSearch";
+import { runStudyResearch } from "@/lib/studyPlanResearch";
+
+const PAGE_SIZE = 40;
 
 export default function StudyPlanView() {
   const { id } = useParams();
@@ -15,6 +18,7 @@ export default function StudyPlanView() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [retrying, setRetrying] = useState(false);
+  const [shown, setShown] = useState(PAGE_SIZE);
 
   async function loadAll() {
     try {
@@ -39,13 +43,16 @@ export default function StudyPlanView() {
     try {
       await base44.entities.StudyPlan.update(id, { status: "researching" });
       setPlan({ ...plan, status: "researching" });
-      base44.functions.invoke("research_topic", { topic: plan.study_query || plan.topic, plan_id: id }).catch(() => {});
+      runStudyResearch(plan, plan.study_query || plan.topic);
     } finally {
       setRetrying(false);
     }
   }
 
   useEffect(() => {
+    setShown(PAGE_SIZE);
+    setLoading(true);
+    setNotFound(false);
     loadAll();
   }, [id]);
 
@@ -77,6 +84,11 @@ export default function StudyPlanView() {
     counts[label] = (counts[label] || 0) + 1;
     return counts;
   }, {});
+  const visible = verses.length > shown ? verses.slice(0, shown) : verses;
+  const planExportBody = () =>
+    [plan.description, ...verses.map((v) => `${v.reference || ""}\n${v.text || ""}`)]
+      .filter(Boolean)
+      .join("\n\n");
 
   return (
     <div>
@@ -91,17 +103,27 @@ export default function StudyPlanView() {
         <div className="flex flex-wrap items-center gap-4 mt-3 text-sm text-[#8a7f6f]">
           <span>
             {verses.length} passage{verses.length === 1 ? "" : "s"}
+            {shown < verses.length ? ` · showing ${shown}` : ""}
           </span>
           <span>·</span>
           <span>Bible passages first, then other stored texts and records</span>
           <NotebookItemActions
             kind="Study plan"
-            item={{
-              ...plan,
-              body: [plan.description, ...verses.map((v) => `${v.reference || ""}\n${v.text || ""}`)].filter(Boolean).join("\n\n"),
-            }}
+            item={plan}
+            text={() =>
+              [
+                `The Truth — Study plan`,
+                plan.topic ? `Topic: ${plan.topic}` : "",
+                plan.status ? `Status: ${plan.status}` : "",
+                "",
+                planExportBody(),
+              ]
+                .filter((line) => line != null)
+                .join("\n")
+                .trim() + "\n"
+            }
             onDelete={async () => {
-              await Promise.all(verses.map((verse) => base44.entities.StudyVerse.delete(verse.id)));
+              await base44.entities.StudyVerse.deleteMatching({ plan_id: id });
               await base44.entities.StudyPlan.delete(id);
               navigate("/notebook");
             }}
@@ -162,9 +184,21 @@ export default function StudyPlanView() {
       )}
 
       <div className="bg-white/60 rounded-2xl border border-[#e8ddc7] px-5 sm:px-8">
-        {verses.map((v, i) => (
+        {visible.map((v, i) => (
           <VerseCard key={v.id || i} verse={v} index={i} topic={plan.topic} />
         ))}
+        {shown < verses.length ? (
+          <div className="py-6 text-center">
+            <button
+              type="button"
+              onClick={() => setShown((n) => n + PAGE_SIZE)}
+              className="truth-btn-sm h-10 px-4"
+            >
+              Further passages · {Math.min(PAGE_SIZE, verses.length - shown)} more
+              {verses.length - shown > PAGE_SIZE ? ` (${verses.length - shown} remaining)` : ""}
+            </button>
+          </div>
+        ) : null}
       </div>
 
       <div className="mt-8 text-center">

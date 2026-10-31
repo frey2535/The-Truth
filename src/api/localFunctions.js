@@ -20,6 +20,7 @@ import { ARCHIVE_NOTICE, searchArchive } from "@/data/inAppArchive";
 import { cleanStudyWord, hasStoredLexicon, studyCardFromLexicon, versesFromMatches } from "@/lib/wordStudy";
 import { looksLikeAppShell } from "@/lib/fetchStoredText";
 import { publicUrl } from "@/lib/publicUrl";
+import { yieldToBrowser } from "@/lib/localCorpusSearch";
 
 function wrapResult(result) {
   if (result && typeof result === "object") {
@@ -92,23 +93,28 @@ async function research_topic({ topic, plan_id }) {
     return fail("No matching passages were found in the texts.");
   }
 
-  await localEntities.StudyVerse.bulkCreate(
-    verses
-      .map((v) => ({
-        plan_id: planId,
-        owner_id: ownerId,
-        reference: String(v.reference || "").trim(),
-        source: normalizeSource(v.source),
-        text: String(v.text || "").trim(),
-        book: String(v.book || "").trim(),
-        chapter: v.chapter,
-        verse: v.verse,
-        chronological_order: Number(v.chronological_order) || 0,
-        era: String(v.era || "").trim(),
-        context_note: String(v.context_note || "").trim(),
-      }))
-      .filter((v) => v.reference && v.text)
-  );
+  const rows = verses
+    .map((v) => ({
+      plan_id: planId,
+      owner_id: ownerId,
+      reference: String(v.reference || "").trim(),
+      source: normalizeSource(v.source),
+      text: String(v.text || "").trim(),
+      book: String(v.book || "").trim(),
+      chapter: v.chapter,
+      verse: v.verse,
+      chronological_order: Number(v.chronological_order) || 0,
+      era: String(v.era || "").trim(),
+      context_note: String(v.context_note || "").trim(),
+    }))
+    .filter((v) => v.reference && v.text);
+
+  // Chunk writes so a huge plan cannot freeze Notebook while localStorage updates.
+  const WRITE_CHUNK = 250;
+  for (let i = 0; i < rows.length; i += WRITE_CHUNK) {
+    await localEntities.StudyVerse.bulkCreate(rows.slice(i, i + WRITE_CHUNK));
+    await yieldToBrowser();
+  }
 
   const bySource = verses.reduce((counts, row) => {
     const key = row.source || "stored text";
