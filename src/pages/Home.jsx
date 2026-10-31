@@ -16,6 +16,7 @@ import {
   Moon,
   CalendarDays,
 } from "lucide-react";
+import PasteTextButton from "@/components/PasteTextButton";
 import PlanCard from "@/components/study/PlanCard";
 import { loadReadingPosition, readingHref, readingLabel } from "@/lib/readingSession";
 import { runStudyResearch, warmStudyCorpus } from "@/lib/studyPlanResearch";
@@ -91,6 +92,11 @@ export default function Home() {
             placeholder="Search Scripture and stored evidence — no internet"
             className="flex-1 h-10 bg-white/90 border-[#e8ddc7] text-[#2b2620] text-sm shadow-md"
             disabled={busy}
+          />
+          <PasteTextButton
+            disabled={busy}
+            onPaste={(text) => setTopic(text)}
+            className="h-10 px-3 rounded-md border border-[#e8ddc7] bg-white/90 text-sm text-[#2b2620] hover:bg-[#f3e9c8]/70 disabled:opacity-60 inline-flex items-center gap-1 shadow-md"
           />
           <Button type="submit" disabled={busy} className="h-10 px-4 bg-[#2b2620] hover:bg-[#3a3328] text-[#f3e9c8]">
             {busy ? (

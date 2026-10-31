@@ -1,5 +1,6 @@
 import React from "react";
 import { Download, Printer, Trash2 } from "lucide-react";
+import CopyTextButton from "@/components/CopyTextButton";
 import ListenControl from "@/components/ListenControl";
 import { downloadText, notebookFilename, notebookItemText, printText } from "@/lib/notebookExport";
 
@@ -19,6 +20,11 @@ export default function NotebookItemActions({ kind, item, onDelete, text: textPr
         id={`notebook:${kind}:${item.id || title}`}
         title={title}
         label={kind}
+        text={resolveText}
+      />
+      <CopyTextButton
+        variant="icon"
+        title={`Copy this ${kind.toLowerCase()}`}
         text={resolveText}
       />
       <button

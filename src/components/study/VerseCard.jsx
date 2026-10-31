@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { BookOpenText } from "lucide-react";
+import CopyTextButton from "@/components/CopyTextButton";
 import ListenControl from "@/components/ListenControl";
 import SourceBadge from "./SourceBadge";
 import EvidenceModal from "./EvidenceModal";
@@ -32,6 +33,12 @@ export default function VerseCard({ verse, index, topic }) {
           title={verse.reference}
           label="Listen"
           text={`${verse.reference}. ${verse.text || ""}`}
+        />
+        <CopyTextButton
+          variant="verse"
+          label="Copy"
+          title={`Copy ${verse.reference}`}
+          text={`${verse.reference}\n${verse.text || ""}`}
         />
         <Link
           to={libraryHref({ book: verse.book, chapter: verse.chapter, source: verse.source, reference: verse.reference })}

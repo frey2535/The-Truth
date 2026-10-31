@@ -101,6 +101,15 @@
     overscroll-behavior-y: none;
   }
 
+  main,
+  .manuscript-leaf,
+  .manuscript-leaf-frame,
+  blockquote,
+  article {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
   #root {
     min-height: 100dvh;
   }

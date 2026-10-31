@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BookOpenText, Loader2, Search as SearchIcon } from "lucide-react";
 import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
+import CopyTextButton from "@/components/CopyTextButton";
 import ListenControl from "@/components/ListenControl";
+import PasteTextButton from "@/components/PasteTextButton";
 import GroupedPassageList from "@/components/study/GroupedPassageList";
 import HighlightedText from "@/components/search/HighlightedText";
 import { libraryHref } from "@/lib/libraryLinks";
@@ -149,6 +151,11 @@ export default function Search() {
             placeholder={`Search every verse in ${chosen?.label || "this text"}`}
             className="flex-1 h-12 bg-white border-[#e8ddc7]"
           />
+          <PasteTextButton
+            disabled={loading}
+            onPaste={(text) => setQuery(text)}
+            className="h-12 px-3 rounded-md border border-[#e8ddc7] bg-white text-sm hover:bg-[#f3e9c8]/40 disabled:opacity-60 inline-flex items-center gap-1"
+          />
           <Button type="submit" disabled={loading} className="h-12 px-6 bg-[#2b2620] text-[#f3e9c8]">
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><SearchIcon className="w-4 h-4 mr-2" /> Search</>}
           </Button>
@@ -182,13 +189,20 @@ export default function Search() {
                 </Link>{" "}
                 <span className="text-[10px] uppercase tracking-wide text-[#8a7f6f]">{m.source}</span>
               </p>
-              <ListenControl
-                variant="icon"
-                id={`search:${m.source}:${m.reference}:${i}`}
-                title={m.reference}
-                label="result"
-                text={`${m.reference}. ${m.text || ""}`}
-              />
+              <span className="inline-flex items-center gap-0.5">
+                <ListenControl
+                  variant="icon"
+                  id={`search:${m.source}:${m.reference}:${i}`}
+                  title={m.reference}
+                  label="result"
+                  text={`${m.reference}. ${m.text || ""}`}
+                />
+                <CopyTextButton
+                  variant="icon"
+                  title={`Copy ${m.reference}`}
+                  text={`${m.reference}\n${m.text || ""}`}
+                />
+              </span>
             </div>
             <HighlightedText
               className="text-[#2b2620] leading-relaxed mt-1"

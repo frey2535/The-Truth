@@ -1,5 +1,6 @@
 import React from "react";
 import { Printer } from "lucide-react";
+import CopyTextButton from "@/components/CopyTextButton";
 import ListenControl from "@/components/ListenControl";
 import ListenSettings from "@/components/ListenSettings";
 import ReportIssue from "@/components/ReportIssue";
@@ -26,6 +27,12 @@ export default function PageTools({ dark = false, pageTitle, compact = false }) 
         className={tone}
       />
       <ListenSettings dark={dark} className={tone} />
+      <CopyTextButton
+        text={() => pageReadingText()}
+        label="Copy"
+        title="Copy this page’s text"
+        className={tone}
+      />
       <button type="button" onClick={printCurrentPage} className={tone} title="Print this page">
         <Printer className="w-3.5 h-3.5" />
         Print
