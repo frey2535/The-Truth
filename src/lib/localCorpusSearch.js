@@ -12,6 +12,7 @@ import {
   scorePassage,
   uniqueMatches,
 } from "./corpusPassages.js";
+import { candidateIndexes, indexCorpusRows } from "./corpusIndex.js";
 import { familyHitsText, familyOf } from "./wordFamilies.js";
 import { loadUserDocumentRows } from "./userDocuments.js";
 
@@ -355,15 +356,29 @@ function loadArchiveRows() {
 
 let corpusPromise = null;
 let scripturePromise = null;
+let corpusIndex = null;
+let scriptureIndex = null;
+
+function rememberIndex(rows, kind) {
+  const built = indexCorpusRows(rows);
+  if (kind === "scripture") scriptureIndex = built.index;
+  else corpusIndex = built.index;
+  return built.rows;
+}
 
 async function loadScriptureCorpus() {
   if (!scripturePromise) {
     scripturePromise = (async () => {
       const rows = await loadScriptureRows();
-      if (!rows.length) scripturePromise = null;
-      return rows;
+      if (!rows.length) {
+        scripturePromise = null;
+        scriptureIndex = null;
+        return rows;
+      }
+      return rememberIndex(rows, "scripture");
     })().catch((error) => {
       scripturePromise = null;
+      scriptureIndex = null;
       throw error;
     });
   }
@@ -396,9 +411,11 @@ async function loadCorpus() {
       } catch {
         uploaded = [];
       }
-      return [...scripture, ...manuscripts, ...loadDssInlineRows(), ...loadArchiveRows(), ...uploaded];
+      const rows = [...scripture, ...manuscripts, ...loadDssInlineRows(), ...loadArchiveRows(), ...uploaded];
+      return rememberIndex(rows, "full");
     })().catch((error) => {
       corpusPromise = null;
+      corpusIndex = null;
       throw error;
     });
   }
@@ -408,6 +425,16 @@ async function loadCorpus() {
 export function resetCorpusCache() {
   corpusPromise = null;
   scripturePromise = null;
+  corpusIndex = null;
+  scriptureIndex = null;
+}
+
+/** Warm the stored-text index so the first study plan does not wait on a cold load. */
+export function prefetchCorpus() {
+  return loadCorpus().then(
+    (rows) => ({ ok: true, rows: rows.length }),
+    () => ({ ok: false, rows: 0 })
+  );
 }
 
 export const SEARCH_CORPORA = [
@@ -427,7 +454,7 @@ export const SEARCH_CORPORA = [
 
 const JESUS_NAMES = new Set(["jesus", "christ", "messiah", "yeshua"]);
 const GOSPEL_BOOKS = new Set(["Matthew", "Mark", "Luke", "John"]);
-const SCAN_YIELD_EVERY = 80;
+const SCAN_YIELD_EVERY = 400;
 
 /** Let the browser paint, scroll, and take clicks so a long stored-text scan cannot freeze the page. */
 export function yieldToBrowser() {
@@ -513,9 +540,15 @@ function sortScored(unique, preferCanon) {
   return unique;
 }
 
+function rowFolded(row) {
+  if (row.folded) return row.folded;
+  row.folded = foldMarks(row.text).toLowerCase();
+  return row.folded;
+}
+
 /**
- * One pass over the stored corpus for many queries. Used by Assistant so it does not
- * freeze the page by scanning every book once per related word.
+ * One pass over the stored corpus for many queries. Uses the inverted token index when
+ * possible so study plans do not rescan every verse for every related word.
  */
 export async function searchCorpusMany(queries, { limit = Infinity, sources, contentWords, boostWords, preferSpeech, preferCanon, mustHitAll, clipLong = true } = {}) {
   const prepared = [];
@@ -532,14 +565,18 @@ export async function searchCorpusMany(queries, { limit = Infinity, sources, con
   const boost = (boostWords || []).filter(Boolean);
   const extras = { must, mustHitAll, boost, preferSpeech, preferCanon };
   const allow = Array.isArray(sources) && sources.length ? new Set(sources) : null;
-  const corpus = sourcesAreScriptureOnly(sources) ? await loadScriptureCorpus() : await loadCorpus();
+  const scriptureOnly = sourcesAreScriptureOnly(sources);
+  const corpus = scriptureOnly ? await loadScriptureCorpus() : await loadCorpus();
+  const index = scriptureOnly ? scriptureIndex : corpusIndex;
+  const candidates = candidateIndexes(index, prepared);
   const scored = [];
   let n = 0;
-  for (const row of corpus) {
+
+  const visit = async (row) => {
     n += 1;
     if (n % SCAN_YIELD_EVERY === 0) await yieldToBrowser();
-    if (allow && !allow.has(row.source)) continue;
-    const folded = foldMarks(row.text).toLowerCase();
+    if (allow && !allow.has(row.source)) return;
+    const folded = rowFolded(row);
     for (const pq of prepared) {
       if (!cheapRowHit(folded, pq)) continue;
       const units = clipLong
@@ -551,7 +588,7 @@ export async function searchCorpusMany(queries, { limit = Infinity, sources, con
       if (!units.length) continue;
       let added = false;
       for (const unit of units) {
-        if (pq.requirePhrase && pq.foldedPhrase && !foldMarks(unit.text).toLowerCase().includes(pq.foldedPhrase)) {
+        if (pq.requirePhrase && pq.foldedPhrase && !rowFolded(unit).includes(pq.foldedPhrase)) {
           continue;
         }
         const decorated = decorateHit(unit, extras);
@@ -562,7 +599,17 @@ export async function searchCorpusMany(queries, { limit = Infinity, sources, con
       }
       if (added) break;
     }
+  };
+
+  if (candidates !== null) {
+    for (const idx of candidates) {
+      const row = corpus[idx];
+      if (row) await visit(row);
+    }
+  } else {
+    for (const row of corpus) await visit(row);
   }
+
   const unique = sortScored(uniqueMatches(scored), preferCanon);
   const forms = [...new Set(prepared.flatMap((pq) => pq.forms.forms))];
   return {

@@ -9,7 +9,7 @@ import { BookMarked, BookOpenText, Highlighter, Loader2, Star, StickyNote } from
 import { MAJOR_STUDY_TOPICS } from "@/data/majorStudyTopics";
 import { libraryHref } from "@/lib/libraryLinks";
 import { downloadText, notebookItemText, printText } from "@/lib/notebookExport";
-import { runStudyResearch } from "@/lib/studyPlanResearch";
+import { runStudyResearch, warmStudyCorpus } from "@/lib/studyPlanResearch";
 
 const TABS = [
   { id: "plans", label: "Study plans", icon: BookMarked },
@@ -45,6 +45,7 @@ export default function MyStudy() {
 
   useEffect(() => {
     load();
+    warmStudyCorpus();
   }, []);
 
   const topics = useMemo(() => {
@@ -79,7 +80,7 @@ export default function MyStudy() {
       status: "researching",
       description: topicDef.description,
     });
-    // Queue only — do not await the corpus scan here so Create all 10 stays snappy.
+    // Queue only — do not await the corpus scan here so Create all stays snappy.
     runStudyResearch(created, topicDef.query);
     if (open) navigate(`/plan/${created.id}`);
     return created;
@@ -208,7 +209,9 @@ export default function MyStudy() {
           <section className="rounded-2xl border border-[#e8ddc7] bg-white/75 p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="font-display text-2xl text-[#2b2620]">Top 10 in-depth biblical study plans</h2>
+                <h2 className="font-display text-2xl text-[#2b2620]">
+                  Top {MAJOR_STUDY_TOPICS.length} in-depth biblical study plans
+                </h2>
                 <p className="mt-1 text-sm text-[#5b5142] max-w-2xl">
                   Create detailed plans over major biblical topics. Each plan searches all stored texts and records
                   with expanded topic terms, then lists every matching passage for study.
@@ -221,7 +224,7 @@ export default function MyStudy() {
                 className="truth-btn-sm h-10 px-4 shrink-0"
               >
                 {creatingMajor === "all" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                Create all 10
+                Create all {MAJOR_STUDY_TOPICS.length}
               </button>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
