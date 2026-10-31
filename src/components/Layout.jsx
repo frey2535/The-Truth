@@ -9,7 +9,9 @@ import PapyrusBackdrop from "@/components/PapyrusBackdrop";
 import { CUSTOMS_NAV_LABEL } from "@/data/inheritedCustoms";
 import AppUpdateBanner from "@/components/AppUpdateBanner";
 import AudibleBar from "@/components/AudibleBar";
+import BackButton from "@/components/BackButton";
 import InstallAppPrompt from "@/components/InstallAppPrompt";
+import NavHistoryTracker from "@/components/NavHistoryTracker";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
 import PageTools from "@/components/PageTools";
 import { fitHeaderBar } from "@/lib/fitHeaderBar";
@@ -102,24 +104,27 @@ export default function Layout() {
             : "border-[#e8c97a]/25 bg-[#120c08]"
         }`}
       >
-        <HeaderBar fitKey={`${isOwner ? "o" : "u"}-${isGuest ? "g" : "s"}`}>
-          <Link to="/" className="truth-header-brand group">
-            <img
-              src={publicUrl("/icon-192.png?v=6")}
-              alt=""
-              width="36"
-              height="36"
-              className="shrink-0 rounded-full object-cover shadow-[0_0_24px_rgba(243,221,150,0.45)]"
-            />
-            <span className="truth-header-brand-text">
-              <span className={`truth-header-title font-display tracking-wide ${usePapyrus ? "text-[#2b2620]" : "text-[#f3e9c8]"}`}>
-                The Truth
+        <HeaderBar fitKey={`${isOwner ? "o" : "u"}-${isGuest ? "g" : "s"}-${isHome ? "h" : "p"}`}>
+          <div className="truth-header-brand">
+            {!isHome ? <BackButton dark={!usePapyrus} /> : null}
+            <Link to="/" className="group inline-flex items-center gap-[inherit]">
+              <img
+                src={publicUrl("/icon-192.png?v=6")}
+                alt=""
+                width="36"
+                height="36"
+                className="shrink-0 rounded-full object-cover shadow-[0_0_24px_rgba(243,221,150,0.45)]"
+              />
+              <span className="truth-header-brand-text">
+                <span className={`truth-header-title font-display tracking-wide ${usePapyrus ? "text-[#2b2620]" : "text-[#f3e9c8]"}`}>
+                  The Truth
+                </span>
+                <span className={`truth-header-tag ${usePapyrus ? "text-[#7a2e2e]" : "text-[#e8c97a]"}`}>
+                  Read · Investigate · Learn
+                </span>
               </span>
-              <span className={`truth-header-tag ${usePapyrus ? "text-[#7a2e2e]" : "text-[#e8c97a]"}`}>
-                Read · Investigate · Learn
-              </span>
-            </span>
-          </Link>
+            </Link>
+          </div>
           <nav className="truth-header-nav" aria-label="Primary">
             {PRIMARY.map(({ to, label, shortLabel, icon: Icon, matchEvidence }) => {
               const active = navActive(pathname, to, matchEvidence);
@@ -285,6 +290,7 @@ export default function Layout() {
       </nav>
       <AudibleBar />
       <InstallAppPrompt />
+      <NavHistoryTracker />
     </div>
   );
 }
