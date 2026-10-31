@@ -26,6 +26,7 @@ export default function MyStudy() {
   const [topicFilter, setTopicFilter] = useState("all");
   const [newTopic, setNewTopic] = useState("");
   const [savingPlan, setSavingPlan] = useState(false);
+  const [creatingMajor, setCreatingMajor] = useState("");
 
   async function load() {
     const [p, n, h, f] = await Promise.all([
@@ -62,6 +63,41 @@ export default function MyStudy() {
     await Promise.all((verses || []).map((verse) => base44.entities.StudyVerse.delete(verse.id)));
     await base44.entities.StudyPlan.delete(id);
     await load();
+  }
+
+  function runStudyResearch(plan, query) {
+    base44.functions.invoke("research_topic", { topic: query || plan.study_query || plan.topic, plan_id: plan.id }).catch(() => {});
+  }
+
+  async function createMajorPlan(topicDef, { open = false } = {}) {
+    const existing = plans.find((plan) => plan.major_topic_id === topicDef.id || plan.topic === topicDef.title);
+    if (existing) {
+      if (open) navigate(`/plan/${existing.id}`);
+      return existing;
+    }
+    const created = await base44.entities.StudyPlan.create({
+      topic: topicDef.title,
+      study_query: topicDef.query,
+      major_topic_id: topicDef.id,
+      status: "researching",
+      description: topicDef.description,
+    });
+    runStudyResearch(created, topicDef.query);
+    if (open) navigate(`/plan/${created.id}`);
+    return created;
+  }
+
+  async function createAllMajorPlans() {
+    if (creatingMajor) return;
+    setCreatingMajor("all");
+    try {
+      for (const topicDef of MAJOR_STUDY_TOPICS) {
+        await createMajorPlan(topicDef);
+      }
+      await load();
+    } finally {
+      setCreatingMajor("");
+    }
   }
 
   function exportTab() {
@@ -169,6 +205,62 @@ export default function MyStudy() {
 
       {tab === "plans" && (
         <div className="space-y-4">
+          <section className="rounded-2xl border border-[#e8ddc7] bg-white/75 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h2 className="font-display text-2xl text-[#2b2620]">Top 10 in-depth biblical study plans</h2>
+                <p className="mt-1 text-sm text-[#5b5142] max-w-2xl">
+                  Create detailed plans over major biblical topics. Each plan searches all stored texts and records
+                  with expanded topic terms, then lists every matching passage for study.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={createAllMajorPlans}
+                disabled={Boolean(creatingMajor)}
+                className="truth-btn-sm h-10 px-4 shrink-0"
+              >
+                {creatingMajor === "all" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                Create all 10
+              </button>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {MAJOR_STUDY_TOPICS.map((topicDef, index) => {
+                const existing = plans.find((plan) => plan.major_topic_id === topicDef.id || plan.topic === topicDef.title);
+                const creating = creatingMajor === topicDef.id;
+                return (
+                  <article key={topicDef.id} className="rounded-xl border border-[#e8ddc7] bg-[#fffdf8] p-3">
+                    <div className="flex items-start gap-3">
+                      <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#2b2620] text-sm font-semibold text-[#f3e9c8]">
+                        {index + 1}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-display text-lg text-[#2b2620]">{topicDef.title}</h3>
+                        <p className="mt-1 text-xs leading-relaxed text-[#6b6155]">{topicDef.description}</p>
+                        <button
+                          type="button"
+                          disabled={Boolean(creatingMajor)}
+                          onClick={async () => {
+                            setCreatingMajor(topicDef.id);
+                            try {
+                              await createMajorPlan(topicDef, { open: true });
+                              await load();
+                            } finally {
+                              setCreatingMajor("");
+                            }
+                          }}
+                          className="mt-3 inline-flex items-center gap-1.5 text-sm text-[#7a2e2e] hover:underline disabled:opacity-60"
+                        >
+                          {creating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                          {existing ? "Open plan" : "Create plan"}
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
           <form
             onSubmit={async (e) => {
               e.preventDefault();
@@ -176,10 +268,10 @@ export default function MyStudy() {
               if (!topic || savingPlan) return;
               setSavingPlan(true);
               try {
-                const created = await base44.entities.StudyPlan.create({ topic, status: "researching" });
+                const created = await base44.entities.StudyPlan.create({ topic, study_query: topic, status: "researching" });
                 setNewTopic("");
                 navigate(`/plan/${created.id}`);
-                base44.functions.invoke("research_topic", { topic, plan_id: created.id }).catch(() => {});
+                runStudyResearch(created, topic);
               } finally {
                 setSavingPlan(false);
               }

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { BookOpenText, Loader2, Search as SearchIcon } from "lucide-react";
 import { SEARCH_CORPORA, SOURCE_LABEL } from "@/lib/localCorpusSearch";
 import ListenControl from "@/components/ListenControl";
+import GroupedPassageList from "@/components/study/GroupedPassageList";
 import HighlightedText from "@/components/search/HighlightedText";
 import { libraryHref } from "@/lib/libraryLinks";
 
@@ -163,9 +164,14 @@ export default function Search() {
           <p className="mt-1 text-xs">{sourceCounts(matches)}</p>
         </div>
       )}
-      <div className="space-y-3 max-w-3xl mx-auto">
-        {visible.map((m, i) => (
-          <article key={`${m.source}-${m.reference}-${i}`} className="rounded-2xl border border-[#e8ddc7] bg-white/80 p-4">
+      <div className="max-w-3xl mx-auto">
+        <GroupedPassageList
+          rows={visible}
+          sourceLabel={(source) => SOURCE_LABEL[source] || source || "stored text"}
+          onOpenAll={() => setShown(matches.length)}
+          itemKey={(m, i) => `${m.source}-${m.reference}-${i}`}
+          renderRow={(m, i) => (
+          <article className="rounded-2xl border border-[#e8ddc7] bg-white/80 p-4">
             <div className="flex items-start justify-between gap-3">
               <p className="text-sm font-medium text-[#7a2e2e]">
                 <Link
@@ -198,7 +204,8 @@ export default function Search() {
               <BookOpenText className="w-4 h-4" /> Read in context
             </Link>
           </article>
-        ))}
+          )}
+        />
       </div>
       {!loading && matches.length > shown && (
         <div className="text-center mt-6">
