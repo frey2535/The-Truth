@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
-import { Highlighter, Star, StickyNote, Link2, Languages, Volume2 } from "lucide-react";
+import { Check, Copy, Highlighter, Star, StickyNote, Link2, Languages, Volume2 } from "lucide-react";
 import { speakText } from "@/lib/audibleReader";
 import VerseEvidenceBadge from "./VerseEvidenceBadge";
 import { chapterCrossRefs, significantWords } from "@/lib/crossRefs";
@@ -9,6 +9,7 @@ import { findRelatedVerses } from "@/lib/localCorpusSearch";
 import { libraryHref } from "@/lib/libraryLinks";
 import { verseDomId } from "@/lib/readingSession";
 import { speechSegments } from "@/lib/jesusWords";
+import { copyTextToClipboard } from "@/lib/clipboardText";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,6 +63,7 @@ export default function VerseStudyRow({
   const [topic, setTopic] = useState("");
   const [open, setOpen] = useState("");
   const [busy, setBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [moreLinks, setMoreLinks] = useState([]);
   const [loadingMore, setLoadingMore] = useState(false);
   const highlighted = highlights.some((h) => h.reference === ref);
@@ -140,6 +142,13 @@ export default function VerseStudyRow({
     }
   }
 
+  async function copyVerse() {
+    const result = await copyTextToClipboard(`${ref}\n${text || ""}`);
+    if (!result.ok) return;
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  }
+
   return (
     <div
       id={verseDomId(book, chapter, verse.verse)}
@@ -184,6 +193,15 @@ export default function VerseStudyRow({
             >
               <Volume2 />
               Listen
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(event) => {
+                event.preventDefault();
+                void copyVerse();
+              }}
+            >
+              {copied ? <Check /> : <Copy />}
+              {copied ? "Copied" : "Copy"}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => setOpen(open === "note" ? "" : "note")}>
               <StickyNote />
