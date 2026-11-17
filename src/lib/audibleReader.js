@@ -63,10 +63,10 @@ export function chapterSpeakParts(book, chapter, verses = []) {
   return (verses || [])
     .map((verse, i) => {
       const head = i === 0 ? [book, chapter ? `chapter ${chapter}` : ""].filter(Boolean).join(", ") : "";
-      const number = verse?.verse != null && verse.verse !== "" ? `Verse ${verse.verse}. ` : "";
+      // Verse numbers remain available for highlighting, but are never spoken.
       return {
         verse: String(verse?.verse ?? ""),
-        text: spokenText(`${head ? `${head}. ` : ""}${number}${verse?.text || ""}`),
+        text: spokenText(`${head ? `${head}. ` : ""}${verse?.text || ""}`),
       };
     })
     .filter((part) => part.text);
@@ -307,9 +307,9 @@ function speakNext(myToken) {
   utterance.pitch = 1;
   startKeepAlive();
   utterance.onend = () => {
-    if (myToken !== token) return;
+    if (myToken !== token || state.status !== "speaking") return;
     index += 1;
-    speakNext(myToken);
+    window.setTimeout(() => speakNext(myToken), 30);
   };
   utterance.onerror = (event) => {
     if (myToken !== token) return;
