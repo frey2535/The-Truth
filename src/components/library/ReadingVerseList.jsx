@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import CopyTextButton from "@/components/CopyTextButton";
 import ListenControl from "@/components/ListenControl";
 import ListenSettings from "@/components/ListenSettings";
@@ -44,6 +44,7 @@ export default function ReadingVerseList({
   const { status, id: activeId, currentVerse } = useAudibleReader();
   const listeningVerse = status === "idle" ? "" : listeningVerseId(activeId, currentVerse, book, chapter);
   const [shown, setShown] = useState(PAGE_SIZE);
+  const lastAutoListenKey = useRef("");
   const [fontScale, setFontScale] = useState(loadFontScale);
 
   useEffect(() => {
@@ -53,6 +54,9 @@ export default function ReadingVerseList({
   useEffect(() => {
     const listenId = `chapter:${book}:${chapter}`;
     if (!autoListenKey || autoListenKey !== listenId || !verses.length) return;
+    // Callback/verse-array identity changes must not restart an active chapter.
+    if (lastAutoListenKey.current === autoListenKey) return;
+    lastAutoListenKey.current = autoListenKey;
     onAutoListenStarted?.();
     speakText(chapterReadingText(book, chapter, verses), {
       id: listenId,
@@ -63,6 +67,10 @@ export default function ReadingVerseList({
       onComplete: onChapterComplete,
     });
   }, [autoListenKey, book, chapter, verses, onAutoListenStarted, onChapterComplete]);
+
+  useEffect(() => {
+    if (!autoListenKey) lastAutoListenKey.current = "";
+  }, [autoListenKey]);
 
   useEffect(() => {
     const target = String(listeningVerse || focusVerse || "");
