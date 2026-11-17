@@ -28,7 +28,8 @@ export function humanTtsAllowed({ userAgent = "", deviceMemory, webAssembly = tr
   const memory = Number(deviceMemory);
   // Prefer the human voice model wherever the browser can reasonably attempt it.
   // If the device cannot load it, the failure is remembered for this session.
-  if (Number.isFinite(memory) && memory < 4) return false;
+  // Low-memory devices may still run the quantized model; attempt it and
+  // fall back only on an actual loading or playback failure.
   return true;
 }
 
@@ -164,7 +165,13 @@ function playBlob(blob, signal) {
     const url = URL.createObjectURL(blob);
     const el = new Audio(url);
     audioEl = el;
+    let finished = false;
     const finish = (err) => {
+      if (finished) return;
+      finished = true;
+      signal?.removeEventListener("abort", onAbort);
+      el.onended = null;
+      el.onerror = null;
       URL.revokeObjectURL(url);
       if (audioEl === el) audioEl = null;
       if (err) reject(err);
@@ -197,8 +204,8 @@ export async function speakHumanText(chunks, { voice, speed, signal, onProgress,
   const rate = Number(speed) || 1;
   for (let i = 0; i < chunks.length; i += 1) {
     if (signal?.aborted) return;
-    onChunkStart?.(i);
     const raw = await tts.generate(chunks[i], { voice: id, speed: rate });
+    onChunkStart?.(i);
     if (signal?.aborted) return;
     await playBlob(raw.toBlob(), signal);
   }
