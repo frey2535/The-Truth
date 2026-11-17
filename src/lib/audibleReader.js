@@ -300,13 +300,7 @@ function speakNext(myToken) {
   emit();
   const utterance = new SpeechSynthesisUtterance(queue[index]);
   const voice = pickVoice(speech);
-  if (!voice) {
-    clearKeepAlive();
-    state = idleState();
-    emit();
-    return;
-  }
-  utterance.voice = voice;
+  if (voice) utterance.voice = voice;
   utterance.lang = voice?.lang || "en-US";
   utterance.rate = prefs.rate;
   utterance.pitch = 1;
@@ -319,14 +313,25 @@ function speakNext(myToken) {
   utterance.onerror = (event) => {
     if (myToken !== token) return;
     if (event?.error === "canceled" || event?.error === "interrupted") return;
-    if (event?.error === "not-allowed") return;
+    if (event?.error === "not-allowed" || event?.error === "audio-busy") {
+      clearKeepAlive();
+      state = { ...idleState(), preparing: "Audio playback was blocked. Tap Play again." };
+      emit();
+      return;
+    }
     window.setTimeout(() => {
       if (myToken !== token) return;
       index += 1;
       speakNext(myToken);
     }, 80);
   };
-  speech.speak(utterance);
+  try {
+    speech.speak(utterance);
+  } catch {
+    clearKeepAlive();
+    state = { ...idleState(), preparing: "Audio could not start. Tap Play to retry." };
+    emit();
+  }
 }
 
 function beginQueue(text, { id = "", title = "", verses, book, chapter, onComplete } = {}) {
@@ -433,9 +438,8 @@ export function speakText(text, { id = "", title = "", verses, book, chapter, on
     if (myToken !== token) return;
     speakNext(myToken);
   };
-  if (!speech.getVoices().length) {
-    speech.addEventListener("voiceschanged", start, { once: true });
-  }
+  // Android WebView may never fire voiceschanged; the default system voice
+  // can still speak even when getVoices() initially returns an empty array.
   window.setTimeout(start, 60);
   return true;
 }
