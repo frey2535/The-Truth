@@ -313,7 +313,13 @@ function speakNext(myToken) {
   };
   utterance.onerror = (event) => {
     if (myToken !== token) return;
-    if (event?.error === "canceled" || event?.error === "interrupted") return;
+    if (event?.error === "canceled" || event?.error === "interrupted") {
+      // Some Android speech engines interrupt a queued utterance unexpectedly.
+      if (state.status === "speaking") window.setTimeout(() => {
+        if (myToken === token && state.status === "speaking") speakNext(myToken);
+      }, 250);
+      return;
+    }
     if (event?.error === "not-allowed" || event?.error === "audio-busy") {
       clearKeepAlive();
       state = { ...idleState(), preparing: "Audio playback was blocked. Tap Play again." };
@@ -386,8 +392,8 @@ async function speakHumanQueue(myToken, id, title) {
     emit();
     defer(done);
   } catch {
-    markHumanTtsFailed();
     if (myToken !== token || signal.aborted) return;
+    markHumanTtsFailed();
     const speech = synth();
     if (!speech) {
       state = idleState();
@@ -395,7 +401,7 @@ async function speakHumanQueue(myToken, id, title) {
       return;
     }
     activeEngine = "device";
-    state = { status: "speaking", id, title, preparing: "Using this device’s voice.", currentVerse: verseMarks[index] || "" };
+    state = { status: "speaking", id, title, preparing: "Natural narration unavailable; using device voice. Check voice download or network.", currentVerse: verseMarks[index] || "" };
     emit();
     speakNext(myToken);
   }
