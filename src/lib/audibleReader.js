@@ -12,7 +12,7 @@ import {
 } from "./humanTts.js";
 import { bestDeviceVoice, humanLikeDeviceVoices } from "./voiceQuality.js";
 
-const DEVICE_CHUNK = 900;
+const DEVICE_CHUNK = 240;
 const HUMAN_CHUNK = 380;
 
 export function spokenText(raw) {
@@ -197,6 +197,7 @@ let token = 0;
 let speakAbort = null;
 let keepAliveTimer = null;
 let completion = null;
+let activeEngine = "device";
 
 function snapshot() {
   return {
@@ -336,6 +337,7 @@ function speakNext(myToken) {
 
 function beginQueue(text, { id = "", title = "", verses, book, chapter, onComplete } = {}) {
   const human = isHumanVoice(prefs.voiceURI) && canUseHumanTts();
+  activeEngine = human ? "human" : "device";
   completion = typeof onComplete === "function" ? onComplete : null;
   if (Array.isArray(verses) && verses.length) {
     const parts = chapterSpeakParts(book, chapter, verses);
@@ -367,7 +369,8 @@ async function speakHumanQueue(myToken, id, title) {
       signal,
       onChunkStart: (offset) => {
         if (myToken !== token) return;
-        state = { ...state, currentVerse: verseMarks[index + offset] || "", preparing: "" };
+        index += offset === 0 ? 0 : 1;
+        state = { ...state, currentVerse: verseMarks[index] || "", preparing: "" };
         emit();
       },
       onProgress: (message) => {
@@ -391,6 +394,7 @@ async function speakHumanQueue(myToken, id, title) {
       emit();
       return;
     }
+    activeEngine = "device";
     state = { status: "speaking", id, title, preparing: "Using this device’s voice.", currentVerse: verseMarks[index] || "" };
     emit();
     speakNext(myToken);
@@ -422,6 +426,7 @@ export function speakText(text, { id = "", title = "", verses, book, chapter, on
         emit();
         return;
       }
+      activeEngine = "device";
       state = { status: "speaking", id: started.id, title: started.title, preparing: "Using this device’s voice.", currentVerse: verseMarks[index] || "" };
       emit();
       speakNext(myToken);
@@ -446,7 +451,7 @@ export function speakText(text, { id = "", title = "", verses, book, chapter, on
 
 export function pauseAudible() {
   if (state.status !== "speaking") return;
-  if (isHumanVoice(prefs.voiceURI) && canUseHumanTts()) pauseHumanAudio();
+  if (activeEngine === "human") pauseHumanAudio();
   else synth()?.pause();
   state = { ...state, status: "paused" };
   emit();
@@ -454,7 +459,7 @@ export function pauseAudible() {
 
 export function resumeAudible() {
   if (state.status !== "paused") return;
-  if (isHumanVoice(prefs.voiceURI) && canUseHumanTts()) {
+  if (activeEngine === "human") {
     if (pendingRestart) {
       pendingRestart = false;
       token += 1;
@@ -520,12 +525,14 @@ function applyLiveSettings() {
     return;
   }
   if (isHumanVoice(prefs.voiceURI) && canUseHumanTts()) {
+    activeEngine = "human";
     void speakHumanQueue(token, id, title).catch(() => {
       markHumanTtsFailed();
       speakNext(token);
     });
     return;
   }
+  activeEngine = "device";
   speakNext(token);
 }
 
