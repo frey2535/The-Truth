@@ -159,40 +159,34 @@ export async function loadHumanTts(onProgress) {
   return modelPromise;
 }
 
+// Reuse one media element across verses. Creating a new Audio() for every
+// verse can lose the user gesture / media playback permission on Android.
 function playBlob(blob, signal) {
   return new Promise((resolve, reject) => {
-    stopHumanAudio();
-    const url = URL.createObjectURL(blob);
-    const el = new Audio(url);
+    if (signal?.aborted) { resolve(); return; }
+    const el = audioEl || new Audio();
     audioEl = el;
+    const url = URL.createObjectURL(blob);
     let finished = false;
-    const finish = (err) => {
+    const finish = (error) => {
       if (finished) return;
       finished = true;
-      signal?.removeEventListener("abort", onAbort);
       el.onended = null;
       el.onerror = null;
+      signal?.removeEventListener("abort", onAbort);
       URL.revokeObjectURL(url);
-      if (audioEl === el) audioEl = null;
-      if (err) reject(err);
+      if (error) reject(error);
       else resolve();
     };
-    el.onended = () => finish();
-    el.onerror = () => finish(new Error("Could not play this voice."));
-    if (signal?.aborted) {
-      finish();
-      return;
-    }
     const onAbort = () => {
-      try {
-        el.pause();
-      } catch {
-        /* ignore */
-      }
+      el.pause();
       finish();
     };
+    el.onended = () => finish();
+    el.onerror = () => finish(new Error("Natural narration playback failed."));
     signal?.addEventListener("abort", onAbort, { once: true });
-    el.play().catch((error) => finish(error));
+    el.src = url;
+    el.play().catch(finish);
   });
 }
 
@@ -205,8 +199,8 @@ export async function speakHumanText(chunks, { voice, speed, signal, onProgress,
   for (let i = 0; i < chunks.length; i += 1) {
     if (signal?.aborted) return;
     const raw = await tts.generate(chunks[i], { voice: id, speed: rate });
-    onChunkStart?.(i);
     if (signal?.aborted) return;
+    onChunkStart?.(i);
     await playBlob(raw.toBlob(), signal);
   }
 }
