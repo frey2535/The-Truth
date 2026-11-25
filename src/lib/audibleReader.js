@@ -198,6 +198,16 @@ let speakAbort = null;
 let keepAliveTimer = null;
 let completion = null;
 let activeEngine = "device";
+let activeUtterance = null;
+let deviceWatchdog = null;
+let retries = 0;
+function clearDeviceWatchdog() {
+  if (deviceWatchdog !== null) clearTimeout(deviceWatchdog);
+  deviceWatchdog = null;
+}
+function deferCompletion(done, myToken) {
+  defer(() => { if (myToken === token) done?.(); });
+}
 
 function snapshot() {
   return {
@@ -287,58 +297,52 @@ if (typeof window !== "undefined") loadPrefsFromWindow();
 
 function speakNext(myToken) {
   const speech = synth();
-  if (!speech || myToken !== token) return;
+  if (!speech || myToken !== token || state.status !== "speaking") return;
+  clearDeviceWatchdog();
   if (index >= queue.length) {
     const done = completion;
     completion = null;
     clearKeepAlive();
     state = idleState();
     emit();
-    defer(done);
+    deferCompletion(done, myToken);
     return;
   }
   state = { ...state, currentVerse: verseMarks[index] || "", preparing: "" };
   emit();
   const utterance = new SpeechSynthesisUtterance(queue[index]);
+  activeUtterance = utterance;
   const voice = pickVoice(speech);
   if (voice) utterance.voice = voice;
   utterance.lang = voice?.lang || "en-US";
   utterance.rate = prefs.rate;
   utterance.pitch = 1;
-  startKeepAlive();
-  utterance.onend = () => {
-    if (myToken !== token || state.status !== "speaking") return;
-    index += 1;
-    window.setTimeout(() => speakNext(myToken), 30);
-  };
-  utterance.onerror = (event) => {
-    if (myToken !== token) return;
-    if (event?.error === "canceled" || event?.error === "interrupted") {
-      // Some Android speech engines interrupt a queued utterance unexpectedly.
-      if (state.status === "speaking") window.setTimeout(() => {
-        if (myToken === token && state.status === "speaking") speakNext(myToken);
-      }, 250);
-      return;
-    }
-    if (event?.error === "not-allowed" || event?.error === "audio-busy") {
+  const current = () => myToken === token && activeUtterance === utterance;
+  const retry = () => {
+    if (!current()) return;
+    clearDeviceWatchdog();
+    activeUtterance = null;
+    speech.cancel();
+    if (state.status !== "speaking") return;
+    if (++retries > 2) {
       clearKeepAlive();
-      state = { ...idleState(), preparing: "Audio playback was blocked. Tap Play again." };
+      state = { ...state, status: "paused", preparing: "Narration interrupted. Tap Resume to retry this verse." };
       emit();
       return;
     }
-    window.setTimeout(() => {
-      if (myToken !== token) return;
-      index += 1;
-      speakNext(myToken);
-    }, 80);
+    window.setTimeout(() => speakNext(myToken), 250);
   };
-  try {
-    speech.speak(utterance);
-  } catch {
-    clearKeepAlive();
-    state = { ...idleState(), preparing: "Audio could not start. Tap Play to retry." };
-    emit();
-  }
+  utterance.onend = () => {
+    if (!current()) return;
+    clearDeviceWatchdog();
+    activeUtterance = null;
+    retries = 0;
+    index += 1;
+    if (state.status === "speaking") window.setTimeout(() => speakNext(myToken), 30);
+  };
+  utterance.onerror = retry;
+  deviceWatchdog = setTimeout(retry, Math.max(20000, queue[index].length * 180 / prefs.rate + 10000));
+  try { speech.speak(utterance); } catch { retry(); }
 }
 
 function beginQueue(text, { id = "", title = "", verses, book, chapter, onComplete } = {}) {
@@ -347,13 +351,15 @@ function beginQueue(text, { id = "", title = "", verses, book, chapter, onComple
   completion = typeof onComplete === "function" ? onComplete : null;
   if (Array.isArray(verses) && verses.length) {
     const parts = chapterSpeakParts(book, chapter, verses);
-    queue = parts.map((part) => part.text);
-    verseMarks = parts.map((part) => part.verse);
+    const chunks = parts.flatMap((part) => chunkSpokenText(part.text, human ? HUMAN_CHUNK : DEVICE_CHUNK).map(text => ({ text, verse: part.verse })));
+    queue = chunks.map(part => part.text);
+    verseMarks = chunks.map(part => part.verse);
   } else {
     queue = chunkSpokenText(typeof text === "function" ? text() : text, human ? HUMAN_CHUNK : DEVICE_CHUNK);
     verseMarks = queue.map(() => "");
   }
   index = 0;
+  retries = 0;
   return {
     human,
     id: String(id || title || "listen"),
@@ -390,7 +396,7 @@ async function speakHumanQueue(myToken, id, title) {
     completion = null;
     state = idleState();
     emit();
-    defer(done);
+    deferCompletion(done, myToken);
   } catch {
     if (myToken !== token || signal.aborted) return;
     markHumanTtsFailed();
@@ -409,6 +415,9 @@ async function speakHumanQueue(myToken, id, title) {
 
 export function speakText(text, { id = "", title = "", verses, book, chapter, onComplete } = {}) {
   token += 1;
+  clearDeviceWatchdog();
+  activeUtterance = null;
+  pendingRestart = false;
   const myToken = token;
   speakAbort?.abort();
   speakAbort = null;
@@ -458,7 +467,12 @@ export function speakText(text, { id = "", title = "", verses, book, chapter, on
 export function pauseAudible() {
   if (state.status !== "speaking") return;
   if (activeEngine === "human") pauseHumanAudio();
-  else synth()?.pause();
+  else {
+    clearDeviceWatchdog();
+    activeUtterance = null;
+    synth()?.cancel();
+    pendingRestart = true;
+  }
   state = { ...state, status: "paused" };
   emit();
 }
@@ -481,6 +495,7 @@ export function resumeAudible() {
   if (!speech) return;
   if (pendingRestart || !speech.speaking) {
     pendingRestart = false;
+    retries = 0;
     token += 1;
     state = { ...state, status: "speaking" };
     emit();
@@ -494,6 +509,8 @@ export function resumeAudible() {
 
 export function stopAudible() {
   token += 1;
+  clearDeviceWatchdog();
+  activeUtterance = null;
   pendingRestart = false;
   completion = null;
   speakAbort?.abort();
@@ -520,6 +537,8 @@ function applyLiveSettings() {
   const id = state.id;
   const title = state.title;
   token += 1;
+  clearDeviceWatchdog();
+  activeUtterance = null;
   speakAbort?.abort();
   stopHumanAudio();
   clearKeepAlive();
