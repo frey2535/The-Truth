@@ -59,7 +59,7 @@ export default function ReadingVerseList({
     if (lastAutoListenKey.current === autoListenKey) return;
     lastAutoListenKey.current = autoListenKey;
     onAutoListenStarted?.();
-    speakText(chapterReadingText(book, chapter, narrationVerses), {
+    speakText("", {
       id: listenId,
       title: `${book}${chapter ? ` ${chapter}` : ""}`,
       verses: narrationVerses,
@@ -102,14 +102,14 @@ export default function ReadingVerseList({
 
   return (
     <div className="py-1" style={{ "--reading-size": `${1.25 * fontScale}rem` }}>
-      {verses.length ? (
+      {narrationVerses.length ? (
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <ListenControl
             variant="chapter"
             id={`chapter:${book}:${chapter}`}
             title={`${book}${chapter ? ` ${chapter}` : ""}`}
             label={onChapterComplete ? "Listen to this book" : "Listen to this chapter"}
-            text={() => chapterReadingText(book, chapter, narrationVerses)}
+            text=""
             verses={narrationVerses}
             book={book}
             chapter={chapter}

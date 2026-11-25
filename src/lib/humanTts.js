@@ -23,14 +23,8 @@ export function humanVoiceId(uri) {
   return HUMAN_VOICES.some((voice) => voice.id === raw) ? raw : HUMAN_VOICES[0].id;
 }
 
-export function humanTtsAllowed({ userAgent = "", deviceMemory, webAssembly = true, skip = false } = {}) {
-  if (!webAssembly || skip) return false;
-  const memory = Number(deviceMemory);
-  // Prefer the human voice model wherever the browser can reasonably attempt it.
-  // If the device cannot load it, the failure is remembered for this session.
-  // Low-memory devices may still run the quantized model; attempt it and
-  // fall back only on an actual loading or playback failure.
-  return true;
+export function humanTtsAllowed({ webAssembly = true, skip = false } = {}) {
+  return webAssembly && !skip;
 }
 
 export function humanTtsSupported() {
@@ -43,8 +37,6 @@ export function humanTtsSupported() {
     /* ignore quota / private mode */
   }
   return humanTtsAllowed({
-    userAgent: navigator.userAgent,
-    deviceMemory: navigator.deviceMemory,
     webAssembly: true,
     skip,
   });
@@ -161,7 +153,6 @@ export async function loadHumanTts(onProgress) {
     return model;
   })().catch((error) => {
     modelPromise = null;
-    markHumanTtsFailed();
     throw error;
   });
   return modelPromise;

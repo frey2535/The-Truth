@@ -51,7 +51,7 @@ export default function ListenSettings({ dark = false, compact = false, classNam
                   Voice and speed
                 </h2>
                 <p className="text-sm text-[#5b5142] mt-1">
-                  Listen uses human-like spoken English on this device. Robotic and mechanical voices are hidden.
+                  Automatic uses the best available device voice. Spoken English voices may need a one-time download.
                   Scripture is not uploaded.
                 </p>
               </div>
@@ -67,7 +67,7 @@ export default function ListenSettings({ dark = false, compact = false, classNam
                 className="mt-1 w-full h-10 rounded-lg border border-[#e8ddc7] bg-white px-3 text-sm"
                 disabled={!voices.length}
               >
-                {!voices.length ? <option value="">No human-like voice available</option> : null}
+                <option value="">Automatic (device voice)</option>
                 {["Spoken English — sounds like a person", "Human-like voices on this device"].map((group) => {
                   const rows = voices.filter((voice) => (voice.group || "This device") === group);
                   if (!rows.length) return null;

@@ -25,6 +25,7 @@ export function spokenText(raw) {
 }
 
 export function chunkSpokenText(text, max = DEVICE_CHUNK) {
+  max = Math.max(1, Math.floor(max) || DEVICE_CHUNK);
   const clean = spokenText(text);
   if (!clean) return [];
   const parts = clean.split(/(?<=[.!?;:])\s+/);
@@ -39,7 +40,12 @@ export function chunkSpokenText(text, max = DEVICE_CHUNK) {
         buf = next;
       } else {
         if (buf) chunks.push(buf);
-        buf = word.length <= max ? word : word.slice(0, max);
+        let rest = word;
+        while (rest.length > max) {
+          chunks.push(rest.slice(0, max));
+          rest = rest.slice(max);
+        }
+        buf = rest;
       }
     }
   }
@@ -132,6 +138,7 @@ export function listVoiceChoices(voices = []) {
   }));
 }
 
+/** @param {any[]} voices @param {{ includeHuman?: boolean }} [options] */
 export function listenVoiceOptions(voices = [], { includeHuman } = {}) {
   const human = includeHuman ?? canUseHumanTts();
   return [
@@ -148,7 +155,7 @@ export function listenVoiceOptions(voices = [], { includeHuman } = {}) {
 }
 
 export function defaultListenPrefs() {
-  return { voiceURI: canUseHumanTts() ? HUMAN_VOICES[0].uri : "", rate: 1 };
+  return { voiceURI: !synth() && canUseHumanTts() ? HUMAN_VOICES[0].uri : "", rate: 1 };
 }
 
 export function loadListenPrefs(storage) {
@@ -158,9 +165,6 @@ export function loadListenPrefs(storage) {
     if (!raw) return fallback;
     const parsed = JSON.parse(raw);
     const voiceURI = String(parsed.voiceURI || "");
-    if (!voiceURI && canUseHumanTts()) {
-      return { voiceURI: HUMAN_VOICES[0].uri, rate: normalizeRate(parsed.rate) };
-    }
     return {
       voiceURI: isHumanVoice(voiceURI) && !canUseHumanTts() ? "" : voiceURI,
       rate: normalizeRate(parsed.rate),
@@ -195,7 +199,6 @@ let verseMarks = [];
 let index = 0;
 let token = 0;
 let speakAbort = null;
-let keepAliveTimer = null;
 let completion = null;
 let activeEngine = "device";
 let activeUtterance = null;
@@ -261,25 +264,6 @@ function pickVoice(speech) {
   return bestDeviceVoice(voices);
 }
 
-function clearKeepAlive() {
-  if (keepAliveTimer) {
-    window.clearInterval(keepAliveTimer);
-    keepAliveTimer = null;
-  }
-}
-
-function startKeepAlive() {
-  clearKeepAlive();
-  if (typeof window === "undefined") return;
-  keepAliveTimer = window.setInterval(() => {
-    const speech = synth();
-    if (speech?.speaking && state.status === "speaking") {
-      speech.pause();
-      speech.resume();
-    }
-  }, 12000);
-}
-
 function loadPrefsFromWindow() {
   if (typeof window === "undefined") return;
   prefs = loadListenPrefs(window.localStorage);
@@ -302,7 +286,6 @@ function speakNext(myToken) {
   if (index >= queue.length) {
     const done = completion;
     completion = null;
-    clearKeepAlive();
     state = idleState();
     emit();
     deferCompletion(done, myToken);
@@ -310,7 +293,7 @@ function speakNext(myToken) {
   }
   state = { ...state, currentVerse: verseMarks[index] || "", preparing: "" };
   emit();
-  const utterance = new SpeechSynthesisUtterance(queue[index]);
+  const utterance = new window.SpeechSynthesisUtterance(queue[index]);
   activeUtterance = utterance;
   const voice = pickVoice(speech);
   if (voice) utterance.voice = voice;
@@ -318,15 +301,15 @@ function speakNext(myToken) {
   utterance.rate = prefs.rate;
   utterance.pitch = 1;
   const current = () => myToken === token && activeUtterance === utterance;
-  const retry = () => {
+  const retry = (event) => {
     if (!current()) return;
     clearDeviceWatchdog();
     activeUtterance = null;
     speech.cancel();
     if (state.status !== "speaking") return;
-    if (++retries > 2) {
-      clearKeepAlive();
-      state = { ...state, status: "paused", preparing: "Narration interrupted. Tap Resume to retry this verse." };
+    if (event?.error === "not-allowed" || ++retries > 2) {
+      pendingRestart = true;
+      state = { ...state, status: "paused", preparing: "Narration interrupted. Tap Resume to retry." };
       emit();
       return;
     }
@@ -341,17 +324,31 @@ function speakNext(myToken) {
     if (state.status === "speaking") window.setTimeout(() => speakNext(myToken), 30);
   };
   utterance.onerror = retry;
-  deviceWatchdog = setTimeout(retry, Math.max(20000, queue[index].length * 180 / prefs.rate + 10000));
-  try { speech.speak(utterance); } catch { retry(); }
+  deviceWatchdog = setTimeout(retry, 8000);
+  utterance.onstart = () => {
+    if (!current()) return;
+    clearDeviceWatchdog();
+    deviceWatchdog = setTimeout(retry, Math.max(15000, queue[index].length * 180 / prefs.rate + 5000));
+  };
+  try {
+    speech.speak(utterance);
+  } catch {
+    retry();
+  }
 }
 
+/** @typedef {{ id?: string, title?: string, verses?: { verse?: string | number, text?: string }[], book?: string, chapter?: number, onComplete?: () => void }} NarrationOptions */
+
+/** @param {string | (() => string)} text @param {NarrationOptions} [options] */
 function beginQueue(text, { id = "", title = "", verses, book, chapter, onComplete } = {}) {
-  const human = isHumanVoice(prefs.voiceURI) && canUseHumanTts();
+  const human = canUseHumanTts() && (isHumanVoice(prefs.voiceURI) || !synth());
   activeEngine = human ? "human" : "device";
   completion = typeof onComplete === "function" ? onComplete : null;
   if (Array.isArray(verses) && verses.length) {
     const parts = chapterSpeakParts(book, chapter, verses);
-    const chunks = parts.flatMap((part) => chunkSpokenText(part.text, human ? HUMAN_CHUNK : DEVICE_CHUNK).map(text => ({ text, verse: part.verse })));
+    const chunks = parts.flatMap(({ text, verse }) =>
+      chunkSpokenText(text, human ? HUMAN_CHUNK : DEVICE_CHUNK).map((chunk) => ({ text: chunk, verse }))
+    );
     queue = chunks.map(part => part.text);
     verseMarks = chunks.map(part => part.verse);
   } else {
@@ -374,14 +371,14 @@ async function speakHumanQueue(myToken, id, title) {
   state = { status: "speaking", id, title, preparing: "Preparing a human voice…", currentVerse: verseMarks[index] || "" };
   emit();
   try {
-    const remaining = queue.slice(index);
-    await speakHumanText(remaining, {
+    const startIndex = index;
+    await speakHumanText(queue.slice(startIndex), {
       voice: prefs.voiceURI,
       speed: prefs.rate,
       signal,
       onChunkStart: (offset) => {
         if (myToken !== token) return;
-        index += offset === 0 ? 0 : 1;
+        index = startIndex + offset;
         state = { ...state, currentVerse: verseMarks[index] || "", preparing: "" };
         emit();
       },
@@ -397,22 +394,25 @@ async function speakHumanQueue(myToken, id, title) {
     state = idleState();
     emit();
     deferCompletion(done, myToken);
-  } catch {
+  } catch (error) {
     if (myToken !== token || signal.aborted) return;
-    markHumanTtsFailed();
-    const speech = synth();
-    if (!speech) {
-      state = idleState();
+    const canFallback = Boolean(synth());
+    if (canFallback && error?.name !== "NotAllowedError") markHumanTtsFailed();
+    activeEngine = canFallback ? "device" : "human";
+    refreshVoices(synth());
+    if (!canFallback || state.status === "paused" || error?.name === "NotAllowedError") {
+      pendingRestart = true;
+      state = { ...state, status: "paused", preparing: canFallback
+        ? "Natural narration couldn’t start. Tap Resume to use the device voice."
+        : "Natural narration interrupted. Tap Resume to retry." };
       emit();
       return;
     }
-    activeEngine = "device";
-    state = { status: "speaking", id, title, preparing: "Natural narration unavailable; using device voice. Check voice download or network.", currentVerse: verseMarks[index] || "" };
-    emit();
     speakNext(myToken);
   }
 }
 
+/** @param {string | (() => string)} text @param {NarrationOptions} [options] */
 export function speakText(text, { id = "", title = "", verses, book, chapter, onComplete } = {}) {
   token += 1;
   clearDeviceWatchdog();
@@ -422,7 +422,6 @@ export function speakText(text, { id = "", title = "", verses, book, chapter, on
   speakAbort?.abort();
   speakAbort = null;
   stopHumanAudio();
-  clearKeepAlive();
   const speech = synth();
   if (speech) speech.cancel();
   const started = beginQueue(text, { id, title, verses, book, chapter, onComplete });
@@ -433,34 +432,19 @@ export function speakText(text, { id = "", title = "", verses, book, chapter, on
     return false;
   }
   if (started.human) {
-    void speakHumanQueue(myToken, started.id, started.title).catch(() => {
-      markHumanTtsFailed();
-      if (myToken !== token) return;
-      if (!speech) {
-        state = idleState();
-        emit();
-        return;
-      }
-      activeEngine = "device";
-      state = { status: "speaking", id: started.id, title: started.title, preparing: "Using this device’s voice.", currentVerse: verseMarks[index] || "" };
-      emit();
-      speakNext(myToken);
-    });
+    void speakHumanQueue(myToken, started.id, started.title);
     return true;
   }
   if (!speech) {
     completion = null;
+    state = idleState();
+    emit();
     return false;
   }
   state = { status: "speaking", id: started.id, title: started.title, preparing: "", currentVerse: verseMarks[0] || "" };
   emit();
-  const start = () => {
-    if (myToken !== token) return;
-    speakNext(myToken);
-  };
-  // Android WebView may never fire voiceschanged; the default system voice
-  // can still speak even when getVoices() initially returns an empty array.
-  window.setTimeout(start, 60);
+  // Start in the Play click so browsers that require user activation can speak.
+  speakNext(myToken);
   return true;
 }
 
@@ -486,9 +470,15 @@ export function resumeAudible() {
       void speakHumanQueue(token, state.id, state.title);
       return;
     }
-    void resumeHumanAudio();
+    const resumeToken = token;
     state = { ...state, status: "speaking" };
     emit();
+    void resumeHumanAudio().catch(() => {
+      if (resumeToken !== token || state.status !== "speaking") return;
+      pauseHumanAudio();
+      state = { ...state, status: "paused", preparing: "Audio could not resume. Tap Resume to retry." };
+      emit();
+    });
     return;
   }
   const speech = synth();
@@ -516,7 +506,6 @@ export function stopAudible() {
   speakAbort?.abort();
   speakAbort = null;
   stopHumanAudio();
-  clearKeepAlive();
   const speech = synth();
   if (speech) speech.cancel();
   queue = [];
@@ -541,24 +530,19 @@ function applyLiveSettings() {
   activeUtterance = null;
   speakAbort?.abort();
   stopHumanAudio();
-  clearKeepAlive();
-  synth()?.cancel();
+  const speech = synth();
+  speech?.cancel();
+  const useHuman = isHumanVoice(prefs.voiceURI) && canUseHumanTts();
+  activeEngine = useHuman || !speech ? "human" : "device";
+  retries = 0;
   if (wasPaused) {
     pendingRestart = true;
     state = { ...state, status: "paused", preparing: "" };
     emit();
     return;
   }
-  if (isHumanVoice(prefs.voiceURI) && canUseHumanTts()) {
-    activeEngine = "human";
-    void speakHumanQueue(token, id, title).catch(() => {
-      markHumanTtsFailed();
-      speakNext(token);
-    });
-    return;
-  }
-  activeEngine = "device";
-  speakNext(token);
+  if (activeEngine === "human") void speakHumanQueue(token, id, title);
+  else speakNext(token);
 }
 
 export function setAudibleRate(rate) {
@@ -578,6 +562,7 @@ export function previewAudibleVoice() {
   });
 }
 
+/** @param {string | (() => string)} text @param {NarrationOptions} [opts] */
 export function toggleAudible(text, opts = {}) {
   const id = String(opts.id || opts.title || "listen");
   if (state.status !== "idle" && state.id === id) {
