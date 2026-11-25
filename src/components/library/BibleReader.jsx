@@ -91,7 +91,7 @@ export default function BibleReader({
 
   function openChapter(nextBook, nextChapter, options = {}) {
     const next = Number(nextChapter) || 1;
-    if (!options.keepListening) stopAudible();
+    if (!options.keepListening) { stopAudible(); setAutoListenKey(""); }
     if (options.autoListen) setAutoListenKey(`chapter:${nextBook}:${next}`);
     setBook(nextBook);
     setChapter(next);
@@ -117,16 +117,12 @@ export default function BibleReader({
       openChapter(book, chapter + 1, { keepListening: true, autoListen: true });
       return;
     }
-    const availableBooks = (apocrypha ? books : versionBooks).map(bookTitleOf);
-    const currentIndex = availableBooks.indexOf(book);
-    const nextBook = currentIndex >= 0 ? availableBooks[currentIndex + 1] : "";
-    if (nextBook) {
-      openChapter(nextBook, 1, { keepListening: true, autoListen: true });
-    }
+    setAutoListenKey("");
   }
 
   function changeVersion(nextId) {
     stopAudible();
+    setAutoListenKey("");
     const next = bibleVersionById(nextId).id;
     const stillHasBook = book && booksForVersion(next).includes(book);
     setVersionId(next);
@@ -348,6 +344,7 @@ export default function BibleReader({
           highlights={highlights}
           favorites={favorites}
           onChanged={reload}
+          narrationVerses={verses}
           onChapterComplete={handleChapterComplete}
           autoListenKey={autoListenKey}
           onAutoListenStarted={() => setAutoListenKey("")}
