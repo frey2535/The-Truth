@@ -47,34 +47,38 @@ export default function BibleReader({
         desc: CANON_BOOK_INFO[title] || `${title} from ${version.label}.`,
       }));
 
-  async function loadBook(b) {
-    const key = `${versionId}:${b}`;
+  useEffect(() => {
+    if (!book) return;
+    const key = `${versionId}:${book}`;
+    setError("");
     if (cache.current[key]) {
       setData(cache.current[key]);
+      setLoading(false);
       return;
     }
+    let active = true;
     setLoading(true);
-    setError("");
-    try {
-      const res = await fetch(bibleBookUrl(b, apocrypha, versionId));
-      if (!res.ok) throw new Error("Could not load " + b + ".");
-      const raw = await res.text();
-      if (raw.trimStart().startsWith("<")) throw new Error("Could not load " + b + ".");
-      const json = JSON.parse(raw);
-      cache.current[key] = json;
-      setData(json);
-    } catch (e) {
-      setError(e.message);
-      setData(null);
-    } finally {
-      setLoading(false);
+    async function loadBook() {
+      try {
+        const res = await fetch(bibleBookUrl(book, apocrypha, versionId));
+        if (!res.ok) throw new Error("Could not load " + book + ".");
+        const raw = await res.text();
+        if (raw.trimStart().startsWith("<")) throw new Error("Could not load " + book + ".");
+        const json = JSON.parse(raw);
+        cache.current[key] = json;
+        if (active) setData(json);
+      } catch (e) {
+        if (active) {
+          setError(e.message);
+          setData(null);
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
     }
-  }
-
-  useEffect(() => {
-    if (book) loadBook(book);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [book, versionId]);
+    void loadBook();
+    return () => { active = false; };
+  }, [book, versionId, apocrypha]);
 
   useEffect(() => {
     if (initialBook) setBook(initialBook);
@@ -91,7 +95,7 @@ export default function BibleReader({
 
   function openChapter(nextBook, nextChapter, options = {}) {
     const next = Number(nextChapter) || 1;
-    if (!options.keepListening) stopAudible();
+    if (!options.keepListening) { stopAudible(); setAutoListenKey(""); }
     if (options.autoListen) setAutoListenKey(`chapter:${nextBook}:${next}`);
     setBook(nextBook);
     setChapter(next);
@@ -117,16 +121,12 @@ export default function BibleReader({
       openChapter(book, chapter + 1, { keepListening: true, autoListen: true });
       return;
     }
-    const availableBooks = (apocrypha ? books : versionBooks).map(bookTitleOf);
-    const currentIndex = availableBooks.indexOf(book);
-    const nextBook = currentIndex >= 0 ? availableBooks[currentIndex + 1] : "";
-    if (nextBook) {
-      openChapter(nextBook, 1, { keepListening: true, autoListen: true });
-    }
+    setAutoListenKey("");
   }
 
   function changeVersion(nextId) {
     stopAudible();
+    setAutoListenKey("");
     const next = bibleVersionById(nextId).id;
     const stillHasBook = book && booksForVersion(next).includes(book);
     setVersionId(next);
@@ -192,8 +192,10 @@ export default function BibleReader({
     </div>
   ) : null;
 
-  const chapterCount = data?.chapters?.length || 0;
-  const current = data?.chapters?.find((c) => String(c.chapter) === String(chapter));
+  // A fetch for a previous book or version must never supply the narration.
+  const chapters = data === cache.current[`${versionId}:${book}`] ? data?.chapters : null;
+  const chapterCount = chapters?.length || 0;
+  const current = chapters?.find((c) => String(c.chapter) === String(chapter));
   const verses = current?.verses || [];
   const bookSearch = bookListQuery.trim().toLowerCase();
   const shownBooks = (apocrypha ? books : versionBooks).filter((entry) => {
@@ -258,6 +260,7 @@ export default function BibleReader({
       <button
         onClick={() => {
           stopAudible();
+          setAutoListenKey("");
           setBook(null);
           const q = new URLSearchParams({ corpus: apocrypha ? "apocrypha" : corpus });
           if (!apocrypha && versionId !== "kjv") q.set("version", versionId);
@@ -348,6 +351,7 @@ export default function BibleReader({
           highlights={highlights}
           favorites={favorites}
           onChanged={reload}
+          narrationVerses={verses}
           onChapterComplete={handleChapterComplete}
           autoListenKey={autoListenKey}
           onAutoListenStarted={() => setAutoListenKey("")}

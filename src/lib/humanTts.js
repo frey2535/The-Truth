@@ -23,14 +23,8 @@ export function humanVoiceId(uri) {
   return HUMAN_VOICES.some((voice) => voice.id === raw) ? raw : HUMAN_VOICES[0].id;
 }
 
-export function humanTtsAllowed({ userAgent = "", deviceMemory, webAssembly = true, skip = false } = {}) {
-  if (!webAssembly || skip) return false;
-  const memory = Number(deviceMemory);
-  // Prefer the human voice model wherever the browser can reasonably attempt it.
-  // If the device cannot load it, the failure is remembered for this session.
-  // Low-memory devices may still run the quantized model; attempt it and
-  // fall back only on an actual loading or playback failure.
-  return true;
+export function humanTtsAllowed({ webAssembly = true, skip = false } = {}) {
+  return webAssembly && !skip;
 }
 
 export function humanTtsSupported() {
@@ -43,8 +37,6 @@ export function humanTtsSupported() {
     /* ignore quota / private mode */
   }
   return humanTtsAllowed({
-    userAgent: navigator.userAgent,
-    deviceMemory: navigator.deviceMemory,
     webAssembly: true,
     skip,
   });
@@ -68,8 +60,13 @@ export function canUseHumanTts() {
 let model = null;
 let modelPromise = null;
 let audioEl = null;
+let paused = false;
+async function waitWhilePaused(signal) {
+  while (paused && !signal?.aborted) await new Promise(resolve => setTimeout(resolve, 100));
+}
 
 export function stopHumanAudio() {
+  paused = false;
   if (!audioEl) return;
   try {
     audioEl.pause();
@@ -81,6 +78,7 @@ export function stopHumanAudio() {
 }
 
 export function pauseHumanAudio() {
+  paused = true;
   try {
     audioEl?.pause();
   } catch {
@@ -89,6 +87,8 @@ export function pauseHumanAudio() {
 }
 
 export function resumeHumanAudio() {
+  paused = false;
+  if (!audioEl?.getAttribute("src") || audioEl.ended) return Promise.resolve();
   try {
     return audioEl?.play?.() || Promise.resolve();
   } catch (error) {
@@ -153,7 +153,6 @@ export async function loadHumanTts(onProgress) {
     return model;
   })().catch((error) => {
     modelPromise = null;
-    markHumanTtsFailed();
     throw error;
   });
   return modelPromise;
@@ -198,9 +197,12 @@ export async function speakHumanText(chunks, { voice, speed, signal, onProgress,
   const rate = Number(speed) || 1;
   for (let i = 0; i < chunks.length; i += 1) {
     if (signal?.aborted) return;
-    const raw = await tts.generate(chunks[i], { voice: id, speed: rate });
+    await waitWhilePaused(signal);
     if (signal?.aborted) return;
     onChunkStart?.(i);
+    const raw = await withTimeout(tts.generate(chunks[i], { voice: id, speed: rate }), 90000, "Narration generation timed out.");
+    await waitWhilePaused(signal);
+    if (signal?.aborted) return;
     await playBlob(raw.toBlob(), signal);
   }
 }

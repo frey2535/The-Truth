@@ -5,6 +5,11 @@ import {
   chapterSpeakParts,
   chunkSpokenText,
   defaultListenPrefs,
+  getAudibleState,
+  pauseAudible,
+  resumeAudible,
+  speakText,
+  stopAudible,
   listVoiceChoices,
   listenVoiceOptions,
   loadListenPrefs,
@@ -43,7 +48,7 @@ const chapter = chapterReadingText("John", 8, [
   { verse: 32, text: "And ye shall know the truth, and the truth shall make you free." },
 ]);
 assert.match(chapter, /John, chapter 8/);
-assert.match(chapter, /Verse 32/);
+assert.doesNotMatch(chapter, /Verse 32/);
 assert.match(chapter, /the truth shall make you free/);
 
 const parts = chapterSpeakParts("John", 8, [
@@ -54,7 +59,7 @@ assert.equal(parts.length, 2);
 assert.equal(parts[0].verse, "31");
 assert.equal(parts[1].verse, "32");
 assert.match(parts[0].text, /John, chapter 8/);
-assert.match(parts[1].text, /Verse 32/);
+assert.doesNotMatch(parts[1].text, /Verse 32/);
 assert.doesNotMatch(parts[1].text, /chapter 8/);
 
 const fakeMain = {
@@ -116,7 +121,7 @@ assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17
 assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Linux; Android 14)", deviceMemory: 8 }), true);
 assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 4 }), true);
 assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)", deviceMemory: undefined }), true);
-assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 2 }), false);
+assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 2 }), true);
 assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 8 }), true);
 assert.equal(humanTtsAllowed({ userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120", deviceMemory: 8, skip: true }), false);
 
@@ -141,5 +146,76 @@ assert.match(libraryHref({ book: "John", chapter: 8, source: "canon", reference:
 assert.equal(romanNumeral(8), "VIII");
 assert.equal(romanNumeral(9), "IX");
 assert.equal(romanNumeral(119), "CXIX");
+
+// Exercise the playback lifecycle with an Android-style empty voice list.
+const scheduled = [];
+const utterances = [];
+globalThis.window = {
+  SpeechSynthesisUtterance: class {
+    constructor(text) { this.text = text; }
+  },
+  speechSynthesis: {
+    getVoices: () => [],
+    cancel() {},
+    speak(utterance) { utterances.push(utterance); },
+  },
+  setTimeout(callback) { scheduled.push(callback); },
+};
+const runNext = () => {
+  assert.ok(scheduled.length, "expected a scheduled narration callback");
+  scheduled.shift()();
+};
+const lastUtterance = () => utterances.at(-1);
+let completed = 0;
+const verses = [1, 2, 3].map((verse) => ({ verse, text: `Sample passage ${verse}.` }));
+const narration = { book: "John", chapter: 8, verses, onComplete: () => { completed += 1; } };
+
+assert.equal(speakText("", narration), true);
+assert.equal(utterances.length, 1, "first device utterance is sent within Play");
+assert.equal(getAudibleState().currentVerse, "1");
+assert.equal(lastUtterance().text, "John, chapter 8. Sample passage 1.");
+lastUtterance().onend();
+runNext();
+const interrupted = lastUtterance();
+interrupted.onerror({ error: "interrupted" });
+interrupted.onend();
+runNext();
+assert.equal(lastUtterance().text, "Sample passage 2.");
+assert.equal(getAudibleState().currentVerse, "2");
+
+const paused = lastUtterance();
+pauseAudible();
+paused.onend();
+assert.equal(getAudibleState().status, "paused");
+assert.equal(scheduled.length, 0);
+resumeAudible();
+assert.equal(lastUtterance().text, paused.text);
+lastUtterance().onend();
+runNext();
+assert.equal(getAudibleState().currentVerse, "3");
+lastUtterance().onend();
+runNext();
+assert.equal(getAudibleState().status, "idle");
+runNext();
+assert.equal(completed, 1);
+
+speakText("Continuation", { onComplete: narration.onComplete });
+lastUtterance().onend();
+runNext();
+stopAudible();
+runNext();
+assert.equal(completed, 1, "Stop invalidates a pending chapter transition");
+
+speakText("Blocked");
+lastUtterance().onerror({ error: "not-allowed" });
+assert.equal(getAudibleState().status, "paused");
+assert.equal(scheduled.length, 0);
+resumeAudible();
+assert.equal(lastUtterance().text, "Blocked");
+stopAudible();
+delete globalThis.window;
+
+const longWord = "abcdefghijklmnopqrstuvwxyz";
+assert.equal(chunkSpokenText(longWord, 8).join(""), longWord);
 
 console.log("audible reader ok");

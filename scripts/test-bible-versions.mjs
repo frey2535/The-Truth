@@ -16,7 +16,7 @@ assert.equal(bibleVersionById("geneva").year, 1599);
 const reader = readFileSync("src/components/library/BibleReader.jsx", "utf8");
 assert.match(reader, /Download this Bible/);
 assert.match(reader, /REFUSED_BIBLE_VERSIONS/);
-assert.match(reader, /bibleBookUrl\(b, apocrypha, versionId\)/);
+assert.match(reader, /bibleBookUrl\(book, apocrypha, versionId\)/);
 
 const catalog = readFileSync("src/components/library/CatalogBrowser.jsx", "utf8");
 assert.match(catalog, /Holy Bible versions/);
