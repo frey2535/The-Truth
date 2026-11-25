@@ -68,8 +68,13 @@ export function canUseHumanTts() {
 let model = null;
 let modelPromise = null;
 let audioEl = null;
+let paused = false;
+async function waitWhilePaused(signal) {
+  while (paused && !signal?.aborted) await new Promise(resolve => setTimeout(resolve, 100));
+}
 
 export function stopHumanAudio() {
+  paused = false;
   if (!audioEl) return;
   try {
     audioEl.pause();
@@ -81,6 +86,7 @@ export function stopHumanAudio() {
 }
 
 export function pauseHumanAudio() {
+  paused = true;
   try {
     audioEl?.pause();
   } catch {
@@ -89,6 +95,8 @@ export function pauseHumanAudio() {
 }
 
 export function resumeHumanAudio() {
+  paused = false;
+  if (!audioEl?.getAttribute("src") || audioEl.ended) return Promise.resolve();
   try {
     return audioEl?.play?.() || Promise.resolve();
   } catch (error) {
@@ -198,9 +206,12 @@ export async function speakHumanText(chunks, { voice, speed, signal, onProgress,
   const rate = Number(speed) || 1;
   for (let i = 0; i < chunks.length; i += 1) {
     if (signal?.aborted) return;
-    const raw = await tts.generate(chunks[i], { voice: id, speed: rate });
+    await waitWhilePaused(signal);
     if (signal?.aborted) return;
     onChunkStart?.(i);
+    const raw = await withTimeout(tts.generate(chunks[i], { voice: id, speed: rate }), 90000, "Narration generation timed out.");
+    await waitWhilePaused(signal);
+    if (signal?.aborted) return;
     await playBlob(raw.toBlob(), signal);
   }
 }
