@@ -23,6 +23,7 @@ export default function ReadingVerseList({
   book,
   chapter = 1,
   verses,
+  narrationVerses = verses,
   showEvidence = true,
   highlights: highlightsProp,
   favorites: favoritesProp,
@@ -53,20 +54,20 @@ export default function ReadingVerseList({
 
   useEffect(() => {
     const listenId = `chapter:${book}:${chapter}`;
-    if (!autoListenKey || autoListenKey !== listenId || !verses.length) return;
+    if (!autoListenKey || autoListenKey !== listenId || !narrationVerses.length) return;
     // Callback/verse-array identity changes must not restart an active chapter.
     if (lastAutoListenKey.current === autoListenKey) return;
     lastAutoListenKey.current = autoListenKey;
     onAutoListenStarted?.();
-    speakText(chapterReadingText(book, chapter, verses), {
+    speakText(chapterReadingText(book, chapter, narrationVerses), {
       id: listenId,
       title: `${book}${chapter ? ` ${chapter}` : ""}`,
-      verses,
+      verses: narrationVerses,
       book,
       chapter,
       onComplete: onChapterComplete,
     });
-  }, [autoListenKey, book, chapter, verses, onAutoListenStarted, onChapterComplete]);
+  }, [autoListenKey, book, chapter, narrationVerses, onAutoListenStarted, onChapterComplete]);
 
   useEffect(() => {
     if (!autoListenKey) lastAutoListenKey.current = "";
@@ -107,9 +108,9 @@ export default function ReadingVerseList({
             variant="chapter"
             id={`chapter:${book}:${chapter}`}
             title={`${book}${chapter ? ` ${chapter}` : ""}`}
-            label="Listen to this chapter"
-            text={() => chapterReadingText(book, chapter, verses)}
-            verses={verses}
+            label={onChapterComplete ? "Listen to this book" : "Listen to this chapter"}
+            text={() => chapterReadingText(book, chapter, narrationVerses)}
+            verses={narrationVerses}
             book={book}
             chapter={chapter}
             onComplete={onChapterComplete}
