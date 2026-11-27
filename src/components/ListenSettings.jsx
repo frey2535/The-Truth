@@ -51,7 +51,7 @@ export default function ListenSettings({ dark = false, compact = false, classNam
                   Voice and speed
                 </h2>
                 <p className="text-sm text-[#5b5142] mt-1">
-                  Automatic uses the best available device voice. Spoken English voices may need a one-time download.
+                  Automatic starts with a device voice and switches to the built-in voice if needed. Spoken English voices may need a one-time download.
                   Scripture is not uploaded.
                 </p>
               </div>
@@ -68,7 +68,7 @@ export default function ListenSettings({ dark = false, compact = false, classNam
                 disabled={!voices.length}
               >
                 <option value="">Automatic (device voice)</option>
-                {["Spoken English — sounds like a person", "Human-like voices on this device"].map((group) => {
+                {["Spoken English — sounds like a person", "Human-like voices on this device", "Built-in voices"].map((group) => {
                   const rows = voices.filter((voice) => (voice.group || "This device") === group);
                   if (!rows.length) return null;
                   return (
