@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { renderFlite } from "../src/lib/flite.js";
 import {
   LISTEN_PREFS_KEY,
   chapterReadingText,
@@ -213,9 +216,39 @@ assert.equal(scheduled.length, 0);
 resumeAudible();
 assert.equal(lastUtterance().text, "Blocked");
 stopAudible();
+
+let audioAttempts = 0;
+window.Worker = class {};
+window.AudioContext = class {
+  constructor() {
+    audioAttempts += 1;
+    throw new Error("No audio output");
+  }
+};
+speakText("", narration);
+const failedVoice = lastUtterance();
+failedVoice.onerror({ error: "synthesis-failed" });
+assert.match(getAudibleState().preparing, /Loading the built-in voice/);
+assert.equal(getAudibleState().currentVerse, "1");
+await Promise.resolve();
+assert.equal(getAudibleState().status, "paused");
+assert.match(getAudibleState().preparing, /Tap Resume/);
+assert.equal(lastUtterance(), failedVoice, "two unavailable engines never retry in a loop");
+assert.equal(audioAttempts, 1);
+assert.equal(completed, 1);
+stopAudible();
 delete globalThis.window;
 
 const longWord = "abcdefghijklmnopqrstuvwxyz";
 assert.equal(chunkSpokenText(longWord, 8).join(""), longWord);
+
+// Exercise the actual built-in synthesizer, including the rate and PCM output.
+const flite = await WebAssembly.compile(await readFile(fileURLToPath(import.meta.resolve("@echogarden/flite-wasi"))));
+const passage = "Blessed are the peacemakers.";
+const regular = await renderFlite(flite, passage, 1);
+const fast = await renderFlite(flite, passage, 1.4);
+assert.equal(new TextDecoder().decode(regular.subarray(0, 4)), "RIFF");
+assert.ok(regular.subarray(44).some((sample) => sample !== 0), "the generated audio contains non-silent samples");
+assert.ok(fast.length < regular.length, "faster narration produces a shorter recording");
 
 console.log("audible reader ok");

@@ -12,10 +12,10 @@ export default function AudibleBar() {
       className="listen-now fixed inset-x-0 z-[85] border-t border-[#e8ddc7] bg-[#faf6ef]/95 backdrop-blur-md px-4 py-2 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] md:bottom-0"
       data-no-listen
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between gap-3 text-sm text-[#2b2620]">
-        <p className="min-w-0 truncate inline-flex items-center gap-2">
+      <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-sm text-[#2b2620]">
+        <p className="min-w-0 basis-40 flex-1 inline-flex items-center gap-2" role="status">
           <Volume2 className="w-4 h-4 shrink-0 text-[#7a2e2e]" />
-          <span className="truncate">
+          <span>
             {preparing || (status === "paused" ? `Paused: ${title}` : `Listening: ${title}`)}
           </span>
         </p>

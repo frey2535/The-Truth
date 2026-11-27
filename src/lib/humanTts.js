@@ -2,7 +2,7 @@
 
 export const HUMAN_MODEL_ID = "onnx-community/Kokoro-82M-v1.0-ONNX";
 export const HUMAN_VOICE_PREFIX = "human:";
-export const HUMAN_TTS_SKIP_KEY = "searchingfortruth_skip_human_tts";
+export const BUILTIN_VOICE = "builtin";
 
 export const HUMAN_VOICES = [
   { id: "af_heart", uri: "human:af_heart", name: "Heart — American woman" },
@@ -28,72 +28,49 @@ export function humanTtsAllowed({ webAssembly = true, skip = false } = {}) {
 }
 
 export function humanTtsSupported() {
-  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
-  if (typeof WebAssembly !== "object") return false;
-  let skip = false;
-  try {
-    skip = window.sessionStorage?.getItem(HUMAN_TTS_SKIP_KEY) === "1";
-  } catch {
-    /* ignore quota / private mode */
-  }
-  return humanTtsAllowed({
-    webAssembly: true,
-    skip,
-  });
+  return typeof window !== "undefined" && typeof window.AudioContext === "function" &&
+    humanTtsAllowed({ webAssembly: typeof WebAssembly === "object" });
 }
 
-let humanTtsFailed = false;
+export const canUseHumanTts = humanTtsSupported;
 
-export function markHumanTtsFailed() {
-  humanTtsFailed = true;
-  try {
-    window.sessionStorage?.setItem(HUMAN_TTS_SKIP_KEY, "1");
-  } catch {
-    /* ignore */
-  }
-}
-
-export function canUseHumanTts() {
-  return humanTtsSupported() && !humanTtsFailed;
+export function canUseBuiltInVoice() {
+  return humanTtsSupported() && typeof window.Worker === "function";
 }
 
 let model = null;
 let modelPromise = null;
-let audioEl = null;
+let audioContext = null;
 let paused = false;
+
+// Called from Play or Resume so the generated audio can start after the voice loads.
+export function primeAudioOutput() {
+  if (!canUseHumanTts()) return;
+  try {
+    audioContext ??= new window.AudioContext();
+    void audioContext.resume().catch(() => {});
+  } catch {
+    // Surface startup failure if this engine is needed.
+  }
+}
+
 async function waitWhilePaused(signal) {
   while (paused && !signal?.aborted) await new Promise(resolve => setTimeout(resolve, 100));
 }
 
-export function stopHumanAudio() {
+export function resetGeneratedPause() {
   paused = false;
-  if (!audioEl) return;
-  try {
-    audioEl.pause();
-    audioEl.removeAttribute("src");
-    audioEl.load();
-  } catch {
-    /* some browsers throw if src is empty */
-  }
 }
 
-export function pauseHumanAudio() {
+export function pauseGeneratedAudio() {
   paused = true;
-  try {
-    audioEl?.pause();
-  } catch {
-    /* ignore */
-  }
+  void audioContext?.suspend().catch(() => {});
 }
 
-export function resumeHumanAudio() {
+export async function resumeGeneratedAudio() {
+  if (!audioContext) throw new Error("Audio could not start.");
   paused = false;
-  if (!audioEl?.getAttribute("src") || audioEl.ended) return Promise.resolve();
-  try {
-    return audioEl?.play?.() || Promise.resolve();
-  } catch (error) {
-    return Promise.reject(error);
-  }
+  await withTimeout(audioContext.resume(), 2000, "Audio did not resume.");
 }
 
 function withTimeout(promise, ms, message) {
@@ -158,41 +135,92 @@ export async function loadHumanTts(onProgress) {
   return modelPromise;
 }
 
-// Reuse one media element across verses. Creating a new Audio() for every
-// verse can lose the user gesture / media playback permission on Android.
-function playBlob(blob, signal) {
-  return new Promise((resolve, reject) => {
-    if (signal?.aborted) { resolve(); return; }
-    const el = audioEl || new Audio();
-    audioEl = el;
-    const url = URL.createObjectURL(blob);
-    let finished = false;
-    const finish = (error) => {
-      if (finished) return;
-      finished = true;
-      el.onended = null;
-      el.onerror = null;
-      signal?.removeEventListener("abort", onAbort);
-      URL.revokeObjectURL(url);
-      if (error) reject(error);
-      else resolve();
+async function playBuffer(buffer, signal, onPlaying) {
+  const context = audioContext;
+  if (!context) throw new Error("Audio could not start.");
+  if (context.state !== "running") {
+    try {
+      await withTimeout(context.resume(), 2000, "Audio did not start.");
+    } catch {
+      throw new DOMException("Tap Resume to enable audio.", "NotAllowedError");
+    }
+  }
+  await waitWhilePaused(signal);
+  if (signal?.aborted) return;
+  const source = context.createBufferSource();
+  source.buffer = buffer;
+  source.connect(context.destination);
+
+  await new Promise((resolve, reject) => {
+    const finish = () => {
+      source.onended = null;
+      signal?.removeEventListener("abort", abort);
+      source.disconnect();
+      resolve();
     };
-    const onAbort = () => {
-      el.pause();
+    const abort = () => {
+      source.stop();
       finish();
     };
-    el.onended = () => finish();
-    el.onerror = () => finish(new Error("Natural narration playback failed."));
-    signal?.addEventListener("abort", onAbort, { once: true });
-    el.src = url;
-    el.play().catch(finish);
+    source.onended = finish;
+    signal?.addEventListener("abort", abort, { once: true });
+    try {
+      source.start();
+      onPlaying?.();
+    } catch (error) {
+      reject(error);
+      finish();
+    }
   });
 }
 
-export async function speakHumanText(chunks, { voice, speed, signal, onProgress, onChunkStart }) {
-  const tts = await loadHumanTts(onProgress);
+let localWorker;
+
+function renderBuiltInAudio(text, rate, signal) {
+  localWorker ??= new Worker(new URL("./flite.worker.js", import.meta.url), { type: "module" });
+  const worker = localWorker;
+  const { port1, port2 } = new MessageChannel();
+  return new Promise((resolve, reject) => {
+    function finish() {
+      clearTimeout(timer);
+      port1.close();
+      worker.removeEventListener("error", fail);
+      signal?.removeEventListener("abort", abort);
+    }
+    function fail() {
+      finish();
+      worker.terminate();
+      if (localWorker === worker) localWorker = null;
+      reject(new Error("The built-in voice could not generate audio."));
+    }
+    function abort() {
+      finish();
+      resolve(null);
+    }
+    const timer = setTimeout(fail, 30000);
+    signal?.addEventListener("abort", abort, { once: true });
+    worker.addEventListener("error", fail, { once: true });
+    port1.onmessage = ({ data }) => {
+      if (data.error) {
+        fail();
+      } else {
+        finish();
+        resolve(data.wave);
+      }
+    };
+    try {
+      worker.postMessage({ text, rate }, [port2]);
+    } catch {
+      fail();
+    }
+  });
+}
+
+export async function speakGeneratedText(chunks, { voice, speed, signal, onProgress, onChunkStart, onPlaying }) {
+  if (!audioContext) throw new Error("Audio could not start.");
+  const builtIn = voice === BUILTIN_VOICE;
+  const tts = builtIn ? null : await loadHumanTts(onProgress);
   if (signal?.aborted) return;
-  onProgress?.("");
   const id = humanVoiceId(voice);
   const rate = Number(speed) || 1;
   for (let i = 0; i < chunks.length; i += 1) {
@@ -200,9 +228,17 @@ export async function speakHumanText(chunks, { voice, speed, signal, onProgress,
     await waitWhilePaused(signal);
     if (signal?.aborted) return;
     onChunkStart?.(i);
-    const raw = await withTimeout(tts.generate(chunks[i], { voice: id, speed: rate }), 90000, "Narration generation timed out.");
-    await waitWhilePaused(signal);
-    if (signal?.aborted) return;
-    await playBlob(raw.toBlob(), signal);
+    let buffer;
+    if (builtIn) {
+      const wave = await renderBuiltInAudio(chunks[i], rate, signal);
+      if (signal?.aborted) return;
+      buffer = await audioContext.decodeAudioData(wave.buffer);
+    } else {
+      const raw = await withTimeout(tts.generate(chunks[i], { voice: id, speed: rate }), 90000, "Narration generation timed out.");
+      if (signal?.aborted) return;
+      buffer = audioContext.createBuffer(1, raw.audio.length, raw.sampling_rate);
+      buffer.getChannelData(0).set(raw.audio);
+    }
+    await playBuffer(buffer, signal, () => onPlaying?.(i));
   }
 }

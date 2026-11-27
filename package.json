@@ -48,6 +48,8 @@
     "test:clipboard": "node scripts/test-clipboard-text.mjs"
   },
   "dependencies": {
+    "@bjorn3/browser_wasi_shim": "0.4.2",
+    "@echogarden/flite-wasi": "0.1.1",
     "@hello-pangea/dnd": "^17.0.0",
     "@hookform/resolvers": "^4.1.2",
     "@radix-ui/react-accordion": "^1.2.3",
